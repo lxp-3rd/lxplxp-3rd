@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Hanken Grotesk', sans-serif;
+  }
+
+  body {
+    @apply bg-background text-on-surface min-h-screen;
+  }
+
+  /* Material Symbols 기본 설정 */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-size: 24px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+}
+
+@layer utilities {
+  /* 페이지 기본 컨테이너 */
+  .page-container {
+    @apply max-w-container-max mx-auto px-gutter;
+  }
+
+  /* 헤더 높이만큼 상단 여백 */
+  .page-top {
+    @apply pt-16;
+  }
+}
