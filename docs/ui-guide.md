@@ -40,7 +40,8 @@ lib/
   - 결정된 사항은 ui-guide.md로 옮겨서 정리
 
 ## 참고 문서
-- 상세 가이드: `docs/fe-guide.md` (같은 대화에서 작성, `D:\min3gi\team3project\lxplxp-3rd\docs`에 저장 예정)
+- 전체 화면 목록 & 팀원 가이드: `D:\min3gi\team3project\lxplxp-3rd\docs\topics\fe-screen-dev.md`
+- C 담당 개발 태스크 (강좌·콘텐츠·강사): `D:\min3gi\team3project\p-docs\next\task.md`
 
 ## 다음 액션 (Cowork에서 이어서 할 일 제안)
 - [ ] `fe-guide.md` 내용 기반으로 실제 도메인 폴더 스캐폴딩 생성
