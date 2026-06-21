@@ -33,6 +33,30 @@ public class InstructorApplication {
         return application;
     }
 
+    public static InstructorApplication reconstitute(
+            Long id,
+            Long memberId,
+            String instructorName,
+            String introduction,
+            String expertise,
+            ApplicationStatus status,
+            String rejectionReason,
+            LocalDateTime createdAt,
+            LocalDateTime resolvedAt
+    ) {
+        InstructorApplication application = new InstructorApplication();
+        application.id = id;
+        application.memberId = memberId;
+        application.instructorName = instructorName;
+        application.introduction = introduction;
+        application.expertise = expertise;
+        application.status = status;
+        application.rejectionReason = rejectionReason;
+        application.createdAt = createdAt;
+        application.resolvedAt = resolvedAt;
+        return application;
+    }
+
     public Long getId() {
         return id;
     }
