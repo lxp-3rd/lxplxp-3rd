@@ -41,7 +41,6 @@ export default function AdminAnnouncementsPage() {
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">제목</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-32">작성자</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-36">작성일</th>
-                <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-24 text-right">조회수</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-28 text-right">관리</th>
               </tr>
             </thead>
@@ -69,9 +68,6 @@ export default function AdminAnnouncementsPage() {
                   </td>
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{ann.author}</td>
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{ann.createdAt}</td>
-                  <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant text-right">
-                    {ann.views.toLocaleString()}
-                  </td>
                   <td className="px-lg py-md text-right">
                     <div className="flex items-center justify-end gap-xs">
                       <Link
