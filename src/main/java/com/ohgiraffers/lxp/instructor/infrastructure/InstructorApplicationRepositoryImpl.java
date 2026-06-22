@@ -9,6 +9,8 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class InstructorApplicationRepositoryImpl implements InstructorApplicationRepository {
 
@@ -33,6 +35,11 @@ public class InstructorApplicationRepositoryImpl implements InstructorApplicatio
             }
             throw e;
         }
+    }
+
+    @Override
+    public Optional<InstructorApplication> findById(Long id) {
+        return jpaRepository.findById(id).map(InstructorApplicationJpaEntity::toDomain);
     }
 
     @Override

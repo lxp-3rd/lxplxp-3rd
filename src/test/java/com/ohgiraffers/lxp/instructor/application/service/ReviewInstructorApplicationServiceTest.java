@@ -1,0 +1,88 @@
+package com.ohgiraffers.lxp.instructor.application.service;
+
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewInstructorApplicationCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
+import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+
+@ExtendWith(MockitoExtension.class)
+class ReviewInstructorApplicationServiceTest {
+
+    @InjectMocks
+    private ReviewInstructorApplicationService reviewInstructorApplicationService;
+
+    @Mock
+    private InstructorApplicationRepository instructorApplicationRepository;
+
+    @Mock
+    private InstructorRepository instructorRepository;
+
+    @Test
+    @DisplayName("승인 시 신청 상태가 APPROVED로 변경되고 Instructor가 생성된다")
+    void review_approve_savesApprovedApplicationAndCreatesInstructor() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        given(instructorApplicationRepository.findById(1L)).willReturn(Optional.of(application));
+        given(instructorApplicationRepository.save(any())).willReturn(application);
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(1L, ReviewAction.APPROVE, null);
+
+        reviewInstructorApplicationService.review(command);
+
+        then(instructorApplicationRepository).should().save(any(InstructorApplication.class));
+        then(instructorRepository).should().save(any(Instructor.class));
+    }
+
+    @Test
+    @DisplayName("반려 시 신청 상태가 REJECTED로 변경되고 Instructor는 생성되지 않는다")
+    void review_reject_savesRejectedApplicationAndNoInstructor() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        given(instructorApplicationRepository.findById(1L)).willReturn(Optional.of(application));
+        given(instructorApplicationRepository.save(any())).willReturn(application);
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(1L, ReviewAction.REJECT, "기준 미달");
+
+        reviewInstructorApplicationService.review(command);
+
+        then(instructorApplicationRepository).should().save(any(InstructorApplication.class));
+        then(instructorRepository).should(never()).save(any());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 신청 ID로 심사하면 예외가 발생한다")
+    void review_notFound_throwsException() {
+        given(instructorApplicationRepository.findById(99L)).willReturn(Optional.empty());
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(99L, ReviewAction.APPROVE, null);
+
+        assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND);
+    }
+}
