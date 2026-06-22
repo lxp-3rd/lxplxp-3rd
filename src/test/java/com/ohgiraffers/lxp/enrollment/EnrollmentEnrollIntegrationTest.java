@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
+@Transactional
 @DisplayName("수강신청 해피패스 통합 테스트")
 class EnrollmentEnrollIntegrationTest {
 
