@@ -59,6 +59,7 @@ export default function RoadmapDetailPage({ params }: { params: { id: string } }
 <div className="z-10 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm">
 <span className="material-symbols-outlined">check</span>
 </div>
+<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
 </div>
 <div className="flex-1 pt-2">
 <div className="flex items-center gap-sm mb-xs">
@@ -77,6 +78,7 @@ export default function RoadmapDetailPage({ params }: { params: { id: string } }
 <div className="z-10 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md border-2 border-primary-fixed ring-4 ring-primary-container ring-opacity-30">
 <span className="text-label-md font-bold">02</span>
 </div>
+<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
 </div>
 <div className="flex-1 pt-2">
 <div className="flex items-center gap-sm mb-xs">
@@ -98,6 +100,7 @@ export default function RoadmapDetailPage({ params }: { params: { id: string } }
 <div className="z-10 w-10 h-10 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant">
 <span className="material-symbols-outlined">lock</span>
 </div>
+<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
 </div>
 <div className="flex-1 pt-2 opacity-70">
 <div className="flex items-center gap-sm mb-xs">
