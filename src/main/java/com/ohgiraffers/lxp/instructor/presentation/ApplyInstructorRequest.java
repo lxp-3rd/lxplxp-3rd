@@ -3,11 +3,13 @@ package com.ohgiraffers.lxp.instructor.presentation;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase.ApplyInstructorCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public record ApplyInstructorRequest(
 
         @NotNull(message = "회원 ID는 필수입니다.")
+        @Positive(message = "회원 ID는 양수여야 합니다.")
         Long memberId,
 
         @NotBlank(message = "강사명은 필수입니다.")

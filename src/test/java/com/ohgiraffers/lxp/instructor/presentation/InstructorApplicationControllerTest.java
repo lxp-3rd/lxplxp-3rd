@@ -59,6 +59,32 @@ class InstructorApplicationControllerTest {
     }
 
     @Test
+    @DisplayName("memberId가 0이면 400을 반환한다")
+    void apply_zeroMemberId_returns400() throws Exception {
+        ApplyInstructorRequest request = new ApplyInstructorRequest(
+                0L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+
+        mockMvc.perform(post("/api/instructors/applications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("memberId가 음수이면 400을 반환한다")
+    void apply_negativeMemberId_returns400() throws Exception {
+        ApplyInstructorRequest request = new ApplyInstructorRequest(
+                -1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+
+        mockMvc.perform(post("/api/instructors/applications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("중복 신청 시 409를 반환한다")
     void apply_duplicate_returns409() throws Exception {
         ApplyInstructorRequest request = new ApplyInstructorRequest(

@@ -8,7 +8,13 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "instructor_application")
+@Table(
+        name = "instructor_application",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_instructor_application_pending_lock",
+                columnNames = "pending_lock"
+        )
+)
 public class InstructorApplicationJpaEntity extends BaseEntity {
 
     @Id
@@ -37,6 +43,13 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
 
+    /**
+     * PENDING 상태일 때만 memberId 값을 가지며, 그 외에는 NULL.
+     * NULL은 유니크 제약 대상에서 제외되므로 PENDING 상태의 중복만 DB 레벨에서 차단.
+     */
+    @Column(name = "pending_lock", unique = true)
+    private Long pendingLock;
+
     protected InstructorApplicationJpaEntity() {
     }
 
@@ -49,6 +62,9 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
         entity.status = domain.getStatus();
         entity.rejectionReason = domain.getRejectionReason();
         entity.resolvedAt = domain.getResolvedAt();
+        entity.pendingLock = domain.getStatus() == ApplicationStatus.PENDING
+                ? domain.getMemberId()
+                : null;
         return entity;
     }
 
@@ -64,9 +80,5 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
                 getCreatedAt(),
                 resolvedAt
         );
-    }
-
-    public boolean hasMemberIdAndStatus(Long memberId, ApplicationStatus status) {
-        return this.memberId.equals(memberId) && this.status == status;
     }
 }

@@ -2,14 +2,19 @@ package com.ohgiraffers.lxp.instructor.infrastructure;
 
 import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
 import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.global.config.JpaAuditingConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
+@Import(JpaAuditingConfig.class)
 class InstructorApplicationJpaEntityTest {
 
     @Autowired
@@ -25,7 +30,7 @@ class InstructorApplicationJpaEntityTest {
 
         InstructorApplicationJpaEntity saved = jpaRepository.save(entity);
 
-        assertThat(saved.getId()).isNotNull();
+        assertThat(saved.toDomain().getId()).isNotNull();
         assertThat(saved.getCreatedAt()).isNotNull();
     }
 
@@ -62,4 +67,26 @@ class InstructorApplicationJpaEntityTest {
 
         assertThat(exists).isFalse();
     }
+
+    @Test
+    @DisplayName("동일 회원의 PENDING 신청이 이미 있으면 DB 유니크 제약 위반 예외가 발생한다")
+    void save_duplicatePending_throwsDataIntegrityViolationException() {
+        InstructorApplication first = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        jpaRepository.saveAndFlush(InstructorApplicationJpaEntity.from(first));
+
+        InstructorApplication second = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+
+        assertThatThrownBy(() ->
+                jpaRepository.saveAndFlush(InstructorApplicationJpaEntity.from(second)))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    // TODO: [T-02 연계] REJECTED 이후 PENDING 재신청 허용 테스트
+    // 반려 처리 시 기존 PENDING 레코드의 status → REJECTED, pending_lock → null 로 갱신하는
+    // ReviewInstructorApplicationService 구현(T-02) 이후 작성 가능.
+    // 관련 이슈: InstructorApplicationJpaEntity에 상태 변경 메서드 추가 필요
 }
