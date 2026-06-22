@@ -3,13 +3,6 @@
 import Link from 'next/link';
 import { MOCK_ANNOUNCEMENTS } from '@/app/announcements/mockData';
 
-const CATEGORY_CLS: Record<string, string> = {
-  시스템: 'bg-error-container text-on-error-container',
-  서비스: 'bg-secondary-container text-on-secondary-container',
-  정책:   'bg-tertiary-container text-on-tertiary-container',
-  이벤트: 'bg-primary-container text-on-primary-container',
-};
-
 export default function AdminAnnouncementsPage() {
   const announcements = MOCK_ANNOUNCEMENTS;
 
@@ -52,17 +45,11 @@ export default function AdminAnnouncementsPage() {
                   </td>
                   <td className="px-lg py-md">
                     <div className="flex items-center gap-sm">
-                      <span className={`px-xs py-[2px] rounded text-label-sm font-label-sm ${CATEGORY_CLS[ann.category] ?? 'bg-surface-container text-on-surface-variant'}`}>
-                        {ann.category}
-                      </span>
                       <Link
                         href={`/admin/announcements/${ann.id}`}
                         className="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors"
                       >
                         {ann.title}
-                        {ann.isNew && (
-                          <span className="ml-xs text-label-sm font-label-sm text-primary">NEW</span>
-                        )}
                       </Link>
                     </div>
                   </td>
@@ -77,12 +64,13 @@ export default function AdminAnnouncementsPage() {
                       >
                         <span className="material-symbols-outlined text-[18px]">visibility</span>
                       </Link>
-                      <button
+                      <Link
+                        href={`/admin/announcements/${ann.id}/edit`}
                         className="p-xs rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors"
                         title="수정"
                       >
                         <span className="material-symbols-outlined text-[18px]">edit</span>
-                      </button>
+                      </Link>
                       <button
                         className="p-xs rounded hover:bg-error-container text-on-surface-variant hover:text-error transition-colors"
                         title="삭제"

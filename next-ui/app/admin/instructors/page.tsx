@@ -25,6 +25,7 @@ export default function AdminInstructorsPage() {
                 <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">표시 이름</th>
                 <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">전문 분야</th>
                 <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">강좌 수</th>
+                <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">상태</th>
                 <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider"></th>
               </tr>
             </thead>
@@ -32,31 +33,29 @@ export default function AdminInstructorsPage() {
               {instructors.map((inst) => (
                 <tr key={inst.id} className="hover:bg-surface-container/50 transition-colors group">
                   <td className="px-xl py-lg">
-                    <span className="text-body-md font-body-md text-on-surface-variant">@{inst.email.split('@')[0]}</span>
+                    <span className="text-body-md font-body-md text-on-surface-variant">@{inst.nickname.split('@')[0]}</span>
                   </td>
                   <td className="px-xl py-lg">
                     <div className="flex items-center gap-md">
-                      <div className="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md flex-shrink-0">
-                        {inst.name[0]}
-                      </div>
                       <span className="text-body-md font-body-md text-on-surface">{inst.name}</span>
                     </div>
                   </td>
                   <td className="px-xl py-lg">
-                    <div className="flex flex-wrap gap-xs">
-                      {inst.expertise.slice(0, 2).map((tag) => (
-                        <span key={tag} className="bg-primary-fixed text-primary px-sm py-0.5 rounded-full text-label-sm font-label-sm">{tag}</span>
-                      ))}
-                      {inst.expertise.length > 2 && (
-                        <span className="text-on-surface-variant text-label-sm font-label-sm">+{inst.expertise.length - 2}</span>
-                      )}
-                    </div>
+                    <span className="px-sm py-xs rounded-full bg-secondary-container text-on-secondary-container text-label-sm font-label-sm whitespace-nowrap">
+                      {inst.expertise[0]}
+                    </span>
                   </td>
                   <td className="px-xl py-lg text-body-md font-body-md text-on-surface text-center">{inst.courseCount}</td>
+                  <td className="px-xl py-lg text-center">
+                    {inst.isActive
+                      ? <span className="flex items-center justify-center gap-xs text-label-sm font-label-sm text-green-600"><span className="w-2 h-2 rounded-full bg-green-600 inline-block" />활성</span>
+                      : <span className="flex items-center justify-center gap-xs text-label-sm font-label-sm text-on-surface-variant"><span className="w-2 h-2 rounded-full bg-outline-variant inline-block" />비활성</span>
+                    }
+                  </td>
                   <td className="px-xl py-lg">
                     <Link
-                      href={`/instructors/${inst.id}`}
-                      className="text-primary text-label-sm font-label-sm opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+                      href={`/admin/instructors/${inst.id}`}
+                      className="text-primary text-label-sm font-label-sm hover:underline"
                     >
                       프로필 보기
                     </Link>

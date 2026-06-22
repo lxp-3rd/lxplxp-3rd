@@ -38,12 +38,6 @@ export default function AdminMembersPage() {
           >
             <span className="material-symbols-outlined text-[18px]">file_download</span> CSV 내보내기
           </button>
-          <button
-            type="button"
-            className="flex items-center gap-xs px-md py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:brightness-105 transition-all"
-          >
-            <span className="material-symbols-outlined text-[18px]">person_add</span> 새 회원 추가
-          </button>
         </div>
       </div>
 
@@ -77,21 +71,21 @@ export default function AdminMembersPage() {
 
       {/* 탭 + 검색 */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
-        <div className="flex items-center gap-sm bg-surface-container-low p-1 rounded-full w-fit">
-          {([['all', '모든 학생'], ['status', '계정 상태']] as [FilterTab, string][]).map(([key, label]) => (
-            <button
-              key={key}
-              onClick={() => setFilterTab(key)}
-              className={`px-lg py-1.5 rounded-full font-label-md text-label-md transition-all ${
-                filterTab === key
-                  ? 'bg-primary-container text-on-primary-container shadow-sm'
-                  : 'text-on-surface-variant hover:bg-surface-container'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+      {/*  <div className="flex items-center gap-sm bg-surface-container-low p-1 rounded-full w-fit">*/}
+      {/*    {([['all', '모든 학생'], ['status', '계정 상태']] as [FilterTab, string][]).map(([key, label]) => (*/}
+      {/*      <button*/}
+      {/*        key={key}*/}
+      {/*        onClick={() => setFilterTab(key)}*/}
+      {/*        className={`px-lg py-1.5 rounded-full font-label-md text-label-md transition-all ${*/}
+      {/*          filterTab === key*/}
+      {/*            ? 'bg-primary-container text-on-primary-container shadow-sm'*/}
+      {/*            : 'text-on-surface-variant hover:bg-surface-container'*/}
+      {/*        }`}*/}
+      {/*      >*/}
+      {/*        {label}*/}
+      {/*      </button>*/}
+      {/*    ))}*/}
+      {/*  </div>*/}
 
         <div className="relative w-64">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
@@ -155,8 +149,8 @@ export default function AdminMembersPage() {
                       </td>
                       <td className="px-xl py-lg">
                         <Link
-                          href={`/members/${m.id}`}
-                          className="text-primary text-label-sm font-label-sm opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+                          href={`/admin/members/${m.id}`}
+                          className="text-primary text-label-sm font-label-sm hover:underline"
                         >
                           상세보기
                         </Link>
