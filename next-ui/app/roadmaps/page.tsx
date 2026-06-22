@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
@@ -32,6 +33,7 @@ const ROADMAPS = [
 
 export default function RoadmapsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('available');
+  const router = useRouter();
 
   return (
     <>
@@ -80,24 +82,29 @@ export default function RoadmapsPage() {
                 key={r.id}
                 className="group relative bg-surface-container-lowest border border-surface-container-high rounded-xl overflow-hidden card-hover-effect transition-all duration-300 flex flex-col"
               >
-                <Link href={`/roadmaps/${r.id}`} className="block h-48 relative">
+                {/* 카드 전체 클릭 영역 */}
+                <Link href={`/roadmaps/${r.id}`} className="absolute inset-0 z-10" aria-label={r.title} />
+
+                {/* 썸네일 */}
+                <div className="relative h-48">
                   <img className="w-full h-full object-cover" alt={r.title} src={r.img} />
                   {r.category && (
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-20">
                       <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">{r.category}</span>
                     </div>
                   )}
                   {activeTab === 'enrolled' && (
-                    <div className="absolute top-4 left-4">
+                    <div className="absolute top-4 left-4 z-20">
                       <span className="bg-primary-container text-on-primary px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">참여 중</span>
                     </div>
                   )}
-                </Link>
+                </div>
 
-                <div className="p-md flex-grow flex flex-col">
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-sm group-hover:text-primary transition-colors line-clamp-1">{r.title}</h3>
+                {/* 콘텐츠 */}
+                <div className="p-md flex-grow flex flex-col relative z-20 pointer-events-none">
+                  <h3 className="font-headline-md text-headline-md text-on-surface mb-sm group-hover:text-primary transition-colors line-clamp-1 pointer-events-none">{r.title}</h3>
 
-                  <div className="flex items-center gap-lg mt-auto pb-md">
+                  <div className="flex items-center gap-lg mt-auto pb-md pointer-events-none">
                     <div className="flex items-center gap-xs text-on-surface-variant">
                       <span className="material-symbols-outlined text-lg">menu_book</span>
                       <span className="font-label-md text-label-md">{r.courses}개 강좌</span>
@@ -108,9 +115,8 @@ export default function RoadmapsPage() {
                     </div>
                   </div>
 
-                  {/* 탭별 하단 액션 */}
                   {activeTab === 'enrolled' && (
-                    <div className="pt-md border-t border-surface-container">
+                    <div className="pt-md border-t border-surface-container pointer-events-none">
                       <div className="flex justify-between items-center mb-xs">
                         <span className="text-label-sm font-label-sm text-on-surface-variant">진행률</span>
                         <span className="text-label-sm font-label-sm text-primary font-bold">{r.progress}%</span>
@@ -121,17 +127,12 @@ export default function RoadmapsPage() {
                     </div>
                   )}
 
-                  {activeTab === 'available' && (
-                    <div className="pt-md border-t border-surface-container">
-                      <button className="w-full py-2 rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md hover:opacity-90 transition-all">
-                        참여하기
-                      </button>
-                    </div>
-                  )}
-
                   {activeTab === 'mine' && (
-                    <div className="flex items-center justify-between pt-md border-t border-surface-container">
-                      <button className="font-label-md text-label-md text-primary hover:underline flex items-center gap-xs">
+                    <div className="flex items-center justify-between pt-md border-t border-surface-container pointer-events-auto">
+                      <button
+                        onClick={() => router.push(`/roadmaps/${r.id}/edit`)}
+                        className="font-label-md text-label-md text-primary hover:underline flex items-center gap-xs"
+                      >
                         콘텐츠 수정 <span className="material-symbols-outlined text-sm">chevron_right</span>
                       </button>
                       <button className="p-2 text-error hover:bg-error-container rounded-lg transition-colors" title="로드맵 삭제">

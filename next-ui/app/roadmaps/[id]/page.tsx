@@ -54,83 +54,96 @@ export default function RoadmapDetailPage({ params }: { params: { id: string } }
 <h2 className="text-headline-md font-headline-md mb-lg">로드맵 순서</h2>
 <div className="space-y-0 roadmap-container">
 
-<div className="roadmap-step relative flex gap-lg pb-xl group" style={{opacity: '1', transform: 'translateY(0px)', transition: '0.5s ease-out'}}>
-<div className="roadmap-line flex flex-col items-center flex-shrink-0">
-<div className="z-10 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm">
-<span className="material-symbols-outlined">check</span>
-</div>
-<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
-</div>
-<div className="flex-1 pt-2">
-<div className="flex items-center gap-sm mb-xs">
-<span className="text-label-md font-label-md text-primary">STEP 01</span>
-<span className="text-body-sm font-body-sm text-on-surface-variant">완료</span>
-</div>
-<div className="bg-surface-container-lowest p-md rounded-lg border border-outline-variant hover:shadow-md transition-all duration-300">
-<h3 className="text-headline-md font-headline-md mb-xs text-on-surface">웹 프로그래밍 기초 (HTML/CSS)</h3>
-<p className="text-body-md font-body-md text-on-surface-variant">시맨틱 웹과 모던 CSS 레이아웃 시스템을 완벽하게 이해합니다.</p>
-</div>
-</div>
-</div>
+  {/* STEP 01 — 완료 */}
+  <div className="flex gap-md pb-xl">
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm flex-shrink-0">
+        <span className="material-symbols-outlined text-[20px]">check</span>
+      </div>
+      <div className="flex-1 w-0.5 bg-outline-variant mt-1" />
+    </div>
+    <div className="flex-1 pb-2">
+      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden hover:shadow-md transition-all duration-300">
+        <div className="flex items-center justify-between px-md pt-md pb-sm border-b border-outline-variant">
+          <span className="text-label-sm font-label-sm text-primary font-bold tracking-wider">STEP 01</span>
+          <span className="bg-secondary-container text-on-secondary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">완료</span>
+        </div>
+        <div className="px-md py-sm">
+          <h3 className="text-body-lg font-bold text-on-surface mb-xs">웹 프로그래밍 기초 (HTML/CSS)</h3>
+          <p className="text-body-sm font-body-sm text-on-surface-variant">시맨틱 웹과 모던 CSS 레이아웃 시스템을 완벽하게 이해합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div className="roadmap-step relative flex gap-lg pb-xl group" style={{opacity: '1', transform: 'translateY(0px)', transition: '0.5s ease-out'}}>
-<div className="roadmap-line flex flex-col items-center flex-shrink-0">
-<div className="z-10 w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md border-2 border-primary-fixed ring-4 ring-primary-container ring-opacity-30">
-<span className="text-label-md font-bold">02</span>
-</div>
-<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
-</div>
-<div className="flex-1 pt-2">
-<div className="flex items-center gap-sm mb-xs">
-<span className="text-label-md font-label-md text-primary">STEP 02</span>
-<span className="text-body-sm font-body-sm text-primary font-bold">수강 중</span>
-</div>
-<div className="bg-surface-container-lowest p-md rounded-lg border-2 border-primary shadow-md transition-all">
-<h3 className="text-headline-md font-headline-md mb-xs text-primary">자바스크립트 딥다이브</h3>
-<p className="text-body-md font-body-md text-on-surface-variant mb-md">비동기 프로그래밍부터 클로저까지, 핵심 원리를 파고듭니다.</p>
-<button className="text-label-md font-label-md text-primary flex items-center gap-1 hover:underline">
-                                강의실로 이동하기 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-</button>
-</div>
-</div>
-</div>
+  {/* STEP 02 — 수강 중 */}
+  <div className="flex gap-md pb-xl">
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-md ring-4 ring-primary/20 flex-shrink-0">
+        <span className="text-label-md font-bold">02</span>
+      </div>
+      <div className="flex-1 w-0.5 bg-outline-variant mt-1" />
+    </div>
+    <div className="flex-1 pb-2">
+      <div className="bg-surface-container-lowest rounded-xl border-2 border-primary overflow-hidden shadow-md">
+        <div className="flex items-center justify-between px-md pt-md pb-sm border-b border-primary/20">
+          <span className="text-label-sm font-label-sm text-primary font-bold tracking-wider">STEP 02</span>
+          <span className="bg-primary text-on-primary text-label-sm font-label-sm px-sm py-0.5 rounded-full">수강 중</span>
+        </div>
+        <div className="px-md py-sm">
+          <h3 className="text-body-lg font-bold text-primary mb-xs">자바스크립트 딥다이브</h3>
+          <p className="text-body-sm font-body-sm text-on-surface-variant mb-md">비동기 프로그래밍부터 클로저까지, 핵심 원리를 파고듭니다.</p>
+          <button className="text-label-md font-label-md text-primary flex items-center gap-xs hover:underline">
+            강의실로 이동하기 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div className="roadmap-step relative flex gap-lg pb-xl group" style={{opacity: '1', transform: 'translateY(0px)', transition: '0.5s ease-out'}}>
-<div className="roadmap-line flex flex-col items-center flex-shrink-0">
-<div className="z-10 w-10 h-10 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant">
-<span className="material-symbols-outlined">lock</span>
-</div>
-<div className="flex-1 w-0.5 bg-outline-variant mt-xs" />
-</div>
-<div className="flex-1 pt-2 opacity-70">
-<div className="flex items-center gap-sm mb-xs">
-<span className="text-label-md font-label-md text-on-surface-variant">STEP 03</span>
-<span className="text-body-sm font-body-sm text-on-surface-variant">대기 중</span>
-</div>
-<div className="bg-surface-container-low p-md rounded-lg border border-outline-variant">
-<h3 className="text-headline-md font-headline-md mb-xs text-on-surface">React 및 상태 관리 (Redux/Zustand)</h3>
-<p className="text-body-md font-body-md text-on-surface-variant">컴포넌트 기반 아키텍처와 효율적인 전역 상태 관리를 배웁니다.</p>
-</div>
-</div>
-</div>
+  {/* STEP 03 — 대기 중 */}
+  <div className="flex gap-md pb-xl opacity-60">
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center border border-outline-variant flex-shrink-0">
+        <span className="material-symbols-outlined text-[20px]">lock</span>
+      </div>
+      <div className="flex-1 w-0.5 bg-outline-variant mt-1" />
+    </div>
+    <div className="flex-1 pb-2">
+      <div className="bg-surface-container rounded-xl border border-outline-variant overflow-hidden">
+        <div className="flex items-center justify-between px-md pt-md pb-sm border-b border-outline-variant">
+          <span className="text-label-sm font-label-sm text-on-surface-variant font-bold tracking-wider">STEP 03</span>
+          <span className="bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm px-sm py-0.5 rounded-full">대기 중</span>
+        </div>
+        <div className="px-md py-sm">
+          <h3 className="text-body-lg font-bold text-on-surface mb-xs">React 및 상태 관리 (Redux/Zustand)</h3>
+          <p className="text-body-sm font-body-sm text-on-surface-variant">컴포넌트 기반 아키텍처와 효율적인 전역 상태 관리를 배웁니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div className="roadmap-step relative flex gap-lg" style={{opacity: '1', transform: 'translateY(0px)', transition: '0.5s ease-out'}}>
-<div className="roadmap-line flex flex-col items-center flex-shrink-0">
-<div className="z-10 w-10 h-10 rounded-full bg-surface-container-low text-on-surface-variant flex items-center justify-center border border-outline-variant">
-<span className="material-symbols-outlined">lock</span>
-</div>
-</div>
-<div className="flex-1 pt-2 opacity-70">
-<div className="flex items-center gap-sm mb-xs">
-<span className="text-label-md font-label-md text-on-surface-variant">STEP 04</span>
-<span className="text-body-sm font-body-sm text-on-surface-variant">대기 중</span>
-</div>
-<div className="bg-surface-container-low p-md rounded-lg border border-outline-variant">
-<h3 className="text-headline-md font-headline-md mb-xs text-on-surface">실전 프로젝트: 이커머스 웹 앱</h3>
-<p className="text-body-md font-body-md text-on-surface-variant">지금까지 배운 모든 기술을 활용하여 상용 수준의 프로젝트를 제작합니다.</p>
-</div>
-</div>
-</div>
+  {/* STEP 04 — 대기 중 (마지막, 연결선 없음) */}
+  <div className="flex gap-md opacity-60">
+    <div className="flex flex-col items-center flex-shrink-0">
+      <div className="w-10 h-10 rounded-full bg-surface-container text-on-surface-variant flex items-center justify-center border border-outline-variant flex-shrink-0">
+        <span className="material-symbols-outlined text-[20px]">lock</span>
+      </div>
+    </div>
+    <div className="flex-1">
+      <div className="bg-surface-container rounded-xl border border-outline-variant overflow-hidden">
+        <div className="flex items-center justify-between px-md pt-md pb-sm border-b border-outline-variant">
+          <span className="text-label-sm font-label-sm text-on-surface-variant font-bold tracking-wider">STEP 04</span>
+          <span className="bg-surface-container-high text-on-surface-variant text-label-sm font-label-sm px-sm py-0.5 rounded-full">대기 중</span>
+        </div>
+        <div className="px-md py-sm">
+          <h3 className="text-body-lg font-bold text-on-surface mb-xs">실전 프로젝트: 이커머스 웹 앱</h3>
+          <p className="text-body-sm font-body-sm text-on-surface-variant">지금까지 배운 모든 기술을 활용하여 상용 수준의 프로젝트를 제작합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 </div>
 
