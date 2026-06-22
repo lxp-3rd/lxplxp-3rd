@@ -66,6 +66,17 @@ export default function EnrollmentsPage() {
             ))}
           </div>
 
+          {/* 더 보기 버튼 */}
+          <div className="flex justify-center mt-xl">
+            <button
+              type="button"
+              className="flex items-center gap-sm px-xl py-md border border-outline-variant rounded-xl text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">expand_more</span>
+              더 많은 강의 보기
+            </button>
+          </div>
+
         </div>
       </main>
       <Footer />
