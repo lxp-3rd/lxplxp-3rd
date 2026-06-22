@@ -223,8 +223,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
               <span>{q.authorName}</span>
               <span>·</span>
               <span>{q.createdAt}</span>
-              <span>·</span>
-              <span>답변 {q.answerCount}개</span>
             </div>
           </div>
           <span className={`flex-shrink-0 px-sm py-1 rounded-full text-label-sm font-label-sm ${q.isAnswered ? 'bg-secondary-container text-on-secondary-container' : 'bg-primary-fixed text-on-primary-container'}`}>

@@ -21,6 +21,17 @@ export default function CourseNewPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [saved, setSaved] = useState(false);
+  const [contents, setContents] = useState<string[]>([]);
+  const [showAddInput, setShowAddInput] = useState(false);
+  const [newContentTitle, setNewContentTitle] = useState('');
+
+  const handleAddContent = () => {
+    const t = newContentTitle.trim();
+    if (!t) return;
+    setContents([...contents, t]);
+    setNewContentTitle('');
+    setShowAddInput(false);
+  };
 
   const addTag = () => {
     const t = tagInput.trim();
@@ -98,6 +109,52 @@ export default function CourseNewPage() {
                       className="w-full px-md py-sm border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary-container focus:border-primary outline-none transition-all font-body-md text-body-md resize-none"
                       placeholder="강좌 목표, 대상, 커리큘럼 개요 등을 자세히 작성해 주세요."
                     />
+                  </div>
+                </div>
+
+                {/* 커리큘럼 */}
+                <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-md">
+                  <div className="flex justify-between items-center">
+                    <h2 className="font-headline-md text-headline-md text-on-surface">커리큘럼 구성</h2>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddInput(true)}
+                      className="text-primary font-label-md flex items-center gap-xs hover:opacity-80 transition-opacity text-label-md"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">add_circle</span>
+                      콘텐츠 추가
+                    </button>
+                  </div>
+                  <div className="space-y-sm">
+                    {contents.length === 0 && !showAddInput && (
+                      <p className="text-label-sm font-label-sm text-on-surface-variant text-center py-md">아직 추가된 콘텐츠가 없습니다.</p>
+                    )}
+                    {contents.map((title, idx) => (
+                      <div key={idx} className="flex items-center gap-md p-md bg-surface-container-low border border-outline-variant rounded-lg group hover:border-primary-container transition-all">
+                        <span className="material-symbols-outlined text-outline">drag_indicator</span>
+                        <p className="flex-grow text-label-md font-label-md text-on-surface">{idx + 1}. {title}</p>
+                        <button
+                          type="button"
+                          onClick={() => setContents(contents.filter((_, i) => i !== idx))}
+                          className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity"
+                        >delete</button>
+                      </div>
+                    ))}
+                    {showAddInput && (
+                      <div className="flex items-center gap-sm p-md bg-primary-fixed/10 border border-primary/30 rounded-lg">
+                        <input
+                          autoFocus
+                          type="text"
+                          value={newContentTitle}
+                          onChange={(e) => setNewContentTitle(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddContent(); } if (e.key === 'Escape') { setShowAddInput(false); setNewContentTitle(''); } }}
+                          placeholder="콘텐츠 제목을 입력하세요"
+                          className="flex-1 px-sm py-xs border border-outline-variant rounded-lg text-label-md font-label-md focus:border-primary focus:outline-none"
+                        />
+                        <button type="button" onClick={handleAddContent} className="px-md py-xs bg-primary text-on-primary rounded-lg text-label-sm font-label-sm hover:opacity-90">입력</button>
+                        <button type="button" onClick={() => { setShowAddInput(false); setNewContentTitle(''); }} className="px-md py-xs border border-outline-variant rounded-lg text-label-sm font-label-sm hover:bg-surface-container">취소</button>
+                      </div>
+                    )}
                   </div>
                 </div>
 

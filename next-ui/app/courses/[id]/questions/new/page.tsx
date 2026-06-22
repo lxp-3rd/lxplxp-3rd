@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
-
-const TAGS = ['이해 안됨', '코드 오류', '추가 자료', '진도', '기타'];
 
 export default function QuestionNewPage({ params }: { params: { id: string } }) {
   const course = getCourseById(params.id) ?? MOCK_COURSES[0];
@@ -15,13 +14,7 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const toggleTag = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,27 +60,6 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
                 placeholder="질문 제목을 입력하세요"
                 className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface focus:border-primary focus:outline-none transition-all"
               />
-            </div>
-
-            {/* 태그 */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-              <p className="text-label-md font-label-md text-on-surface-variant mb-sm">태그 (선택)</p>
-              <div className="flex flex-wrap gap-sm">
-                {TAGS.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-md py-sm rounded-full text-label-sm font-label-sm transition-all ${
-                      selectedTags.includes(tag)
-                        ? 'bg-primary text-on-primary'
-                        : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high border border-outline-variant'
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* 내용 */}

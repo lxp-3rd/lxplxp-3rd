@@ -102,42 +102,36 @@ export default function QuestionsPage() {
                   </p>
 
                   {/* 답변 섹션 */}
-                  {selected.answers.length > 0 && (
+                  {selected.answer && (
                     <div className="flex flex-col gap-lg">
                       <h2 className="text-headline-sm font-headline-sm text-on-surface border-t border-outline-variant pt-lg">
                         답변
                       </h2>
-                      {selected.answers.map((answer) => (
-                        <div key={answer.id} className="flex flex-col gap-md">
-                          {/* 답변자 정보 */}
-                          <div className="flex items-center gap-md">
-                            {answer.avatarSrc ? (
-                              <img
-                                src={answer.avatarSrc}
-                                alt={answer.authorName}
-                                className="w-10 h-10 rounded-full object-cover border border-outline-variant flex-shrink-0"
-                              />
-                            ) : (
-                              <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md flex-shrink-0">
-                                {answer.authorName[0]}
-                              </div>
-                            )}
-                            <div className="flex items-center gap-sm">
-                              <span className="text-label-md font-label-md text-on-surface font-bold">{answer.authorName}</span>
-                              {answer.role === 'instructor' && (
-                                <span className="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">
-                                  강사
-                                </span>
-                              )}
-                              <span className="text-label-sm font-label-sm text-on-surface-variant">{answer.createdAt}</span>
+                      <div className="flex flex-col gap-md">
+                        <div className="flex items-center gap-md">
+                          {selected.answer.avatarSrc ? (
+                            <img
+                              src={selected.answer.avatarSrc}
+                              alt={selected.answer.authorName}
+                              className="w-10 h-10 rounded-full object-cover border border-outline-variant flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md flex-shrink-0">
+                              {selected.answer.authorName[0]}
                             </div>
+                          )}
+                          <div className="flex items-center gap-sm">
+                            <span className="text-label-md font-label-md text-on-surface font-bold">{selected.answer.authorName}</span>
+                            <span className="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">
+                              강사
+                            </span>
+                            <span className="text-label-sm font-label-sm text-on-surface-variant">{selected.answer.createdAt}</span>
                           </div>
-                          {/* 답변 내용 */}
-                          <p className="text-body-md font-body-md text-on-surface leading-relaxed whitespace-pre-wrap pl-[56px]">
-                            {answer.content}
-                          </p>
                         </div>
-                      ))}
+                        <p className="text-body-md font-body-md text-on-surface leading-relaxed whitespace-pre-wrap pl-[56px]">
+                          {selected.answer.content}
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -146,7 +140,7 @@ export default function QuestionsPage() {
                 <div className="p-lg bg-surface-container border-t border-outline-variant flex justify-center items-center flex-shrink-0">
                   <p className="text-on-surface-variant text-label-sm font-label-sm flex items-center gap-xs">
                     <span className="material-symbols-outlined text-tertiary text-[20px]">info</span>
-                    답변은 강사와 수강생만 작성할 수 있습니다.
+                    답변은 강사만 작성할 수 있습니다.
                   </p>
                 </div>
               </section>

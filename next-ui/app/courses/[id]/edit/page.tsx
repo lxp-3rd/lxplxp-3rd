@@ -1,12 +1,34 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
 
 export default function CourseEditPage({ params }: { params: { id: string } }) {
   const course = getCourseById(params.id) ?? MOCK_COURSES[0];
+
+  const [isPublic, setIsPublic] = useState(true);
+
+  const [contents, setContents] = useState([
+    '오리엔테이션 및 환경 설정',
+    'Python 기본 문법 복습',
+    'Pandas를 활용한 데이터 핸들링',
+    '데이터 시각화의 정석',
+    '중급 분석 실습 프로젝트',
+  ]);
+  const [showAddInput, setShowAddInput] = useState(false);
+  const [newContentTitle, setNewContentTitle] = useState('');
+
+  const handleAddContent = () => {
+    const title = newContentTitle.trim();
+    if (!title) return;
+    setContents([...contents, title]);
+    setNewContentTitle('');
+    setShowAddInput(false);
+  };
+
   return (
     <>
       <TopNavBar />
@@ -19,14 +41,14 @@ export default function CourseEditPage({ params }: { params: { id: string } }) {
                 강의 목록으로 돌아가기
             </a>
 <div className="flex gap-sm">
-<button className="flex items-center gap-sm px-md py-sm bg-surface border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-all">
+<Link href={`/courses/${course.id}/stats`} className="flex items-center gap-sm px-md py-sm bg-surface border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-all">
 <span className="material-symbols-outlined text-[20px]">analytics</span>
                     통계 보기
-                </button>
-<button className="flex items-center gap-sm px-md py-sm bg-surface border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-all">
+                </Link>
+<Link href={`/courses/${course.id}/questions/instructor`} className="flex items-center gap-sm px-md py-sm bg-surface border border-outline-variant rounded-lg text-label-md font-label-md hover:bg-surface-container-low transition-all">
 <span className="material-symbols-outlined text-[20px]">forum</span>
                     Q&amp;A 바로가기
-                </button>
+                </Link>
 </div>
 </div>
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-xl">
@@ -73,57 +95,42 @@ export default function CourseEditPage({ params }: { params: { id: string } }) {
 <div className="glass-panel p-lg rounded-xl shadow-sm">
 <div className="flex justify-between items-center mb-md">
 <h2 className="text-headline-md font-headline-md text-[20px]">커리큘럼 구성</h2>
-<button className="text-primary font-label-md flex items-center gap-xs hover:opacity-80 transition-opacity">
+<button
+  type="button"
+  onClick={() => setShowAddInput(true)}
+  className="text-primary font-label-md flex items-center gap-xs hover:opacity-80 transition-opacity"
+>
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
-                            콘텐츠 추가
-                        </button>
+  콘텐츠 추가
+</button>
 </div>
 <div className="space-y-sm">
-
-<div className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move">
-<span className="material-symbols-outlined text-outline">drag_indicator</span>
-<div className="flex-grow">
-<p className="text-label-md font-label-md text-on-surface">1. 오리엔테이션 및 환경 설정</p>
-<p className="text-label-sm font-label-sm text-tertiary">비디오 • 12:40</p>
-</div>
-<button className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity" style={{opacity: '1'}}>edit</button>
-</div>
-
-<div className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move">
-<span className="material-symbols-outlined text-outline">drag_indicator</span>
-<div className="flex-grow">
-<p className="text-label-md font-label-md text-on-surface">2. Python 기본 문법 복습</p>
-<p className="text-label-sm font-label-sm text-tertiary">비디오 • 25:15</p>
-</div>
-<button className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity">edit</button>
-</div>
-
-<div className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move">
-<span className="material-symbols-outlined text-outline">drag_indicator</span>
-<div className="flex-grow">
-<p className="text-label-md font-label-md text-on-surface">3. Pandas를 활용한 데이터 핸들링</p>
-<p className="text-label-sm font-label-sm text-tertiary">실습 파일 • 2.4 MB</p>
-</div>
-<button className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity">edit</button>
-</div>
-
-<div className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move">
-<span className="material-symbols-outlined text-outline">drag_indicator</span>
-<div className="flex-grow">
-<p className="text-label-md font-label-md text-on-surface">4. 데이터 시각화의 정석</p>
-<p className="text-label-sm font-label-sm text-tertiary">비디오 • 18:00</p>
-</div>
-<button className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity">edit</button>
-</div>
-
-<div className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move border-l-4 border-l-primary-container">
-<span className="material-symbols-outlined text-outline">drag_indicator</span>
-<div className="flex-grow">
-<p className="text-label-md font-label-md text-on-surface">5. 중급 분석 실습 프로젝트</p>
-<p className="text-label-sm font-label-sm text-tertiary">퀴즈 • 10 문항</p>
-</div>
-<button className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity">edit</button>
-</div>
+{contents.map((title, idx) => (
+  <div key={idx} className="flex items-center gap-md p-md bg-white border border-outline-variant rounded-lg group hover:border-primary-container transition-all cursor-move">
+    <span className="material-symbols-outlined text-outline">drag_indicator</span>
+    <p className="flex-grow text-label-md font-label-md text-on-surface">{idx + 1}. {title}</p>
+    <button
+      type="button"
+      onClick={() => setContents(contents.filter((_, i) => i !== idx))}
+      className="material-symbols-outlined text-outline opacity-0 group-hover:opacity-100 transition-opacity text-error hover:text-error"
+    >delete</button>
+  </div>
+))}
+{showAddInput && (
+  <div className="flex items-center gap-sm p-md bg-primary-fixed/10 border border-primary/30 rounded-lg">
+    <input
+      autoFocus
+      type="text"
+      value={newContentTitle}
+      onChange={(e) => setNewContentTitle(e.target.value)}
+      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddContent(); } if (e.key === 'Escape') { setShowAddInput(false); setNewContentTitle(''); } }}
+      placeholder="콘텐츠 제목을 입력하세요"
+      className="flex-1 px-sm py-xs border border-outline-variant rounded-lg text-label-md font-label-md focus:border-primary focus:outline-none"
+    />
+    <button type="button" onClick={handleAddContent} className="px-md py-xs bg-primary text-on-primary rounded-lg text-label-sm font-label-sm hover:opacity-90">입력</button>
+    <button type="button" onClick={() => { setShowAddInput(false); setNewContentTitle(''); }} className="px-md py-xs border border-outline-variant rounded-lg text-label-sm font-label-sm hover:bg-surface-container">취소</button>
+  </div>
+)}
 </div>
 </div>
 
@@ -135,9 +142,14 @@ export default function CourseEditPage({ params }: { params: { id: string } }) {
 <span className="text-label-md font-label-md">강의 공개 여부</span>
 </div>
 <label className="relative inline-flex items-center cursor-pointer">
-<input checked className="sr-only peer" type="checkbox" />
-<div className="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-defaultChecked={true}:after:translate-x-full peer-defaultChecked={true}:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked={true}:bg-primary-container"></div>
-<span className="ml-3 text-label-md font-label-md">공개</span>
+<input
+  type="checkbox"
+  checked={isPublic}
+  onChange={(e) => setIsPublic(e.target.checked)}
+  className="sr-only peer"
+/>
+<div className="w-11 h-6 bg-surface-variant rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+<span className="ml-3 text-label-md font-label-md">{isPublic ? '공개' : '비공개'}</span>
 </label>
 </div>
 <div className="p-md bg-surface-container-low rounded-lg space-y-sm">

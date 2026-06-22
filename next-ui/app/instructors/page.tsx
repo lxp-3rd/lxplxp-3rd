@@ -31,7 +31,7 @@ export default function InstructorsPage() {
                   </div>
                   <div>
                     <h2 className="text-label-md font-label-md text-on-surface group-hover:text-primary transition-colors">{instructor.name}</h2>
-                    <p className="text-label-sm font-label-sm text-on-surface-variant">{instructor.email}</p>
+                    <p className="text-label-sm font-label-sm text-on-surface-variant">{instructor.nickname}</p>
                   </div>
                 </div>
 
