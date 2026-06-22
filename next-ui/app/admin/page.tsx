@@ -84,35 +84,35 @@ export default function AdminDashboardPage() {
                     빠른 메뉴
                 </h3>
 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
-<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/members">
+<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/instructor-applications">
 <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span className="material-symbols-outlined">assignment_ind</span>
 </div>
 <span className="font-label-md text-on-surface">강사 신청 목록</span>
 <p className="text-label-sm text-on-surface-variant">새로운 강사 프로필 및 자격 서류를 검토합니다.</p>
 </a>
-<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/courses">
+<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/instructors">
 <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span className="material-symbols-outlined">manage_accounts</span>
 </div>
 <span className="font-label-md text-on-surface">강사 관리</span>
 <p className="text-label-sm text-on-surface-variant">강사 권한 및 세부 정보를 수정합니다.</p>
 </a>
-<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/instructor-applications">
+<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/members">
 <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span className="material-symbols-outlined">person_search</span>
 </div>
 <span className="font-label-md text-on-surface">회원 관리</span>
 <p className="text-label-sm text-on-surface-variant">모든 학습자 계정을 검색하고 관리합니다.</p>
 </a>
-<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/announcements">
+<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/courses">
 <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span className="material-symbols-outlined">book</span>
 </div>
 <span className="font-label-md text-on-surface">강좌 관리</span>
 <p className="text-label-sm text-on-surface-variant">활성 강좌를 감사하거나 승인 또는 숨김 처리합니다.</p>
 </a>
-<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/instructors">
+<a className="group p-md rounded-xl border border-surface-variant hover:border-primary-container hover:bg-primary-fixed/30 transition-all flex flex-col gap-sm" href="/admin/announcements">
 <div className="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
 <span className="material-symbols-outlined">campaign</span>
 </div>
