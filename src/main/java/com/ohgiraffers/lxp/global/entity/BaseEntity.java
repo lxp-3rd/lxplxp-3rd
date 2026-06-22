@@ -21,11 +21,28 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column
+    private LocalDateTime deletedAt;
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
+
+    public void delete() {
+		if (this.deletedAt == null) {
+			this.deletedAt = LocalDateTime.now();
+		}
     }
 }
