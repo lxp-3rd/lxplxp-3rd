@@ -6,29 +6,6 @@ import Link from 'next/link';
 export default function AdminCourseEnrollmentsPage() {
   return (
     <>
-<nav className="sticky top-0 w-full z-50 flex items-center justify-between px-margin-desktop bg-surface-container-lowest dark:bg-inverse-surface h-16 shadow-sm dark:shadow-none border-b border-surface-variant dark:border-outline-variant">
-<div className="flex items-center gap-xl">
-<span className="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">LXP Admin</span>
-<div className="hidden md:flex items-center gap-lg h-full">
-<a className="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80" href="/admin/courses">Dashboard</a>
-<a className="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80" href="/admin/members/1">Courses</a>
-<a className="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80" href="/admin/members/2">Enrollments</a>
-<a className="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80" href="/admin/members/3">Users</a>
-<a className="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant pb-1 hover:text-primary dark:hover:text-primary-fixed transition-colors duration-200 cursor-pointer active:opacity-80" href="/admin/members/4">Analytics</a>
-</div>
-</div>
-<div className="flex items-center gap-md">
-<button className="p-sm hover:bg-surface-container rounded-full transition-colors">
-<span className="material-symbols-outlined text-on-surface-variant">notifications</span>
-</button>
-<button className="p-sm hover:bg-surface-container rounded-full transition-colors">
-<span className="material-symbols-outlined text-on-surface-variant">settings</span>
-</button>
-<div className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-sm">
-<img className="w-full h-full object-cover" alt="A professional headshot of an administrator for a high-tech learning platform. The person has a friendly, confident expression and is dressed in modern business casual attire. The background is a clean, softly blurred office environment with cool blue and grey tones, emphasizing a high-contrast and minimalist aesthetic. Lighting is bright and even, highlighting professional competence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCErcPy8VuDQHbV2NbF3gyr7hJBxGTNdgts-375GyWpnj3ozxZFzyyNeHV1OQiQZYtmdzsC-2KsjLfn7FM6XapXZ2GwRYalTS5Di56JCDPeogUoGvkiYV7qbLZINJTb7KztvfeRoCwfoRkXXfzSmYLGfYPUjtfpynioqdxH1QwDPh4cx4Ai7Lz0-RyOm-iIgbNJvEfEiqhC4fVIudZH_tL_lb0rl9XbX8e0m0DNTx8pOwAk48oB0vWBFFoSlWMJ_udny2Un65QMNJ_C" />
-</div>
-</div>
-</nav>
 <div className="flex-grow w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">
 
 <div className="mb-lg">
