@@ -33,4 +33,112 @@
   .page-top {
     @apply pt-16;
   }
+
+  /* ── Stitch 스타일 블록에서 변환된 커스텀 클래스 ── */
+
+  /* Progress bar */
+  .progress-bar-bg {
+    @apply bg-surface-container-highest;
+  }
+  .progress-bar-fill {
+    @apply bg-primary rounded-full;
+  }
+
+  /* Card variants */
+  .roadmap-card {
+    @apply transition-all duration-300;
+  }
+  .roadmap-card-hover:hover,
+  .roadmap-card:hover {
+    @apply shadow-lg -translate-y-0.5;
+  }
+  .course-card {
+    @apply transition-all duration-300;
+  }
+  .course-card-shadow {
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 12px rgba(0,0,0,.06);
+  }
+  .card-hover,
+  .card-hover-effect {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover,
+  .card-hover-effect:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+
+  /* Bento layout */
+  .bento-grid {
+    @apply grid grid-cols-12 gap-gutter;
+  }
+  .bento-card {
+    @apply bg-surface-container-lowest border border-surface-container-high rounded-xl;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  /* Glass effect */
+  .glass-card,
+  .glass-panel {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply rounded-2xl p-lg;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .stat-card-glow {
+    box-shadow: 0 0 40px rgba(255,126,33,0.15);
+  }
+
+  /* Roadmap step / line */
+  .roadmap-step {
+    @apply relative;
+  }
+  .roadmap-line {
+    @apply absolute left-5 top-10 bottom-0 w-0.5 bg-outline-variant;
+  }
+
+  /* Curriculum item */
+  .curriculum-item {
+    @apply flex items-center gap-md p-md rounded-lg cursor-pointer transition-colors;
+  }
+  .curriculum-item:hover {
+    @apply bg-surface-container;
+  }
+
+  /* Course item */
+  .course-item {
+    @apply flex items-center gap-md p-sm rounded-lg transition-colors cursor-pointer;
+  }
+  .course-item:hover {
+    @apply bg-surface-container;
+  }
+
+  /* Input focus style */
+  .input-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-outline-variant rounded-full;
+  }
+
+  /* flat-plus (Stitch FAB style) */
+  .flat-plus {
+    @apply flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white shadow-md cursor-pointer transition-all duration-200;
+  }
+  .flat-plus:hover {
+    @apply shadow-lg scale-105;
+  }
 }
