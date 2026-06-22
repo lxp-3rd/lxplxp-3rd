@@ -13,68 +13,89 @@ export default function AdminCoursesPage() {
   const courses = MOCK_COURSES;
 
   return (
-      <div className="mt-20 px-gutter pb-xl flex-grow max-w-[1280px] mx-auto w-full">
+    <div className="mt-20 px-gutter pb-xl flex-grow max-w-[1280px] mx-auto w-full">
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-4">
-          <div>
-            <h1 className="font-headline-lg text-headline-lg text-on-surface">강좌 관리</h1>
-            <p className="text-on-surface-variant font-body-md text-body-md">학습 콘텐츠를 관리하고 수강생 등록 현황을 추적합니다. (총 {courses.length}개)</p>
-          </div>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-xl gap-4">
+        <div>
+          <h1 className="font-headline-lg text-headline-lg text-on-surface">강좌 관리</h1>
+          <p className="text-on-surface-variant font-body-md text-body-md">학습 콘텐츠를 관리하고 수강생 등록 현황을 추적합니다. (총 {courses.length}개)</p>
         </div>
-
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mb-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-container-low border-b border-outline-variant">
-                <tr>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">강좌</th>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">강사</th>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">수강생</th>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">평점</th>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">상태</th>
-                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant uppercase tracking-wider"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-outline-variant">
-                {courses.map((course) => {
-                  const statusInfo = STATUS_MAP[course.status] ?? STATUS_MAP['DRAFT'];
-                  return (
-                    <tr key={course.id} className="hover:bg-surface-container/50 transition-colors group">
-                      <td className="px-lg py-md">
-                        <div className="flex items-center gap-md">
-                          <img src={course.thumbnail} alt={course.title} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-body-md font-body-md text-on-surface line-clamp-1">{course.title}</p>
-                            <p className="text-label-sm font-label-sm text-on-surface-variant">{course.category} · {course.level}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-lg py-md text-body-md font-body-md text-on-surface-variant">{course.instructor}</td>
-                      <td className="px-lg py-md text-body-md font-body-md text-on-surface text-center">{course.enrollmentCount.toLocaleString()}</td>
-                      <td className="px-lg py-md text-center">
-                        <span className="flex items-center justify-center gap-xs text-tertiary">
-                          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                          <span className="text-body-md font-body-md">{course.rating}</span>
-                        </span>
-                      </td>
-                      <td className="px-lg py-md text-center">
-                        <span className={`px-sm py-1 rounded-full text-label-sm font-label-sm ${statusInfo.cls}`}>{statusInfo.label}</span>
-                      </td>
-                      <td className="px-lg py-md">
-                        <div className="flex items-center gap-sm opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link href={`/courses/${course.id}/edit`} className="text-primary text-label-sm font-label-sm hover:underline">수정</Link>
-                          <span className="text-outline-variant">|</span>
-                          <Link href={`/courses/${course.id}/stats`} className="text-primary text-label-sm font-label-sm hover:underline">통계</Link>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg">
+        {courses.map((course) => {
+          const statusInfo = STATUS_MAP[course.status] ?? STATUS_MAP['DRAFT'];
+          return (
+            <div key={course.id} className="bento-card overflow-hidden flex flex-col group">
+              {/* 썸네일 */}
+              <div className="relative aspect-video overflow-hidden bg-surface-container">
+                <img
+                  src={course.thumbnail}
+                  alt={course.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <span className={`absolute top-3 left-3 px-sm py-1 rounded-full text-label-sm font-label-sm shadow-sm ${statusInfo.cls}`}>
+                  {statusInfo.label}
+                </span>
+              </div>
+
+              {/* 내용 */}
+              <div className="p-lg flex flex-col flex-grow">
+                <h3 className="text-headline-sm font-bold text-on-surface line-clamp-2 group-hover:text-primary transition-colors mb-xs">
+                  {course.title}
+                </h3>
+                <p className="text-body-sm font-body-sm text-on-surface-variant mb-md">{course.instructor} 강사</p>
+
+                <div className="flex items-center gap-lg mt-auto mb-lg">
+                  <div className="flex items-center gap-xs text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[16px]">group</span>
+                    <span className="text-label-md font-label-md">{course.enrollmentCount.toLocaleString()}명</span>
+                  </div>
+                  <div className="flex items-center gap-xs text-tertiary">
+                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                    <span className="text-label-md font-label-md">{course.rating}</span>
+                  </div>
+                </div>
+
+                {/* 액션 버튼 */}
+                <div className="flex items-center justify-between pt-md border-t border-outline-variant">
+                  <div className="flex items-center gap-sm">
+                    <Link
+                      href={`/courses/${course.id}/edit`}
+                      className="flex items-center gap-xs px-sm py-1.5 rounded-lg border border-outline-variant text-on-surface text-label-sm font-label-sm hover:bg-surface-container-low transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">edit</span>수정
+                    </Link>
+                    <Link
+                      href={`/courses/${course.id}/stats`}
+                      className="flex items-center gap-xs px-sm py-1.5 rounded-lg border border-outline-variant text-on-surface text-label-sm font-label-sm hover:bg-surface-container-low transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">bar_chart</span>통계
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-xs">
+                    <button
+                      title="숨김/공개 전환"
+                      className="p-1.5 rounded-lg hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">
+                        {course.status === 'PUBLISHED' ? 'visibility' : 'visibility_off'}
+                      </span>
+                    </button>
+                    <button
+                      title="강좌 삭제"
+                      className="p-1.5 rounded-lg hover:bg-error-container text-on-surface-variant hover:text-error transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+    </div>
   );
 }
