@@ -5,6 +5,9 @@ import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase.ApplyInstructorCommand;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewInstructorApplicationCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +34,9 @@ class InstructorApplicationControllerTest {
 
     @MockitoBean
     private ApplyInstructorUseCase applyInstructorUseCase;
+
+    @MockitoBean
+    private ReviewInstructorApplicationUseCase reviewInstructorApplicationUseCase;
 
     @Test
     @DisplayName("강사 신청 성공 시 201을 반환한다")
@@ -97,5 +104,60 @@ class InstructorApplicationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    @DisplayName("강사 신청 승인 성공 시 200을 반환한다")
+    void review_approve_returns200() throws Exception {
+        ReviewInstructorApplicationRequest request =
+                new ReviewInstructorApplicationRequest(ReviewAction.APPROVE, null);
+        willDoNothing().given(reviewInstructorApplicationUseCase)
+                .review(any(ReviewInstructorApplicationCommand.class));
+
+        mockMvc.perform(patch("/api/instructors/applications/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("강사 신청 반려 성공 시 200을 반환한다")
+    void review_reject_returns200() throws Exception {
+        ReviewInstructorApplicationRequest request =
+                new ReviewInstructorApplicationRequest(ReviewAction.REJECT, "기준 미달");
+        willDoNothing().given(reviewInstructorApplicationUseCase)
+                .review(any(ReviewInstructorApplicationCommand.class));
+
+        mockMvc.perform(patch("/api/instructors/applications/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 신청 ID로 심사 시 404를 반환한다")
+    void review_notFound_returns404() throws Exception {
+        ReviewInstructorApplicationRequest request =
+                new ReviewInstructorApplicationRequest(ReviewAction.APPROVE, null);
+        willThrow(new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND))
+                .given(reviewInstructorApplicationUseCase)
+                .review(any(ReviewInstructorApplicationCommand.class));
+
+        mockMvc.perform(patch("/api/instructors/applications/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("action 필드 누락 시 400을 반환한다")
+    void review_missingAction_returns400() throws Exception {
+        ReviewInstructorApplicationRequest request =
+                new ReviewInstructorApplicationRequest(null, null);
+
+        mockMvc.perform(patch("/api/instructors/applications/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
     }
 }
