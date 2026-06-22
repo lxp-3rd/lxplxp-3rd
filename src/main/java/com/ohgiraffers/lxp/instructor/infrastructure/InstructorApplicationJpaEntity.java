@@ -55,6 +55,7 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
 
     public static InstructorApplicationJpaEntity from(InstructorApplication domain) {
         InstructorApplicationJpaEntity entity = new InstructorApplicationJpaEntity();
+        entity.id = domain.getId();
         entity.memberId = domain.getMemberId();
         entity.instructorName = domain.getInstructorName();
         entity.introduction = domain.getIntroduction();
