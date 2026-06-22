@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-// TODO: API 연동 필요
+import { MOCK_ROADMAPS } from '@/app/roadmaps/mockData';
 
 type Tab = 'available' | 'enrolled' | 'mine';
 
@@ -22,18 +22,17 @@ const TAB_TITLE: Record<Tab, string> = {
   mine:      '내가 만든 로드맵',
 };
 
-const ROADMAPS = [
-  { id: '1', title: '풀스택 모던 웹 아키텍트',          courses: 12, members: 1240, progress: 35,  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCgQqyRQ7SuKAPjnnITAyw_yepF6gQEKno0WY21e-FxmjhTlSUzqqzl3jLOzdAGBhw_U1ndwILwY_qOobveMUxeQ9Qy4sOxAnaq0U4sp-4CMSJ7C3f2G3bxPw0QMcSJcSF6Pf1jjuZvWH4DsRnzdYmiaWckwZ_au8dexALWyXWIzZZFMjhCji_KjH3JmCw_Aat_SV2tCwk9px4KpXWtDXwViyOxTMHnjYCuGuX_qpYJ9B2xG3ld2cMY_Xmk9eL1rSZ2u2uwhBmmealx' },
-  { id: '2', title: '고급 머신러닝 마스터리',            courses: 8,  members: 850,  progress: 60,  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCyNP4QvvkjrGPROGSKnMlkkiESHrlmVPheJa9LffgMRFtJwfh74MEjHQbdTM3d9gyzLwatKvu5TuU_lUN-aYN2x05YxETopNOY2mt2_Sl6zSXW2SzZQco1O08MCslxRTux8NqX1DqCgzOl6Coa5zHnri3NCVcV6SOjj9-scph82wVUxhh3bu7mVg5bi0NVVUhdkF3EydyS2haaPKHE98nTp6UfKaPCP8wuqcmCyV0YXZ0abEJtAUQl3stnlqms_fQrd9fD0BlQXcdW' },
-  { id: '3', title: '프로덕트 디자인 전략 2024',         courses: 15, members: 3120, progress: 10,  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBHIgSQIFZTxZZ96kAIGQKk1OKOBqcq101k_8J8y8luhctmyMsv0fz52rFPNBHVzhUMhFT3znaySpvghQfywO4BKKXuMyUXFZHGQ4k8fO4aERxONXHFD82Lk0pGHR5qhiQ3JOuYWmzdfzF4OxgHEsE7dTZhcqjClRTXkSfqPnVFdd98kEklk0xKEAVsa7QTF9QgfsMugZKGRYA-DJzXFEZf-qfYf3c0q9wgV7KQYRzjj0CC5ib54wlOM_OAogLzRhPVojhn_FaLAFYZ' },
-  { id: '4', title: '디지털 트랜스포메이션 리더십',     courses: 6,  members: 420,  progress: 80,  img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOflCVzT456kde8hx8X4R6Z1L9NQvesXUDXgflb3SN5lyDX3fXe7K8H4XKQC7noGnNXtlHHZ2DrR-698kqdqDVUJbUpYA3fZoOzCziz8sAQcR5FjOZVvlZAKE0CKIV_QENAYwfTI7xrM3VywH5IckVwtMz0hmrkM2nRYGdmYthOivV6bXGRXNtmElB54jbzcdgOhcGRVdWchxyzywzGF25J1mrhmSjaN1PefWnyIeYTfPQowPMNIVIJaMYsap2RotopPY9smBS1Ehk', category: '비즈니스' },
-  { id: '5', title: '팀을 위한 사이버 보안 에센셜',     courses: 10, members: 2050, progress: 0,   img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFeRNT2jIX0NwLhTV7s6rCojQVRg_-j-juFzjRI65QISW0gbA_5HEQK6un4vqgpnCea_iwvdfbrX9gF66llwIqUEL9wYD98dk2oVIsTk2p-IuCVFzzuROhE9PVoA3lLsfaSeJmN4MoWCd1DzTp0bmCth2NbG2qtVpL8iV4pr46QkEOABLiY37vxWwDBuc0S4657g-Sae5Uu5B7p4KTUiIMDTLMBvMTC60oQI1oEqKkn1rP2NIkzxUyUUY1c34b0nDjK5NAAQwZhYhh' },
-  { id: '6', title: '클라우드 네이티브 아키텍처 (AWS/Azure)', courses: 14, members: 1580, progress: 50, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCYf5C358gYRHTx04VU97ReutHchGpgDpgag-hJtXkZudxw56iSYAjD3YJv1ykzrHDwPeIvf9v_V-fVITdppsWuOYHj4O8IAurzNppA1KlkvbCJYaRTxqdHzsnI8A3xIO8xzpSz0OISCfdEOEoqkKrkUtx1Yd54PG8PR-BISijdTrVbLcM5jRm6rQ5HX_3ADJkAMLYY-uZZF0bSsYPwxLGt9XT8q37AaZotN9_a0py8Ahdm-S9vOhcXspLctFEC754nQAS8akD-siYt' },
-];
 
 export default function RoadmapsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('available');
   const router = useRouter();
+
+  const visibleRoadmaps = MOCK_ROADMAPS.filter((r) => {
+    if (activeTab === 'available') return !r.isEnrolled;
+    if (activeTab === 'enrolled')  return r.isEnrolled;
+    if (activeTab === 'mine')      return r.createdBy === 'u2'; // 현재 사용자
+    return false;
+  });
 
   return (
     <>
@@ -77,7 +76,7 @@ export default function RoadmapsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            {ROADMAPS.map((r) => (
+            {visibleRoadmaps.map((r) => (
               <div
                 key={r.id}
                 className="group relative bg-surface-container-lowest border border-surface-container-high rounded-xl overflow-hidden card-hover-effect transition-all duration-300 flex flex-col"
@@ -87,36 +86,36 @@ export default function RoadmapsPage() {
 
                 {/* 썸네일 */}
                 <div className="relative h-48">
-                  <img className="w-full h-full object-cover" alt={r.title} src={r.img} />
+                  <img className="w-full h-full object-cover" alt={r.title} src={r.thumbnail} />
                   {r.category && (
                     <div className="absolute top-4 left-4 z-20">
                       <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">{r.category}</span>
                     </div>
                   )}
-                  {activeTab === 'enrolled' && (
-                    <div className="absolute top-4 left-4 z-20">
-                      <span className="bg-primary-container text-on-primary px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">참여 중</span>
+                  {r.isEnrolled && (
+                    <div className="absolute top-4 right-4 z-20">
+                      <span className="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">참여 중</span>
                     </div>
                   )}
                 </div>
 
                 {/* 콘텐츠 */}
                 <div className="p-md flex-grow flex flex-col relative z-20 pointer-events-none">
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-sm group-hover:text-primary transition-colors line-clamp-1 pointer-events-none">{r.title}</h3>
+                  <h3 className="font-headline-md text-headline-md text-on-surface mb-sm group-hover:text-primary transition-colors line-clamp-1">{r.title}</h3>
 
-                  <div className="flex items-center gap-lg mt-auto pb-md pointer-events-none">
+                  <div className="flex items-center gap-lg mt-auto pb-md">
                     <div className="flex items-center gap-xs text-on-surface-variant">
                       <span className="material-symbols-outlined text-lg">menu_book</span>
-                      <span className="font-label-md text-label-md">{r.courses}개 강좌</span>
+                      <span className="font-label-md text-label-md">{r.courseCount}개 강좌</span>
                     </div>
                     <div className="flex items-center gap-xs text-on-surface-variant">
                       <span className="material-symbols-outlined text-lg">group</span>
-                      <span className="font-label-md text-label-md">{r.members.toLocaleString()}명 참여</span>
+                      <span className="font-label-md text-label-md">{r.enrollmentCount.toLocaleString()}명 참여</span>
                     </div>
                   </div>
 
-                  {activeTab === 'enrolled' && (
-                    <div className="pt-md border-t border-surface-container pointer-events-none">
+                  {r.isEnrolled && (
+                    <div className="pt-md border-t border-surface-container">
                       <div className="flex justify-between items-center mb-xs">
                         <span className="text-label-sm font-label-sm text-on-surface-variant">진행률</span>
                         <span className="text-label-sm font-label-sm text-primary font-bold">{r.progress}%</span>
