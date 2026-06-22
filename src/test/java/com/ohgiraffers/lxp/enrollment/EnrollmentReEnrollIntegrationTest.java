@@ -22,10 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 재신청(re-enroll) 통합 테스트 재신청은 reactivate가 아니라 새 enroll()이며, 차단 기준은 ACTIVE 수강 존재
- * 여부(existsActiveEnrollment)뿐이다. (취소 기능 자체는 별도 PR — 여기서는 CANCELED row를 직접 시드해 재신청 경로만 검증한다.)
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")

@@ -30,7 +30,6 @@ public class EnrollmentJpaEntity extends BaseEntity {
     private EnrollmentStatus status;
 
     protected EnrollmentJpaEntity() {
-        // JPA 전용
     }
 
     public EnrollmentJpaEntity(Long memberId, Long courseId, EnrollmentStatus status) {

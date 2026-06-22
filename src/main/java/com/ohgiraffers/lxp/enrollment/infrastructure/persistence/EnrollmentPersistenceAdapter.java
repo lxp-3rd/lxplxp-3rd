@@ -21,13 +21,12 @@ public class EnrollmentPersistenceAdapter implements SaveEnrollmentPort, LoadEnr
     @Override
     public EnrollmentResult save(Enrollment enrollment) {
         EnrollmentJpaEntity saved = repository.save(EnrollmentMapper.toJpaEntity(enrollment));
-        // 저장 시 BaseEntity 감사가 createdAt을 채운다 → 결과 DTO로 그대로 공급.
         return EnrollmentMapper.toResult(saved);
     }
 
     @Override
     public boolean existsActiveEnrollment(Long memberId, Long courseId) {
-        return repository.existsByMemberIdAndCourseIdAndStatus(memberId, courseId,
-                EnrollmentStatus.ACTIVE);
+        return repository.existsByMemberIdAndCourseIdAndStatus(memberId, courseId, EnrollmentStatus.ACTIVE);
     }
+
 }

@@ -34,8 +34,7 @@ public class Enrollment {
         return new Enrollment(null, memberId, courseId, EnrollmentStatus.ACTIVE);
     }
 
-    public static Enrollment restore(Long id, Long memberId, Long courseId,
-            EnrollmentStatus status) {
+    public static Enrollment restore(Long id, Long memberId, Long courseId, EnrollmentStatus status) {
         return new Enrollment(id, memberId, courseId, status);
     }
 
@@ -43,6 +42,7 @@ public class Enrollment {
         if (this.status == EnrollmentStatus.CANCELED) {
             throw new EnrollmentAlreadyCanceledException();
         }
+
         this.status = EnrollmentStatus.CANCELED;
     }
 

@@ -19,4 +19,5 @@ public record EnrollmentResponse(
                 result.status().name(),
                 result.createdAt());
     }
+    
 }

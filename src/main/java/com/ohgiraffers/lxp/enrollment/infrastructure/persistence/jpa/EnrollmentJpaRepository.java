@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnrollmentJpaRepository extends JpaRepository<EnrollmentJpaEntity, Long> {
 
-    boolean existsByMemberIdAndCourseIdAndStatus(Long memberId, Long courseId,
-            EnrollmentStatus status);
+    boolean existsByMemberIdAndCourseIdAndStatus(Long memberId, Long courseId, EnrollmentStatus status);
 
 }
