@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
 import { Role } from '@/lib/mockAuth';
 
-const NAV_LINKS: Record<Role, { href: string; label: string; exact?: boolean }[]> = {
+const NAV_LINKS: Partial<Record<Role, { href: string; label: string; exact?: boolean }[]>> = {
   member: [
     { href: '/courses',       label: '전체 강좌', exact: true },
     { href: '/roadmaps',      label: '로드맵' },
@@ -18,12 +18,6 @@ const NAV_LINKS: Record<Role, { href: string; label: string; exact?: boolean }[]
     { href: '/instructor/stats', label: '내 강의 통계' },
     { href: '/roadmaps',         label: '로드맵' },
     { href: '/announcements',    label: '공지사항' },
-  ],
-  admin: [
-    { href: '/admin',               label: '대시보드' },
-    { href: '/admin/courses',       label: '강좌 관리' },
-    { href: '/admin/members',       label: '회원 관리' },
-    { href: '/admin/announcements', label: '공지사항' },
   ],
 };
 
@@ -38,7 +32,7 @@ export function TopNavBar() {
   const { user, role, isLoggedIn, logout } = useAuth();
   const router = useRouter();
 
-  const links = role ? NAV_LINKS[role] : GUEST_LINKS;
+  const links = (role && NAV_LINKS[role]) ?? GUEST_LINKS;
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/');
