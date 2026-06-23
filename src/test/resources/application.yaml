@@ -6,3 +6,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+lxp:
+  auth:
+    jwt:
+      secret: lxp-jwt-secret-key-for-test-environment-1234567890

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -123,6 +124,11 @@ class SignUpServiceTest {
         public boolean existsByNickname(Nickname nickname) {
             return members.values().stream()
                     .anyMatch(member -> member.getNickname().equals(nickname));
+        }
+
+        @Override
+        public Optional<Member> findByEmail(Email email) {
+            return Optional.ofNullable(members.get(email.value()));
         }
 
         @Override

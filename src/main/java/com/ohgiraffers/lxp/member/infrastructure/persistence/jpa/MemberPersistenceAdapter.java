@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @Repository
 public class MemberPersistenceAdapter implements MemberRepositoryPort {
@@ -31,6 +32,12 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
     @Override
     public boolean existsByNickname(Nickname nickname) {
         return memberJpaRepository.existsByNickname(nickname.value());
+    }
+
+    @Override
+    public Optional<Member> findByEmail(Email email) {
+        return memberJpaRepository.findByEmail(email.value())
+                .map(MemberJpaEntity::toDomain);
     }
 
     @Override
