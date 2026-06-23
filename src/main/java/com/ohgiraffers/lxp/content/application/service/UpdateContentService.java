@@ -23,6 +23,9 @@ public class UpdateContentService implements UpdateContentUseCase {
     public void update(UpdateContentCommand command) {
         Content content = contentRepository.findById(command.contentId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.CONTENT_NOT_FOUND));
+        if (!content.getCourseId().equals(command.courseId())) {
+            throw new BusinessException(ErrorCode.CONTENT_NOT_FOUND);
+        }
         try {
             content.update(command.title(), command.contentUrl());
         } catch (IllegalArgumentException e) {

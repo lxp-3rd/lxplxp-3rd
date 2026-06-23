@@ -58,6 +58,18 @@ class UpdateContentServiceTest {
     }
 
     @Test
+    @DisplayName("경로의 courseId와 콘텐츠의 courseId가 불일치하면 CONTENT_NOT_FOUND 예외가 발생한다")
+    void update_courseIdMismatch_throwsException() {
+        Content existing = Content.restore(10L, 1L, 0, "기존 제목", "https://example.com/old");
+        given(contentRepository.findById(10L)).willReturn(Optional.of(existing));
+        UpdateContentCommand command = new UpdateContentCommand(999L, 10L, "새 제목", "https://example.com/new");
+
+        assertThatThrownBy(() -> updateContentService.update(command))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.CONTENT_NOT_FOUND.getMessage());
+    }
+
+    @Test
     @DisplayName("잘못된 입력값으로 수정 시 INVALID_INPUT 예외가 발생한다")
     void update_invalidInput_throwsException() {
         Content existing = Content.restore(10L, 1L, 0, "기존 제목", "https://example.com/old");
