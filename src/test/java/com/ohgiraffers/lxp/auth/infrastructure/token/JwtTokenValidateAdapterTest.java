@@ -39,8 +39,7 @@ class JwtTokenValidateAdapterTest {
 
         assertThatThrownBy(() -> validateAdapter.validateAccessToken(tokenPair.refreshToken()))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.TOKEN_TYPE_MISMATCH);
+                .hasMessage(ErrorCode.TOKEN_TYPE_MISMATCH.getMessage());
     }
 
     @Test
@@ -63,8 +62,7 @@ class JwtTokenValidateAdapterTest {
 
         assertThatThrownBy(() -> validateAdapter.validateRefreshToken(tokenPair.accessToken()))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.TOKEN_TYPE_MISMATCH);
+                .hasMessage(ErrorCode.TOKEN_TYPE_MISMATCH.getMessage());
     }
 
     @Test
@@ -74,8 +72,7 @@ class JwtTokenValidateAdapterTest {
 
         assertThatThrownBy(() -> validateAdapter.validateAccessToken(expiredToken))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.TOKEN_EXPIRED);
+                .hasMessage(ErrorCode.TOKEN_EXPIRED.getMessage());
     }
 
     @Test
@@ -84,8 +81,7 @@ class JwtTokenValidateAdapterTest {
 
         assertThatThrownBy(() -> validateAdapter.validateAccessToken("invalid-token"))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.TOKEN_INVALID);
+                .hasMessage(ErrorCode.TOKEN_INVALID.getMessage());
     }
 
     @Test
@@ -95,8 +91,7 @@ class JwtTokenValidateAdapterTest {
 
         assertThatThrownBy(() -> validateAdapter.validateAccessToken(invalidRoleToken))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.TOKEN_INVALID);
+                .hasMessage(ErrorCode.TOKEN_INVALID.getMessage());
     }
 
     private String createToken(String tokenType, Instant issuedAt, Instant expiresAt) {

@@ -47,11 +47,11 @@ public class RefreshTokenJpaEntity extends BaseEntity {
         this.revoked = false;
     }
 
-    public static RefreshTokenJpaEntity create(Long memberId, String tokenHash, Instant expiresAt) {
+    public static RefreshTokenJpaEntity from(Long memberId, String tokenHash, Instant expiresAt) {
         return new RefreshTokenJpaEntity(memberId, tokenHash, expiresAt);
     }
 
-    public RefreshTokenInfo toInfo() {
+    public RefreshTokenInfo toDomain() {
         return new RefreshTokenInfo(memberId, expiresAt, revoked);
     }
 

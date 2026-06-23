@@ -21,20 +21,20 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenSavePort, Ref
     @Override
     public void save(Long memberId, String refreshToken, Instant expiresAt) {
         String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
-        refreshTokenJpaRepository.save(RefreshTokenJpaEntity.create(memberId, tokenHash, expiresAt));
+        refreshTokenJpaRepository.save(RefreshTokenJpaEntity.from(memberId, tokenHash, expiresAt));
     }
 
     @Override
     public Optional<RefreshTokenInfo> findByToken(String refreshToken) {
         String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
-        return refreshTokenJpaRepository.findByTokenHash(tokenHash)
-                .map(RefreshTokenJpaEntity::toInfo);
+        return refreshTokenJpaRepository.findByTokenHashAndDeletedAtIsNull(tokenHash)
+                .map(RefreshTokenJpaEntity::toDomain);
     }
 
     @Override
     public void revoke(String refreshToken) {
         String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
-        refreshTokenJpaRepository.findByTokenHash(tokenHash)
+        refreshTokenJpaRepository.findByTokenHashAndDeletedAtIsNull(tokenHash)
                 .ifPresent(RefreshTokenJpaEntity::revoke);
     }
 }

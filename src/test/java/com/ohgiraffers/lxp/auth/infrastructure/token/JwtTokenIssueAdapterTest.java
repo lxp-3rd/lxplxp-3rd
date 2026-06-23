@@ -40,7 +40,7 @@ class JwtTokenIssueAdapterTest {
     void issue_access_token_creates_access_token_only() {
         JwtTokenIssueAdapter tokenIssueAdapter = new JwtTokenIssueAdapter(SECRET, 30, 14);
 
-        String accessToken = tokenIssueAdapter.issueAccessToken(1L, MemberRole.LEARNER);
+        String accessToken = tokenIssueAdapter.issueAccessToken(1L, MemberRole.LEARNER.name());
 
         Claims claims = parse(accessToken);
         assertThat(claims.getSubject()).isEqualTo("1");

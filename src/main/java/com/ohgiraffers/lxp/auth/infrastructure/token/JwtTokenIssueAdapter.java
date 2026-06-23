@@ -43,23 +43,23 @@ public class JwtTokenIssueAdapter implements TokenIssuePort, AccessTokenIssuePor
         Instant refreshTokenExpiresAt = now.plus(refreshTokenExpiration);
 
         return new TokenPair(
-                createToken(memberId, role, JwtTokenType.ACCESS, now, accessTokenExpiresAt),
-                createToken(memberId, role, JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
+                createToken(memberId, role.name(), JwtTokenType.ACCESS, now, accessTokenExpiresAt),
+                createToken(memberId, role.name(), JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
                 refreshTokenExpiresAt
         );
     }
 
     @Override
-    public String issueAccessToken(Long memberId, MemberRole role) {
+    public String issueAccessToken(Long memberId, String role) {
         Instant now = Instant.now();
         return createToken(memberId, role, JwtTokenType.ACCESS, now, now.plus(accessTokenExpiration));
     }
 
-    private String createToken(Long memberId, MemberRole role, String tokenType, Instant issuedAt, Instant expiresAt) {
+    private String createToken(Long memberId, String role, String tokenType, Instant issuedAt, Instant expiresAt) {
         return Jwts.builder()
                 .subject(String.valueOf(memberId))
                 .claim("memberId", memberId)
-                .claim("role", role.name())
+                .claim("role", role)
                 .claim("type", tokenType)
                 .issuedAt(Date.from(issuedAt))
                 .expiration(Date.from(expiresAt))

@@ -49,7 +49,7 @@ public class AuthTokenService implements ReissueTokenUseCase, LogoutUseCase {
         }
 
         return new ReissueTokenResult(
-                accessTokenIssuePort.issueAccessToken(authenticatedMember.memberId(), authenticatedMember.role())
+                accessTokenIssuePort.issueAccessToken(authenticatedMember.memberId(), authenticatedMember.role().name())
         );
     }
 

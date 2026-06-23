@@ -30,7 +30,7 @@ class RefreshTokenPersistenceAdapterTest {
         assertThat(refreshTokenInfo.memberId()).isEqualTo(1L);
         assertThat(refreshTokenInfo.expiresAt()).isEqualTo(expiresAt);
         assertThat(refreshTokenInfo.revoked()).isFalse();
-        assertThat(refreshTokenJpaRepository.findByTokenHash("refresh-token")).isEmpty();
+        assertThat(refreshTokenJpaRepository.findByTokenHashAndDeletedAtIsNull("refresh-token")).isEmpty();
     }
 
     @Test
