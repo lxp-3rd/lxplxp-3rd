@@ -34,6 +34,12 @@ public class AnnouncementJpaEntity extends BaseEntity {
         this.status = status;
     }
 
+    public void update(String title, String content, AnnouncementStatus status) {
+        this.title = title;
+        this.content = content;
+        this.status = status;
+    }
+
     public Long getId() { return id; }
     public Long getAdminId() { return adminId; }
     public String getTitle() { return title; }
