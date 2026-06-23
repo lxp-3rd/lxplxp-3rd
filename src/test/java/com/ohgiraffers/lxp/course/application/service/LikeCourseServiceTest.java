@@ -5,6 +5,7 @@ import com.ohgiraffers.lxp.course.application.port.out.CourseLikeRepositoryPort;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseLike;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +49,19 @@ class LikeCourseServiceTest {
     void like_alreadyExists_throwsException() {
         LikeCourseCommand command = new LikeCourseCommand(1L, 100L);
         given(courseLikeRepository.existsByCourseIdAndLearnerId(1L, 100L)).willReturn(true);
+
+        assertThatThrownBy(() -> likeCourseService.like(command))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.COURSE_LIKE_ALREADY_EXISTS.getMessage());
+    }
+
+    @Test
+    @DisplayName("동시 요청으로 DB UNIQUE 제약 위반 시 COURSE_LIKE_ALREADY_EXISTS 예외가 발생한다")
+    void like_concurrentDuplicate_throwsException() {
+        LikeCourseCommand command = new LikeCourseCommand(1L, 100L);
+        given(courseLikeRepository.existsByCourseIdAndLearnerId(1L, 100L)).willReturn(false);
+        given(courseLikeRepository.save(any(CourseLike.class)))
+                .willThrow(new DataIntegrityViolationException("duplicate key"));
 
         assertThatThrownBy(() -> likeCourseService.like(command))
                 .isInstanceOf(BusinessException.class)

@@ -6,6 +6,7 @@ import com.ohgiraffers.lxp.course.application.port.out.CourseLikeRepositoryPort;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseLike;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +29,10 @@ public class LikeCourseService implements LikeCourseUseCase {
         } catch (IllegalArgumentException e) {
             throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
-        courseLikeRepository.save(like);
+        try {
+            courseLikeRepository.save(like);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.COURSE_LIKE_ALREADY_EXISTS);
+        }
     }
 }
