@@ -50,6 +50,15 @@ class MemberProfileServiceTest {
     }
 
     @Test
+    void get_my_profile_fails_when_member_not_found() {
+        given(memberRepositoryPort.findById(1L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.getMyProfile(1L))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.MEMBER_NOT_FOUND.getMessage());
+    }
+
+    @Test
     void update_my_profile_success() {
         Member savedMember = member(1L, "learner@lxp.com", "learner");
         Member updatedMember = member(1L, "learner@lxp.com", "updated");
