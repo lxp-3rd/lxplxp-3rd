@@ -1,8 +1,11 @@
-// AuthRequest 도메인 타입 정의
-export type AuthRequest = {
-  id: string;
+export type LoginRequest = {
   email: string;
   password: string;
-  createdAt: string;
-  updatedAt: string;
 };
+
+export type LoginResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type AuthRequest = LoginRequest;

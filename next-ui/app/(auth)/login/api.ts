@@ -1,12 +1,21 @@
-// 담당: E
-import { fetcher } from '@/lib/fetcher';
-import type { AuthRequest } from './types';
+import type { LoginRequest, LoginResponse } from './types';
 
-// TODO: 실제 엔드포인트로 교체
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  return response.json() as Promise<T>;
+}
+
 export const authApi = {
-  getAll: () => fetcher.get<AuthRequest[]>('/auths'),
-  getById: (id: string) => fetcher.get<AuthRequest>(`/auths/${id}`),
-  create: (data: Partial<AuthRequest>) => fetcher.post<AuthRequest>('/auths', data),
-  update: (id: string, data: Partial<AuthRequest>) => fetcher.put<AuthRequest>(`/auths/${id}`, data),
-  remove: (id: string) => fetcher.delete(`/auths/${id}`),
+  login: (data: LoginRequest) => postJson<LoginResponse>('/api/auth/login', data),
 };
