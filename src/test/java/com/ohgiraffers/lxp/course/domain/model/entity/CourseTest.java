@@ -107,4 +107,69 @@ class CourseTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("강좌 설명은 필수입니다.");
     }
+
+    @Test
+    @DisplayName("강사가 강좌를 HIDDEN으로 변경하면 hiddenBy가 INSTRUCTOR로 설정된다")
+    void changeStatus_instructorHides_setsHiddenByInstructor() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.PUBLIC, null);
+
+        course.changeStatus(CourseStatus.HIDDEN, HiddenBy.INSTRUCTOR);
+
+        assertThat(course.getStatus()).isEqualTo(CourseStatus.HIDDEN);
+        assertThat(course.getHiddenBy()).isEqualTo(HiddenBy.INSTRUCTOR);
+    }
+
+    @Test
+    @DisplayName("관리자가 강좌를 HIDDEN으로 변경하면 hiddenBy가 ADMIN으로 설정된다")
+    void changeStatus_adminHides_setsHiddenByAdmin() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.PUBLIC, null);
+
+        course.changeStatus(CourseStatus.HIDDEN, HiddenBy.ADMIN);
+
+        assertThat(course.getStatus()).isEqualTo(CourseStatus.HIDDEN);
+        assertThat(course.getHiddenBy()).isEqualTo(HiddenBy.ADMIN);
+    }
+
+    @Test
+    @DisplayName("강사가 INSTRUCTOR로 숨긴 강좌를 PUBLIC으로 변경할 수 있다")
+    void changeStatus_instructorUnhidesOwnCourse_success() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.HIDDEN, HiddenBy.INSTRUCTOR);
+
+        course.changeStatus(CourseStatus.PUBLIC, HiddenBy.INSTRUCTOR);
+
+        assertThat(course.getStatus()).isEqualTo(CourseStatus.PUBLIC);
+        assertThat(course.getHiddenBy()).isNull();
+    }
+
+    @Test
+    @DisplayName("관리자가 숨긴 강좌를 강사가 PUBLIC으로 변경하면 예외가 발생한다")
+    void changeStatus_instructorCannotUnhideAdminHidden_throwsException() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.HIDDEN, HiddenBy.ADMIN);
+
+        assertThatThrownBy(() -> course.changeStatus(CourseStatus.PUBLIC, HiddenBy.INSTRUCTOR))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("관리자가 숨긴 강좌는 강사가 공개할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("관리자는 ADMIN이 숨긴 강좌를 PUBLIC으로 변경할 수 있다")
+    void changeStatus_adminCanUnhideAdminHidden_success() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.HIDDEN, HiddenBy.ADMIN);
+
+        course.changeStatus(CourseStatus.PUBLIC, HiddenBy.ADMIN);
+
+        assertThat(course.getStatus()).isEqualTo(CourseStatus.PUBLIC);
+        assertThat(course.getHiddenBy()).isNull();
+    }
+
+    @Test
+    @DisplayName("강좌를 CLOSED로 변경하면 hiddenBy가 null로 초기화된다")
+    void changeStatus_toClosed_clearsHiddenBy() {
+        Course course = Course.restore(1L, 10L, "강좌 제목", "강좌 설명", null, CourseStatus.HIDDEN, HiddenBy.INSTRUCTOR);
+
+        course.changeStatus(CourseStatus.CLOSED, HiddenBy.ADMIN);
+
+        assertThat(course.getStatus()).isEqualTo(CourseStatus.CLOSED);
+        assertThat(course.getHiddenBy()).isNull();
+    }
 }
