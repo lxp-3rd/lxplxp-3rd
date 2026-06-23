@@ -1,20 +1,22 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public class InstructorApplicationRepositoryImpl implements InstructorApplicationRepository {
+public class InstructorApplicationPersistenceAdapter implements InstructorApplicationRepositoryPort {
 
     private final InstructorApplicationJpaRepository jpaRepository;
 
-    public InstructorApplicationRepositoryImpl(InstructorApplicationJpaRepository jpaRepository) {
+    public InstructorApplicationPersistenceAdapter(InstructorApplicationJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
@@ -33,6 +35,11 @@ public class InstructorApplicationRepositoryImpl implements InstructorApplicatio
             }
             throw e;
         }
+    }
+
+    @Override
+    public Optional<InstructorApplication> findById(Long id) {
+        return jpaRepository.findById(id).map(InstructorApplicationJpaEntity::toDomain);
     }
 
     @Override
