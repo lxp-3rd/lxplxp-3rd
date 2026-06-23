@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
 
 public record RegisterContentRequest(
-        @NotNull Integer sequence,
+        @NotNull @Min(0) Integer sequence,
         @NotBlank String title,
         @NotBlank @URL String contentUrl
 ) {

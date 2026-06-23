@@ -80,6 +80,17 @@ class ContentControllerTest {
     }
 
     @Test
+    @DisplayName("sequence가 음수이면 400을 반환한다")
+    void register_negativeSequence_returns400() throws Exception {
+        RegisterContentRequest request = new RegisterContentRequest(-1, "Java 기초", "https://example.com/video");
+
+        mockMvc.perform(post("/api/courses/1/contents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @DisplayName("존재하지 않는 강좌 ID로 등록 시 404를 반환한다")
     void register_courseNotFound_returns404() throws Exception {
         RegisterContentRequest request = new RegisterContentRequest(0, "Java 기초", "https://example.com/video");
