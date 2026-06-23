@@ -39,7 +39,7 @@ class ContentJpaEntityTest {
         contentJpaRepository.save(ContentJpaEntity.from(Content.create(1L, 0, "1강", "https://example.com/1")));
         contentJpaRepository.save(ContentJpaEntity.from(Content.create(1L, 1, "2강", "https://example.com/2")));
 
-        long count = contentJpaRepository.count();
+        long count = contentJpaRepository.countByDeletedAtIsNull();
 
         assertThat(count).isEqualTo(2);
     }
