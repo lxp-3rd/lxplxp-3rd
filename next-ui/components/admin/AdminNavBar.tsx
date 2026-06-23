@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/lib/AuthContext';
 
 const ADMIN_NAV_LINKS = [
   { href: '/admin',                         label: '대시보드',    exact: true  },
@@ -15,10 +16,10 @@ const ADMIN_NAV_LINKS = [
 
 export function AdminNavBar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    router.push('/admin/login');
+    void logout('/admin/login');
   };
 
   const isActive = (href: string, exact: boolean) =>

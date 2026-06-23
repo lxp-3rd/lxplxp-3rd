@@ -1,8 +1,10 @@
 package com.ohgiraffers.lxp.instructor.presentation.web;
 
 import com.ohgiraffers.lxp.auth.presentation.support.RequireRole;
+import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
+import com.ohgiraffers.lxp.instructor.presentation.dto.InstructorProfileResponse;
 import com.ohgiraffers.lxp.instructor.presentation.dto.RegisterInstructorProfileRequest;
 import com.ohgiraffers.lxp.instructor.presentation.dto.UpdateInstructorProfileRequest;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
@@ -16,13 +18,16 @@ public class InstructorProfileController {
 
     private final RegisterInstructorProfileUseCase registerInstructorProfileUseCase;
     private final UpdateInstructorProfileUseCase updateInstructorProfileUseCase;
+    private final GetInstructorProfileUseCase getInstructorProfileUseCase;
 
     public InstructorProfileController(
             RegisterInstructorProfileUseCase registerInstructorProfileUseCase,
-            UpdateInstructorProfileUseCase updateInstructorProfileUseCase
+            UpdateInstructorProfileUseCase updateInstructorProfileUseCase,
+            GetInstructorProfileUseCase getInstructorProfileUseCase
     ) {
         this.registerInstructorProfileUseCase = registerInstructorProfileUseCase;
         this.updateInstructorProfileUseCase = updateInstructorProfileUseCase;
+        this.getInstructorProfileUseCase = getInstructorProfileUseCase;
     }
 
     @RequireRole(MemberRole.INSTRUCTOR)
@@ -43,5 +48,10 @@ public class InstructorProfileController {
     ) {
         updateInstructorProfileUseCase.update(request.toCommand(id));
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<InstructorProfileResponse> get(@PathVariable Long id) {
+        return ResponseEntity.ok(InstructorProfileResponse.from(getInstructorProfileUseCase.get(id)));
     }
 }

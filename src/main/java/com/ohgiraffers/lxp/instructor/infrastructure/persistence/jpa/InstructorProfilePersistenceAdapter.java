@@ -37,7 +37,7 @@ public class InstructorProfilePersistenceAdapter implements InstructorProfileRep
 
     @Override
     public Optional<InstructorProfile> findByInstructorId(Long instructorId) {
-        return jpaRepository.findByInstructorId(instructorId)
+        return jpaRepository.findByInstructorIdAndDeletedAtIsNull(instructorId)
                 .map(InstructorProfileJpaEntity::toDomain);
     }
 }

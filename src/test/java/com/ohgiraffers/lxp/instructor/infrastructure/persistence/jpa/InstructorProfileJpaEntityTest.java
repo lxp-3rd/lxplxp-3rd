@@ -42,7 +42,7 @@ class InstructorProfileJpaEntityTest {
         );
         jpaRepository.save(InstructorProfileJpaEntity.from(domain));
 
-        Optional<InstructorProfileJpaEntity> found = jpaRepository.findByInstructorId(1L);
+        Optional<InstructorProfileJpaEntity> found = jpaRepository.findByInstructorIdAndDeletedAtIsNull(1L);
 
         assertThat(found).isPresent();
         assertThat(found.get().toDomain().getInstructorId()).isEqualTo(1L);
@@ -51,7 +51,7 @@ class InstructorProfileJpaEntityTest {
     @Test
     @DisplayName("존재하지 않는 강사 ID로 조회 시 빈 값을 반환한다")
     void findByInstructorId_returnsEmptyWhenNotExists() {
-        Optional<InstructorProfileJpaEntity> found = jpaRepository.findByInstructorId(99L);
+        Optional<InstructorProfileJpaEntity> found = jpaRepository.findByInstructorIdAndDeletedAtIsNull(99L);
 
         assertThat(found).isEmpty();
     }
@@ -68,7 +68,7 @@ class InstructorProfileJpaEntityTest {
         updated.update("https://example.com/new.jpg", "새로운 자기소개");
         jpaRepository.saveAndFlush(InstructorProfileJpaEntity.from(updated));
 
-        InstructorProfileJpaEntity found = jpaRepository.findByInstructorId(1L).get();
+        InstructorProfileJpaEntity found = jpaRepository.findByInstructorIdAndDeletedAtIsNull(1L).get();
         assertThat(found.toDomain().getProfileImageUrl()).isEqualTo("https://example.com/new.jpg");
         assertThat(found.toDomain().getBio()).isEqualTo("새로운 자기소개");
     }

@@ -7,8 +7,10 @@ import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
 import com.ohgiraffers.lxp.instructor.application.port.command.UpdateInstructorProfileCommand;
+import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import com.ohgiraffers.lxp.instructor.presentation.dto.RegisterInstructorProfileRequest;
 import com.ohgiraffers.lxp.instructor.presentation.dto.UpdateInstructorProfileRequest;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
@@ -29,8 +31,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.mockito.ArgumentCaptor;
 
@@ -54,6 +58,10 @@ class InstructorProfileControllerTest {
     @MockitoBean
     private TokenValidatePort tokenValidatePort;
 
+    @MockitoBean
+    private GetInstructorProfileUseCase getInstructorProfileUseCase;
+
+  
     @BeforeEach
     void setUp() {
         given(tokenValidatePort.validateAccessToken(INSTRUCTOR_TOKEN))
@@ -239,6 +247,32 @@ class InstructorProfileControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    @DisplayName("프로필 조회 성공 시 200과 응답 바디를 반환한다")
+    void get_success_returns200WithBody() throws Exception {
+        InstructorProfile profile = InstructorProfile.create(
+                1L, "https://example.com/image.jpg", "10년 경력의 Java 개발자입니다."
+        );
+        given(getInstructorProfileUseCase.get(1L)).willReturn(profile);
+
+        mockMvc.perform(get("/api/instructors/1/profile"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.instructorId").value(1))
+                .andExpect(jsonPath("$.profileImageUrl").value("https://example.com/image.jpg"))
+                .andExpect(jsonPath("$.bio").value("10년 경력의 Java 개발자입니다."));
+    }
+
+    @Test
+    @DisplayName("프로필 조회 시 프로필이 없으면 404를 반환한다")
+    void get_profileNotFound_returns404() throws Exception {
+        willThrow(new BusinessException(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND))
+                .given(getInstructorProfileUseCase)
+                .get(99L);
+
+        mockMvc.perform(get("/api/instructors/99/profile"))
+                .andExpect(status().isNotFound());
+    }
+  
     private String bearerInstructorToken() {
         return "Bearer " + INSTRUCTOR_TOKEN;
     }

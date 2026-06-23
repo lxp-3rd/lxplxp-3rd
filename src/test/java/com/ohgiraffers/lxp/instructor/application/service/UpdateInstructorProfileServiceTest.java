@@ -59,8 +59,7 @@ class UpdateInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> updateInstructorProfileService.update(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND);
+                .hasMessage(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND.getMessage());
     }
 
     @Test
