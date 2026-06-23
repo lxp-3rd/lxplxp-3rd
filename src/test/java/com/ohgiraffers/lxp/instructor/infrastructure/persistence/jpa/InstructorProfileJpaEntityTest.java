@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Import(JpaAuditingConfig.class)
@@ -69,5 +71,21 @@ class InstructorProfileJpaEntityTest {
         InstructorProfileJpaEntity found = jpaRepository.findByInstructorId(1L).get();
         assertThat(found.toDomain().getProfileImageUrl()).isEqualTo("https://example.com/new.jpg");
         assertThat(found.toDomain().getBio()).isEqualTo("새로운 자기소개");
+    }
+
+    @Test
+    @DisplayName("동일 instructorId로 프로필을 두 번 저장하면 DataIntegrityViolationException이 발생한다")
+    void save_duplicateInstructorId_throwsDataIntegrityViolationException() {
+        InstructorProfile first = InstructorProfile.create(
+                1L, "https://example.com/image.jpg", "첫 번째 자기소개"
+        );
+        jpaRepository.saveAndFlush(InstructorProfileJpaEntity.from(first));
+
+        InstructorProfile duplicate = InstructorProfile.create(
+                1L, "https://example.com/other.jpg", "두 번째 자기소개"
+        );
+
+        assertThatThrownBy(() -> jpaRepository.saveAndFlush(InstructorProfileJpaEntity.from(duplicate)))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

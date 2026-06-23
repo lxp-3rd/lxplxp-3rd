@@ -5,14 +5,20 @@ import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "instructor_profile")
+@Table(
+        name = "instructor_profile",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uq_instructor_profile_instructor_id",
+                columnNames = "instructor_id"
+        )
+)
 public class InstructorProfileJpaEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "instructor_id", nullable = false, unique = true)
+    @Column(name = "instructor_id", nullable = false)
     private Long instructorId;
 
     @Column(name = "profile_image_url", nullable = false)
