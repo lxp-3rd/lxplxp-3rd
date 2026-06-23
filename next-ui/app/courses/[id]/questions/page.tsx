@@ -6,8 +6,12 @@ import { useParams } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { questionApi } from './api';
-import type { QuestionResponse } from './types';
+import type { QuestionResponse, QuestionStatus } from './types';
 import { formatDate } from '@/lib/formatDate';
+
+const STATUS_LABEL: Record<QuestionStatus, string> = {
+  PUBLISHED: '답변 대기',
+};
 
 export default function CourseQuestionsPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,13 +21,26 @@ export default function CourseQuestionsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setQuestions([]);
+    setSelectedId(null);
+
     questionApi.getAll(Number(id))
       .then((data) => {
+        if (controller.signal.aborted) return;
         setQuestions(data);
         if (data.length > 0) setSelectedId(data[0].id);
       })
-      .catch(() => setError('질문 목록을 불러올 수 없습니다.'))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!controller.signal.aborted) setError('질문 목록을 불러올 수 없습니다.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
   }, [id]);
 
   const selected = questions.find((q) => q.id === selectedId);
@@ -90,7 +107,7 @@ export default function CourseQuestionsPage() {
                     >
                       <div className="flex justify-between items-start mb-xs">
                         <span className="text-label-sm font-label-sm px-sm py-0.5 rounded-full bg-primary-fixed text-on-primary-container">
-                          답변 대기
+                          {STATUS_LABEL[q.status]}
                         </span>
                         <span className="text-label-sm font-label-sm text-on-surface-variant">
                           {formatDate(q.createdAt)}
@@ -115,7 +132,7 @@ export default function CourseQuestionsPage() {
                 <div className="p-xl border-b border-outline-variant flex-shrink-0">
                   <div className="flex items-center gap-sm mb-md">
                     <span className="text-label-sm font-label-sm px-md py-1 rounded-full bg-primary-container text-on-primary-container">
-                      답변 대기 중
+                      {STATUS_LABEL[selected.status]}
                     </span>
                   </div>
                   <h1 className="text-headline-md font-headline-md text-on-surface mb-md">{selected.title}</h1>

@@ -24,15 +24,31 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
   const memberId = 1;
 
   useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setQuestion(null);
+    setError(null);
+
     questionApi.getById(Number(params.qid))
       .then((data) => {
+        if (controller.signal.aborted) return;
+        if (data.courseId !== Number(params.id)) {
+          setError('잘못된 접근입니다.');
+          return;
+        }
         setQuestion(data);
         setEditTitle(data.title);
         setEditContent(data.content);
       })
-      .catch(() => setError('질문을 불러올 수 없습니다.'))
-      .finally(() => setLoading(false));
-  }, [params.qid]);
+      .catch(() => {
+        if (!controller.signal.aborted) setError('질문을 불러올 수 없습니다.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [params.qid, params.id]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -145,6 +161,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
               </form>
             ) : (
               <>
+                {error && <p className="text-error text-label-md font-label-md mb-md">{error}</p>}
                 <div className="flex items-start justify-between mb-md gap-md">
                   <h1 className="text-headline-md font-headline-md text-on-surface">{question?.title}</h1>
                   {isOwner && (
