@@ -1,12 +1,15 @@
 package com.ohgiraffers.lxp.announcement;
 
 import com.ohgiraffers.lxp.announcement.infrastructure.persistence.jpa.AnnouncementRepository;
+import com.ohgiraffers.lxp.auth.infrastructure.token.JwtTokenIssueAdapter;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +30,9 @@ class AnnouncementCreateIntegrationTest {
     @Autowired
     private AnnouncementRepository announcementRepository;
 
+    @Autowired
+    private JwtTokenIssueAdapter jwtTokenIssueAdapter;
+
     @AfterEach
     void cleanup() {
         announcementRepository.deleteAll();
@@ -36,6 +42,7 @@ class AnnouncementCreateIntegrationTest {
     @Test
     void createAnnouncement() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -49,5 +56,9 @@ class AnnouncementCreateIntegrationTest {
                 .andExpect(jsonPath("$.id").isNumber());
 
         assertThat(announcementRepository.count()).isEqualTo(1);
+    }
+
+    private String bearerAdminToken() {
+        return "Bearer " + jwtTokenIssueAdapter.issueAccessToken(1L, MemberRole.ADMIN.name());
     }
 }

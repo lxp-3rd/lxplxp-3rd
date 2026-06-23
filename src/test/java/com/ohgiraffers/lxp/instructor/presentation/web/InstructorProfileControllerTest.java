@@ -1,6 +1,8 @@
 package com.ohgiraffers.lxp.instructor.presentation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
+import com.ohgiraffers.lxp.auth.application.port.out.TokenValidatePort;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
@@ -9,10 +11,13 @@ import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProf
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.presentation.dto.RegisterInstructorProfileRequest;
 import com.ohgiraffers.lxp.instructor.presentation.dto.UpdateInstructorProfileRequest;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
@@ -30,6 +36,8 @@ import org.mockito.ArgumentCaptor;
 
 @WebMvcTest(InstructorProfileController.class)
 class InstructorProfileControllerTest {
+
+    private static final String INSTRUCTOR_TOKEN = "instructor-token";
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,6 +51,15 @@ class InstructorProfileControllerTest {
     @MockitoBean
     private UpdateInstructorProfileUseCase updateInstructorProfileUseCase;
 
+    @MockitoBean
+    private TokenValidatePort tokenValidatePort;
+
+    @BeforeEach
+    void setUp() {
+        given(tokenValidatePort.validateAccessToken(INSTRUCTOR_TOKEN))
+                .willReturn(new AuthenticatedMember(1L, MemberRole.INSTRUCTOR));
+    }
+
     @Test
     @DisplayName("프로필 등록 성공 시 201을 반환한다")
     void register_success_returns201() throws Exception {
@@ -53,6 +70,7 @@ class InstructorProfileControllerTest {
                 .register(any(RegisterInstructorProfileCommand.class));
 
         mockMvc.perform(post("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
@@ -66,6 +84,7 @@ class InstructorProfileControllerTest {
         );
 
         mockMvc.perform(post("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -82,6 +101,7 @@ class InstructorProfileControllerTest {
                 .register(any(RegisterInstructorProfileCommand.class));
 
         mockMvc.perform(post("/api/instructors/99/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -98,6 +118,7 @@ class InstructorProfileControllerTest {
                 .register(any(RegisterInstructorProfileCommand.class));
 
         mockMvc.perform(post("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict());
@@ -113,6 +134,7 @@ class InstructorProfileControllerTest {
                 .update(any(UpdateInstructorProfileCommand.class));
 
         mockMvc.perform(put("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
@@ -126,6 +148,7 @@ class InstructorProfileControllerTest {
         );
 
         mockMvc.perform(put("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -141,6 +164,7 @@ class InstructorProfileControllerTest {
                 .register(any(RegisterInstructorProfileCommand.class));
 
         mockMvc.perform(post("/api/instructors/42/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
@@ -160,6 +184,7 @@ class InstructorProfileControllerTest {
                 .update(any(UpdateInstructorProfileCommand.class));
 
         mockMvc.perform(put("/api/instructors/42/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
@@ -180,6 +205,7 @@ class InstructorProfileControllerTest {
                 .update(any(UpdateInstructorProfileCommand.class));
 
         mockMvc.perform(put("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
@@ -193,6 +219,7 @@ class InstructorProfileControllerTest {
         );
 
         mockMvc.perform(post("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -206,8 +233,13 @@ class InstructorProfileControllerTest {
         );
 
         mockMvc.perform(put("/api/instructors/1/profile")
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
+    }
+
+    private String bearerInstructorToken() {
+        return "Bearer " + INSTRUCTOR_TOKEN;
     }
 }
