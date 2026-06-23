@@ -2,8 +2,8 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewAction;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase.ReviewInstructorApplicationCommand;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationCommand;
 import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
 import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
 import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
