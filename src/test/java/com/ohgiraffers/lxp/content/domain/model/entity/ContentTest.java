@@ -53,6 +53,37 @@ class ContentTest {
     }
 
     @Test
+    @DisplayName("update: 제목과 URL이 정상 수정된다")
+    void update_success() {
+        Content content = Content.restore(10L, 1L, 0, "Java 기초", "https://example.com/old");
+
+        content.update("Java 심화", "https://example.com/new");
+
+        assertThat(content.getTitle()).isEqualTo("Java 심화");
+        assertThat(content.getContentUrl()).isEqualTo("https://example.com/new");
+    }
+
+    @Test
+    @DisplayName("update: title이 공백이면 예외가 발생한다")
+    void update_blankTitle_throwsException() {
+        Content content = Content.restore(10L, 1L, 0, "Java 기초", "https://example.com/video");
+
+        assertThatThrownBy(() -> content.update(" ", "https://example.com/video"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("콘텐츠 제목은 필수입니다.");
+    }
+
+    @Test
+    @DisplayName("update: contentUrl이 null이면 예외가 발생한다")
+    void update_nullContentUrl_throwsException() {
+        Content content = Content.restore(10L, 1L, 0, "Java 기초", "https://example.com/video");
+
+        assertThatThrownBy(() -> content.update("Java 기초", null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("콘텐츠 URL은 필수입니다.");
+    }
+
+    @Test
     @DisplayName("restore: 저장된 값 그대로 복원된다")
     void restore_success() {
         Content content = Content.restore(10L, 1L, 2, "제목", "https://example.com/video");
