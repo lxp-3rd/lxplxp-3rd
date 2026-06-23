@@ -27,7 +27,10 @@ public enum ErrorCode {
 
     // content
     CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다."),
-    CONTENT_LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "학습 이력을 찾을 수 없습니다.");
+    CONTENT_LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "학습 이력을 찾을 수 없습니다."),
+
+    // announcement
+    ANNOUNCEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "공지사항을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
