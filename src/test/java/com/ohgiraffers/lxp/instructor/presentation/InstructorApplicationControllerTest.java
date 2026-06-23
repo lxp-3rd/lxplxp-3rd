@@ -160,4 +160,16 @@ class InstructorApplicationControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @DisplayName("REJECT 시 반려 사유가 없으면 400을 반환한다")
+    void review_rejectWithoutReason_returns400() throws Exception {
+        ReviewInstructorApplicationRequest request =
+                new ReviewInstructorApplicationRequest(ReviewAction.REJECT, null);
+
+        mockMvc.perform(patch("/api/instructors/applications/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
 }
