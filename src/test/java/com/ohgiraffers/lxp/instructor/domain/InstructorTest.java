@@ -43,4 +43,32 @@ class InstructorTest {
         assertThatThrownBy(instructor::withdraw)
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    @DisplayName("create 시 memberId가 null이면 예외가 발생한다")
+    void create_nullMemberId_throwsException() {
+        assertThatThrownBy(() -> Instructor.create(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 id가 null이면 예외가 발생한다")
+    void restore_nullId_throwsException() {
+        assertThatThrownBy(() -> Instructor.restore(null, 1L, InstructorStatus.ACTIVE))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 memberId가 null이면 예외가 발생한다")
+    void restore_nullMemberId_throwsException() {
+        assertThatThrownBy(() -> Instructor.restore(1L, null, InstructorStatus.ACTIVE))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 status가 null이면 예외가 발생한다")
+    void restore_nullStatus_throwsException() {
+        assertThatThrownBy(() -> Instructor.restore(1L, 1L, null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

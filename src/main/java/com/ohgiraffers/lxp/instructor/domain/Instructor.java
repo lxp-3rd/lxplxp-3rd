@@ -10,6 +10,9 @@ public class Instructor {
     }
 
     public static Instructor create(Long memberId) {
+        if (memberId == null) {
+            throw new IllegalArgumentException("회원 ID는 필수입니다.");
+        }
         Instructor instructor = new Instructor();
         instructor.memberId = memberId;
         instructor.status = InstructorStatus.ACTIVE;
@@ -17,6 +20,15 @@ public class Instructor {
     }
 
     public static Instructor restore(Long id, Long memberId, InstructorStatus status) {
+        if (id == null) {
+            throw new IllegalArgumentException("강사 ID는 필수입니다.");
+        }
+        if (memberId == null) {
+            throw new IllegalArgumentException("회원 ID는 필수입니다.");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("강사 상태는 필수입니다.");
+        }
         Instructor instructor = new Instructor();
         instructor.id = id;
         instructor.memberId = memberId;

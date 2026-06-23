@@ -115,4 +115,26 @@ class InstructorApplicationTest {
         assertThatThrownBy(() -> application.reject("기준 미달", LocalDateTime.now()))
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    @DisplayName("승인 시 처리 시각이 null이면 예외가 발생한다")
+    void approve_nullResolvedAt_throwsException() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+
+        assertThatThrownBy(() -> application.approve(null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("반려 시 처리 시각이 null이면 예외가 발생한다")
+    void reject_nullResolvedAt_throwsException() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+
+        assertThatThrownBy(() -> application.reject("기준 미달", null))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

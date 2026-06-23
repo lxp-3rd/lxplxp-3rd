@@ -97,6 +97,9 @@ public class InstructorApplication {
         if (this.status != ApplicationStatus.PENDING) {
             throw new IllegalStateException("PENDING 상태에서만 승인할 수 있습니다.");
         }
+        if (resolvedAt == null) {
+            throw new IllegalArgumentException("처리 시각은 필수입니다.");
+        }
         this.status = ApplicationStatus.APPROVED;
         this.resolvedAt = resolvedAt;
     }
@@ -107,6 +110,9 @@ public class InstructorApplication {
         }
         if (rejectionReason == null || rejectionReason.isBlank()) {
             throw new IllegalArgumentException("반려 사유는 필수입니다.");
+        }
+        if (resolvedAt == null) {
+            throw new IllegalArgumentException("처리 시각은 필수입니다.");
         }
         this.status = ApplicationStatus.REJECTED;
         this.rejectionReason = rejectionReason;
