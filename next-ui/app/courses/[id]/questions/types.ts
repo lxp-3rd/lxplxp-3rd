@@ -9,6 +9,9 @@ export interface QuestionResponse {
   status: QuestionStatus;
   createdAt: string;
   updatedAt: string;
+  answer: string | null;
+  answeredBy: number | null;
+  answeredAt: string | null;
 }
 
 export interface CreateQuestionRequest {
@@ -21,5 +24,10 @@ export interface CreateQuestionRequest {
 export interface UpdateQuestionRequest {
   memberId: number;
   title: string;
+  content: string;
+}
+
+export interface AnswerQuestionRequest {
+  instructorId: number;
   content: string;
 }
