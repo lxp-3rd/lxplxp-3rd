@@ -68,8 +68,7 @@ class QuestionTest {
 
         assertThatThrownBy(() -> question.update(2L, "수정 제목", "수정 내용"))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.QUESTION_NOT_FOUND);
+                .hasMessage(ErrorCode.QUESTION_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -112,7 +111,6 @@ class QuestionTest {
     private void assertInvalidInput(Runnable executable) {
         assertThatThrownBy(executable::run)
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.INVALID_INPUT);
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 }
