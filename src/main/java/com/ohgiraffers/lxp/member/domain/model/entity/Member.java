@@ -30,6 +30,14 @@ public class Member {
         return new Member(id, email, nickname, password, role, status);
     }
 
+    public Member changePassword(EncodedPassword password) {
+        return Member.restore(id, email, nickname, password, role, status);
+    }
+
+    public Member withdraw() {
+        return Member.restore(id, email, nickname, password, role, MemberStatus.WITHDRAWN);
+    }
+
     public Long getId() {
         return id;
     }
