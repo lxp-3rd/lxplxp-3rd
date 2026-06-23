@@ -35,7 +35,8 @@ public enum ErrorCode {
     ENROLLMENT_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 수강입니다."),
     MEMBER_NOT_LEARNER(HttpStatus.FORBIDDEN, "수강생만 수강신청할 수 있습니다."),
     MEMBER_SUSPENDED(HttpStatus.FORBIDDEN, "정지된 회원은 수강신청할 수 없습니다."),
-    COURSE_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 강좌만 수강신청할 수 있습니다.");
+    COURSE_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 강좌만 수강신청할 수 있습니다."),
+
     // member
     MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다.");
