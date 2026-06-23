@@ -1,23 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useAdminLogin } from './useAdminLogin';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
-    router.push('/admin');
-  };
+  const {
+    email,
+    password,
+    showPassword,
+    error,
+    isSubmitting,
+    handleEmailChange,
+    handlePasswordChange,
+    toggleShowPassword,
+    handleSubmit,
+  } = useAdminLogin();
 
   return (
     <div className="fixed inset-0 z-50 bg-surface flex items-center justify-center px-gutter">
@@ -45,7 +41,7 @@ export default function AdminLoginPage() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                onChange={handleEmailChange}
                 placeholder="admin@lxp.com"
                 className="w-full px-md py-sm bg-surface-container border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary focus:outline-none transition-colors"
               />
@@ -58,13 +54,13 @@ export default function AdminLoginPage() {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  onChange={handlePasswordChange}
                   placeholder="비밀번호를 입력하세요"
                   className="w-full px-md py-sm pr-10 bg-surface-container border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/40 focus:border-primary focus:outline-none transition-colors"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
+                  onClick={toggleShowPassword}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"
                 >
                   <span className="material-symbols-outlined text-[20px]">
@@ -76,7 +72,7 @@ export default function AdminLoginPage() {
 
             {/* 에러 메시지 */}
             {error && (
-              <p className="font-label-sm text-label-sm text-error flex items-center gap-xs">
+              <p role="alert" className="font-label-sm text-label-sm text-error flex items-center gap-xs">
                 <span className="material-symbols-outlined text-[16px]">error</span>
                 {error}
               </p>
@@ -85,9 +81,10 @@ export default function AdminLoginPage() {
             {/* 로그인 버튼 */}
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full py-sm bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-sm hover:brightness-110 transition-all active:scale-95 mt-xs"
             >
-              로그인
+              {isSubmitting ? '로그인 중...' : '로그인'}
             </button>
 
           </form>

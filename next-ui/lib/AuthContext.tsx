@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -14,10 +15,17 @@ import {
   ROLE_HOME,
   ROLE_LABEL,
 } from './mockAuth';
-
-const ACCESS_TOKEN_STORAGE_KEY = 'lxp_access_token';
-const REFRESH_TOKEN_STORAGE_KEY = 'lxp_refresh_token';
-const AUTH_USER_STORAGE_KEY = 'lxp_auth_user';
+import { fetcher } from './fetcher';
+import {
+  clearStoredAuth,
+  getStoredAccessToken,
+  getStoredAuthUser,
+  getStoredRefreshToken,
+  setStoredAccessToken,
+  setStoredAuthUser,
+  setStoredRefreshToken,
+  StoredAuthUser,
+} from './authStorage';
 
 type BackendRole = 'LEARNER' | 'INSTRUCTOR' | 'ADMIN';
 
@@ -25,13 +33,6 @@ export interface LoginSession {
   accessToken: string;
   refreshToken: string;
   email: string;
-}
-
-interface StoredAuthUser {
-  id: string;
-  email: string;
-  nickname: string;
-  role: Role;
 }
 
 interface JwtPayload {
@@ -47,7 +48,8 @@ interface AuthContextValue {
   accessToken: string | null;
   refreshToken: string | null;
   login: (session: LoginSession) => void;
-  logout: () => void;
+  logout: (redirectTo?: string) => Promise<void>;
+  updateProfileUser: (profile: { memberId: number; email: string; nickname: string; role: string }) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -58,7 +60,8 @@ const AuthContext = createContext<AuthContextValue>({
   accessToken: null,
   refreshToken: null,
   login: () => {},
-  logout: () => {},
+  logout: async () => {},
+  updateProfileUser: () => {},
 });
 
 function decodeJwtPayload(token: string): JwtPayload | null {
@@ -84,19 +87,6 @@ function toFrontRole(role?: BackendRole): Role {
   return 'member';
 }
 
-function readStoredUser(): StoredAuthUser | null {
-  if (typeof window === 'undefined') return null;
-  const rawUser = localStorage.getItem(AUTH_USER_STORAGE_KEY);
-  if (!rawUser) return null;
-
-  try {
-    return JSON.parse(rawUser) as StoredAuthUser;
-  } catch {
-    localStorage.removeItem(AUTH_USER_STORAGE_KEY);
-    return null;
-  }
-}
-
 function toMockUser(storedUser: StoredAuthUser | null): MockUser | null {
   if (!storedUser) return null;
   const displayName = storedUser.nickname || storedUser.email || ROLE_LABEL[storedUser.role];
@@ -119,13 +109,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    setAccessToken(localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY));
-    setRefreshToken(localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY));
-    setStoredUser(readStoredUser());
+    const savedAccessToken = getStoredAccessToken();
+    const savedRefreshToken = getStoredRefreshToken();
+    const savedUser = getStoredAuthUser();
+
+    if (savedAccessToken && savedRefreshToken && savedUser) {
+      setAccessToken(savedAccessToken);
+      setRefreshToken(savedRefreshToken);
+      setStoredUser(savedUser);
+    } else {
+      clearStoredAuth();
+      setAccessToken(null);
+      setRefreshToken(null);
+      setStoredUser(null);
+    }
+
     setIsInitializing(false);
   }, []);
 
-  const login = (session: LoginSession) => {
+  const login = useCallback((session: LoginSession) => {
     const payload = decodeJwtPayload(session.accessToken);
     const role = toFrontRole(payload?.role);
     const user: StoredAuthUser = {
@@ -135,27 +137,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role,
     };
 
-    localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, session.accessToken);
-    localStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, session.refreshToken);
-    localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(user));
+    setStoredAccessToken(session.accessToken);
+    setStoredRefreshToken(session.refreshToken);
+    setStoredAuthUser(user);
 
     setAccessToken(session.accessToken);
     setRefreshToken(session.refreshToken);
     setStoredUser(user);
     setIsInitializing(false);
     router.push(ROLE_HOME[role]);
-  };
+  }, [router]);
 
-  const logout = () => {
-    localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-    localStorage.removeItem(AUTH_USER_STORAGE_KEY);
+  const logout = useCallback(async (redirectTo = '/login') => {
+    const currentRefreshToken = refreshToken ?? getStoredRefreshToken();
+    if (currentRefreshToken) {
+      try {
+        await fetcher.post<void>('/api/auth/logout', { refreshToken: currentRefreshToken });
+      } catch {
+        // 로컬 세션 정리는 실패 여부와 무관하게 진행한다.
+      }
+    }
+
+    clearStoredAuth();
     setAccessToken(null);
     setRefreshToken(null);
     setStoredUser(null);
     setIsInitializing(false);
-    router.push('/login');
-  };
+    router.push(redirectTo);
+  }, [refreshToken, router]);
+
+  const updateProfileUser = useCallback((profile: { memberId: number; email: string; nickname: string; role: string }) => {
+    const role = toFrontRole(profile.role as BackendRole);
+    const user: StoredAuthUser = {
+      id: String(profile.memberId),
+      email: profile.email,
+      nickname: profile.nickname,
+      role,
+    };
+
+    setStoredAuthUser(user);
+    setStoredUser(user);
+  }, []);
 
   const user = toMockUser(storedUser);
   const role = storedUser?.role ?? null;
@@ -171,6 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refreshToken,
         login,
         logout,
+        updateProfileUser,
       }}
     >
       {children}
