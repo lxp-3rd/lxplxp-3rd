@@ -61,6 +61,19 @@ public class Course {
         return course;
     }
 
+    public void changeStatus(CourseStatus newStatus, HiddenBy changedBy) {
+        if (newStatus == CourseStatus.PUBLIC && this.hiddenBy == HiddenBy.ADMIN && changedBy == HiddenBy.INSTRUCTOR) {
+            throw new IllegalArgumentException("관리자가 숨긴 강좌는 강사가 공개할 수 없습니다.");
+        }
+        if (newStatus == CourseStatus.HIDDEN) {
+            this.status = CourseStatus.HIDDEN;
+            this.hiddenBy = changedBy;
+        } else {
+            this.status = newStatus;
+            this.hiddenBy = null;
+        }
+    }
+
     public void update(String title, String description, String thumbnailUrl) {
         if (title == null || title.isBlank()) {
             throw new IllegalArgumentException("강좌 제목은 필수입니다.");

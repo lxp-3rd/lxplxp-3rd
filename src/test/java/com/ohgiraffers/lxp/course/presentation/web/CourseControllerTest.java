@@ -1,11 +1,16 @@
 package com.ohgiraffers.lxp.course.presentation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ohgiraffers.lxp.course.application.port.command.ChangeCourseStatusCommand;
 import com.ohgiraffers.lxp.course.application.port.command.RegisterCourseCommand;
 import com.ohgiraffers.lxp.course.application.port.command.UpdateCourseCommand;
+import com.ohgiraffers.lxp.course.application.port.in.ChangeCourseStatusUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.DeleteCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.RegisterCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.UpdateCourseUseCase;
+import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
+import com.ohgiraffers.lxp.course.domain.model.entity.HiddenBy;
+import com.ohgiraffers.lxp.course.presentation.dto.ChangeCourseStatusRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.RegisterCourseRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.UpdateCourseRequest;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
@@ -44,6 +49,9 @@ class CourseControllerTest {
 
     @MockitoBean
     private DeleteCourseUseCase deleteCourseUseCase;
+
+    @MockitoBean
+    private ChangeCourseStatusUseCase changeCourseStatusUseCase;
 
     @Test
     @DisplayName("강좌 등록 성공 시 201과 courseId를 반환한다")
@@ -167,5 +175,41 @@ class CourseControllerTest {
 
         mockMvc.perform(delete("/api/courses/99"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("강좌 상태 변경 성공 시 200을 반환한다")
+    void changeStatus_success_returns200() throws Exception {
+        ChangeCourseStatusRequest request = new ChangeCourseStatusRequest(CourseStatus.HIDDEN, HiddenBy.INSTRUCTOR);
+        willDoNothing().given(changeCourseStatusUseCase).changeStatus(any(ChangeCourseStatusCommand.class));
+
+        mockMvc.perform(patch("/api/courses/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("강좌 상태 변경 시 status가 null이면 400을 반환한다")
+    void changeStatus_nullStatus_returns400() throws Exception {
+        ChangeCourseStatusRequest request = new ChangeCourseStatusRequest(null, HiddenBy.INSTRUCTOR);
+
+        mockMvc.perform(patch("/api/courses/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("관리자 숨김 강좌를 강사가 공개하려 하면 403을 반환한다")
+    void changeStatus_notAllowed_returns403() throws Exception {
+        ChangeCourseStatusRequest request = new ChangeCourseStatusRequest(CourseStatus.PUBLIC, HiddenBy.INSTRUCTOR);
+        willThrow(new BusinessException(ErrorCode.COURSE_STATUS_CHANGE_NOT_ALLOWED))
+                .given(changeCourseStatusUseCase).changeStatus(any(ChangeCourseStatusCommand.class));
+
+        mockMvc.perform(patch("/api/courses/1/status")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
     }
 }

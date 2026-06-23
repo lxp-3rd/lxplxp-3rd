@@ -1,8 +1,10 @@
 package com.ohgiraffers.lxp.course.presentation.web;
 
+import com.ohgiraffers.lxp.course.application.port.in.ChangeCourseStatusUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.DeleteCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.RegisterCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.UpdateCourseUseCase;
+import com.ohgiraffers.lxp.course.presentation.dto.ChangeCourseStatusRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.RegisterCourseRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.RegisterCourseResponse;
 import com.ohgiraffers.lxp.course.presentation.dto.UpdateCourseRequest;
@@ -17,13 +19,16 @@ public class CourseController {
     private final RegisterCourseUseCase registerCourseUseCase;
     private final UpdateCourseUseCase updateCourseUseCase;
     private final DeleteCourseUseCase deleteCourseUseCase;
+    private final ChangeCourseStatusUseCase changeCourseStatusUseCase;
 
     public CourseController(RegisterCourseUseCase registerCourseUseCase,
                             UpdateCourseUseCase updateCourseUseCase,
-                            DeleteCourseUseCase deleteCourseUseCase) {
+                            DeleteCourseUseCase deleteCourseUseCase,
+                            ChangeCourseStatusUseCase changeCourseStatusUseCase) {
         this.registerCourseUseCase = registerCourseUseCase;
         this.updateCourseUseCase = updateCourseUseCase;
         this.deleteCourseUseCase = deleteCourseUseCase;
+        this.changeCourseStatusUseCase = changeCourseStatusUseCase;
     }
 
     @PostMapping
@@ -42,5 +47,12 @@ public class CourseController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         deleteCourseUseCase.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> changeStatus(@PathVariable Long id,
+                                             @RequestBody @Valid ChangeCourseStatusRequest request) {
+        changeCourseStatusUseCase.changeStatus(request.toCommand(id));
+        return ResponseEntity.ok().build();
     }
 }
