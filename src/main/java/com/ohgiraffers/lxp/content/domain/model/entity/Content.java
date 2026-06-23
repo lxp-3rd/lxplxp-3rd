@@ -5,8 +5,8 @@ public class Content {
     private final Long id;
     private final Long courseId;
     private final int sequence;
-    private final String title;
-    private final String contentUrl;
+    private String title;
+    private String contentUrl;
 
     private Content(Long id, Long courseId, int sequence, String title, String contentUrl) {
         this.id = id;
@@ -26,6 +26,13 @@ public class Content {
 
     public static Content restore(Long id, Long courseId, int sequence, String title, String contentUrl) {
         return new Content(id, courseId, sequence, title, contentUrl);
+    }
+
+    public void update(String title, String contentUrl) {
+        if (title == null || title.isBlank()) throw new IllegalArgumentException("콘텐츠 제목은 필수입니다.");
+        if (contentUrl == null || contentUrl.isBlank()) throw new IllegalArgumentException("콘텐츠 URL은 필수입니다.");
+        this.title = title;
+        this.contentUrl = contentUrl;
     }
 
     public Long getId() { return id; }

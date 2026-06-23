@@ -4,6 +4,8 @@ import com.ohgiraffers.lxp.content.application.port.out.ContentRepositoryPort;
 import com.ohgiraffers.lxp.content.domain.model.entity.Content;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public class ContentPersistenceAdapter implements ContentRepositoryPort {
 
@@ -16,5 +18,20 @@ public class ContentPersistenceAdapter implements ContentRepositoryPort {
     @Override
     public Content save(Content content) {
         return jpaRepository.save(ContentJpaEntity.from(content)).toDomain();
+    }
+
+    @Override
+    public Optional<Content> findById(Long id) {
+        return jpaRepository.findByIdAndDeletedAtIsNull(id)
+                .map(ContentJpaEntity::toDomain);
+    }
+
+    @Override
+    public void delete(Long id) {
+        jpaRepository.findByIdAndDeletedAtIsNull(id)
+                .ifPresent(entity -> {
+                    entity.delete();
+                    jpaRepository.save(entity);
+                });
     }
 }
