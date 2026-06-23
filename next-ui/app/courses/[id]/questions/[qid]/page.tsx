@@ -1,19 +1,110 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { getQuestionById, MOCK_QUESTIONS } from '@/app/questions/mockData';
-import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
-
-const MOCK_ANSWERS = [
-  { id: 'a1', author: '이하연 강사', role: '강사', content: '정량 조사는 설문, A/B 테스트처럼 수치로 측정 가능한 방법이고, 정성 조사는 인터뷰나 사용성 테스트처럼 이유와 맥락을 파악하는 방법입니다. 실무에서는 정성으로 문제를 발견하고, 정량으로 규모를 확인하는 순서로 함께 사용하는 경우가 많습니다.', createdAt: '2026-06-21', isAccepted: true },
-  { id: 'a2', author: '김지혜', role: '수강생', content: '저도 같은 고민을 했는데, 강의 3주차 자료에 실무 예시가 잘 정리되어 있어서 참고해 보시면 좋을 것 같아요!', createdAt: '2026-06-22', isAccepted: false },
-];
+import { questionApi } from '../api';
+import type { QuestionResponse } from '../types';
+import { formatDate } from '@/lib/formatDate';
 
 export default function CourseQuestionDetailPage({ params }: { params: { id: string; qid: string } }) {
-  const course = getCourseById(params.id) ?? MOCK_COURSES[0];
-  const question = getQuestionById(params.qid) ?? MOCK_QUESTIONS[0];
+  const router = useRouter();
+  const [question, setQuestion] = useState<QuestionResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // TODO: 인증 구현 후 JWT에서 memberId 추출로 교체
+  const memberId = 1;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setQuestion(null);
+    setError(null);
+
+    questionApi.getById(Number(params.qid))
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        if (data.courseId !== Number(params.id)) {
+          setError('잘못된 접근입니다.');
+          return;
+        }
+        setQuestion(data);
+        setEditTitle(data.title);
+        setEditContent(data.content);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setError('질문을 불러올 수 없습니다.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [params.qid, params.id]);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!question) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const updated = await questionApi.update(question.id, { memberId, title: editTitle, content: editContent });
+      setQuestion(updated);
+      setEditTitle(updated.title);
+      setEditContent(updated.content);
+      setIsEditing(false);
+    } catch {
+      setError('수정 중 오류가 발생했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!question || deleting || !confirm('질문을 삭제하시겠습니까?')) return;
+    setDeleting(true);
+    try {
+      await questionApi.remove(question.id, memberId);
+      router.push(`/courses/${params.id}/questions`);
+    } catch {
+      setError('삭제 중 오류가 발생했습니다.');
+      setDeleting(false);
+    }
+  };
+
+  const isOwner = question?.memberId === memberId;
+
+  if (loading) {
+    return (
+      <>
+        <TopNavBar />
+        <main className="pt-16 min-h-screen flex items-center justify-center">
+          <p className="text-on-surface-variant text-body-md font-body-md">불러오는 중...</p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
+  if (error && !question) {
+    return (
+      <>
+        <TopNavBar />
+        <main className="pt-16 min-h-screen flex items-center justify-center">
+          <p className="text-error text-body-md font-body-md">{error}</p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -23,75 +114,97 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
 
           {/* 뒤로가기 */}
           <div className="mb-lg">
-            <Link href={`/courses/${params.id}`} className="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
+            <Link href={`/courses/${params.id}/questions`} className="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-              <span className="text-label-md font-label-md">{course.title} Q&A</span>
+              <span className="text-label-md font-label-md">Q&A 목록</span>
             </Link>
           </div>
 
           {/* 질문 */}
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl mb-xl">
-            <div className="flex flex-wrap gap-sm mb-md">
-              {question.tags.map((tag) => (
-                <span key={tag} className="bg-primary-fixed text-primary px-sm py-1 rounded-full text-label-sm font-label-sm">{tag}</span>
-              ))}
-              <span className={`ml-auto px-sm py-1 rounded-full text-label-sm font-label-sm ${question.isAnswered ? 'bg-secondary-container text-on-secondary-container' : 'bg-error-container text-on-error-container'}`}>
-                {question.isAnswered ? '답변 완료' : '답변 대기'}
-              </span>
-            </div>
-            <h1 className="text-headline-md font-headline-md text-on-surface mb-lg">{question.title}</h1>
-            <p className="text-body-lg font-body-md text-on-surface-variant leading-relaxed mb-xl">{question.content}</p>
-            <div className="flex items-center gap-md text-label-md font-label-md text-on-surface-variant border-t border-outline-variant pt-md">
-              <span className="flex items-center gap-xs"><span className="material-symbols-outlined text-[16px]">person</span>{question.authorName}</span>
-              <span>·</span>
-              <span>{question.createdAt}</span>
-            </div>
-          </div>
-
-          {/* 답변 목록 */}
-          <div className="mb-xl">
-            <h2 className="text-headline-sm font-headline-md text-on-surface mb-md flex items-center gap-sm">
-              <span className="material-symbols-outlined text-primary">forum</span>
-              답변 {MOCK_ANSWERS.length}개
-            </h2>
-            <div className="space-y-md">
-              {MOCK_ANSWERS.map((answer) => (
-                <div key={answer.id} className={`bg-surface-container-lowest border rounded-xl p-lg ${answer.isAccepted ? 'border-primary bg-primary-fixed/10' : 'border-outline-variant'}`}>
-                  {answer.isAccepted && (
-                    <div className="flex items-center gap-xs mb-sm text-primary">
-                      <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
-                      <span className="text-label-sm font-label-sm">채택된 답변</span>
+            {isEditing ? (
+              <form onSubmit={handleUpdate} className="space-y-md">
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  required
+                  minLength={2}
+                  maxLength={200}
+                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-headline-md font-headline-md text-on-surface focus:border-primary focus:outline-none"
+                />
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  required
+                  maxLength={500}
+                  rows={6}
+                  className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface resize-none focus:border-primary focus:outline-none"
+                />
+                {error && <p className="text-error text-label-md font-label-md">{error}</p>}
+                <div className="flex gap-sm justify-end">
+                  <button
+                    type="button"
+                    onClick={() => { setIsEditing(false); setEditTitle(question?.title ?? ''); setEditContent(question?.content ?? ''); setError(null); }}
+                    className="border border-outline-variant text-on-surface px-lg py-sm rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="bg-primary text-on-primary px-lg py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity disabled:opacity-40"
+                  >
+                    {saving ? '저장 중...' : '저장'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <>
+                {error && <p className="text-error text-label-md font-label-md mb-md">{error}</p>}
+                <div className="flex items-start justify-between mb-md gap-md">
+                  <h1 className="text-headline-md font-headline-md text-on-surface">{question?.title}</h1>
+                  {isOwner && (
+                    <div className="flex gap-sm flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setIsEditing(true)}
+                        className="flex items-center gap-xs text-label-md font-label-md text-on-surface-variant hover:text-primary transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        수정
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="flex items-center gap-xs text-label-md font-label-md text-on-surface-variant hover:text-error transition-colors disabled:opacity-40"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                        {deleting ? '삭제 중...' : '삭제'}
+                      </button>
                     </div>
                   )}
-                  <div className="flex items-center gap-sm mb-md">
-                    <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-label-sm font-bold">{answer.author[0]}</div>
-                    <div>
-                      <p className="text-label-md font-label-md text-on-surface">{answer.author}</p>
-                      <p className="text-label-sm font-label-sm text-on-surface-variant">{answer.role} · {answer.createdAt}</p>
-                    </div>
-                  </div>
-                  <p className="text-body-md font-body-md text-on-surface-variant leading-relaxed">{answer.content}</p>
                 </div>
-              ))}
-            </div>
+                <p className="text-body-lg font-body-md text-on-surface leading-relaxed mb-xl whitespace-pre-wrap">
+                  {question?.content}
+                </p>
+                <div className="flex items-center gap-md text-label-md font-label-md text-on-surface-variant border-t border-outline-variant pt-md">
+                  <span className="flex items-center gap-xs">
+                    <span className="material-symbols-outlined text-[16px]">person</span>
+                    회원 #{question?.memberId}
+                  </span>
+                  <span>·</span>
+                  <span>{question && formatDate(question.createdAt)}</span>
+                </div>
+              </>
+            )}
           </div>
 
-          {/* 답변 작성 */}
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-            <h3 className="text-label-md font-label-md text-on-surface mb-md flex items-center gap-xs">
-              <span className="material-symbols-outlined text-[18px] text-primary">edit</span>
-              답변 작성
-            </h3>
-            <textarea
-              className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md text-body-md font-body-md text-on-surface resize-none focus:border-primary focus:outline-none"
-              rows={4}
-              placeholder="도움이 될 답변을 작성해 주세요..."
-            />
-            <div className="flex justify-end mt-md">
-              <button type="button" className="bg-primary text-on-primary px-xl py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity">
-                답변 등록
-              </button>
-            </div>
+          {/* 강사 답변 영역 (추후 구현) */}
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex items-center gap-md text-on-surface-variant">
+            <span className="material-symbols-outlined text-[24px] text-tertiary">pending</span>
+            <p className="text-body-md font-body-md">강사 답변 기능이 곧 추가될 예정입니다.</p>
           </div>
 
         </div>
