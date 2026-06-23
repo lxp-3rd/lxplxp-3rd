@@ -9,7 +9,8 @@ final class AuthPathPolicy {
     static final String[] PROTECTED_PATH_PATTERNS = {
             "/api/members/**",
             "/api/admin/**",
-            "/api/auth/logout"
+            "/api/auth/logout",
+            "/api/roadmaps/**"
     };
 
     private static final String[] ADMIN_PATH_PATTERNS = {
