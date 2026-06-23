@@ -9,16 +9,20 @@ public record LoginResult(
         String email,
         String nickname,
         MemberRole role,
-        MemberStatus status
+        MemberStatus status,
+        String accessToken,
+        String refreshToken
 ) {
 
-    public static LoginResult from(Member member) {
+    public static LoginResult from(Member member, String accessToken, String refreshToken) {
         return new LoginResult(
                 member.getId(),
                 member.getEmail().value(),
                 member.getNickname().value(),
                 member.getRole(),
-                member.getStatus()
+                member.getStatus(),
+                accessToken,
+                refreshToken
         );
     }
 }

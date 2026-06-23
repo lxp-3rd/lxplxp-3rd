@@ -9,7 +9,9 @@ public record LoginResponse(
         String email,
         String nickname,
         MemberRole role,
-        MemberStatus status
+        MemberStatus status,
+        String accessToken,
+        String refreshToken
 ) {
 
     public static LoginResponse from(LoginResult result) {
@@ -18,7 +20,9 @@ public record LoginResponse(
                 result.email(),
                 result.nickname(),
                 result.role(),
-                result.status()
+                result.status(),
+                result.accessToken(),
+                result.refreshToken()
         );
     }
 }

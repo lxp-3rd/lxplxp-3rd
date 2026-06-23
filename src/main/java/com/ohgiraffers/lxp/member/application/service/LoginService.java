@@ -1,5 +1,8 @@
 package com.ohgiraffers.lxp.member.application.service;
 
+import com.ohgiraffers.lxp.auth.application.dto.TokenPair;
+import com.ohgiraffers.lxp.auth.application.port.out.RefreshTokenSavePort;
+import com.ohgiraffers.lxp.auth.application.port.out.TokenIssuePort;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.member.application.dto.LoginResult;
@@ -18,14 +21,23 @@ public class LoginService implements LoginUseCase {
 
     private final MemberRepositoryPort memberRepositoryPort;
     private final PasswordMatchPort passwordMatchPort;
+    private final TokenIssuePort tokenIssuePort;
+    private final RefreshTokenSavePort refreshTokenSavePort;
 
-    public LoginService(MemberRepositoryPort memberRepositoryPort, PasswordMatchPort passwordMatchPort) {
+    public LoginService(
+            MemberRepositoryPort memberRepositoryPort,
+            PasswordMatchPort passwordMatchPort,
+            TokenIssuePort tokenIssuePort,
+            RefreshTokenSavePort refreshTokenSavePort
+    ) {
         this.memberRepositoryPort = memberRepositoryPort;
         this.passwordMatchPort = passwordMatchPort;
+        this.tokenIssuePort = tokenIssuePort;
+        this.refreshTokenSavePort = refreshTokenSavePort;
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public LoginResult login(LoginCommand command) {
         Member member = memberRepositoryPort.findByEmail(new Email(command.email()))
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -38,6 +50,9 @@ public class LoginService implements LoginUseCase {
             throw new BusinessException(ErrorCode.MEMBER_NOT_ACTIVE);
         }
 
-        return LoginResult.from(member);
+        TokenPair tokenPair = tokenIssuePort.issue(member.getId(), member.getRole());
+        refreshTokenSavePort.save(member.getId(), tokenPair.refreshToken(), tokenPair.refreshTokenExpiresAt());
+
+        return LoginResult.from(member, tokenPair.accessToken(), tokenPair.refreshToken());
     }
 }
