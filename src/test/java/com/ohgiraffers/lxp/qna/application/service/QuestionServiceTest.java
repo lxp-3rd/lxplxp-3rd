@@ -225,15 +225,48 @@ class QuestionServiceTest {
 		verify(questionRepositoryPort, never()).deleteById(any());
 	}
 
+	@Test
+	@DisplayName("답변 등록 성공 — saveAnswer 호출 후 result 반환")
+	void answerQuestion_success() {
+		Question question = savedQuestion(QUESTION_ID);
+		Question answered = question.answer(INSTRUCTOR_ID, "답변 내용입니다.");
+		given(questionRepositoryPort.findById(QUESTION_ID)).willReturn(Optional.of(question));
+		given(questionRepositoryPort.saveAnswer(any())).willReturn(answered);
+
+		var command = new com.ohgiraffers.lxp.qna.application.port.command.AnswerQuestionCommand(QUESTION_ID, INSTRUCTOR_ID, "답변 내용입니다.");
+		QuestionResult result = questionService.answerQuestion(command);
+
+		assertThat(result.answer()).isEqualTo("답변 내용입니다.");
+		assertThat(result.answeredBy()).isEqualTo(INSTRUCTOR_ID);
+		verify(questionRepositoryPort).saveAnswer(any());
+	}
+
+	@Test
+	@DisplayName("이미 답변된 질문에 답변 시 ANSWER_ALREADY_EXISTS 예외 발생")
+	void answerQuestion_alreadyAnswered_throwsException() {
+		Question answeredQuestion = new Question(QUESTION_ID, COURSE_ID, MEMBER_ID, "제목", "내용",
+			QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null, "기존 답변", INSTRUCTOR_ID, LocalDateTime.now());
+		given(questionRepositoryPort.findById(QUESTION_ID)).willReturn(Optional.of(answeredQuestion));
+
+		var command = new com.ohgiraffers.lxp.qna.application.port.command.AnswerQuestionCommand(QUESTION_ID, INSTRUCTOR_ID, "새 답변");
+		assertThatThrownBy(() -> questionService.answerQuestion(command))
+			.isInstanceOf(BusinessException.class)
+			.hasMessage(ErrorCode.ANSWER_ALREADY_EXISTS.getMessage());
+
+		verify(questionRepositoryPort, never()).saveAnswer(any());
+	}
+
 	// ─── helpers ──────────────────────────────────────────────────────────
+
+	private static final Long INSTRUCTOR_ID = 99L;
 
 	private Question savedQuestion(Long id) {
 		return new Question(id, COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다",
-			QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null);
+			QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null, null, null, null);
 	}
 
 	private Question questionWithContent(Long id, String title, String content) {
 		return new Question(id, COURSE_ID, MEMBER_ID, title, content,
-			QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null);
+			QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null, null, null, null);
 	}
 }

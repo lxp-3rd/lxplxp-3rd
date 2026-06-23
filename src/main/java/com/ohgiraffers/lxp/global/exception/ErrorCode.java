@@ -63,8 +63,13 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
 
     // question
-    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문이 존재하지 않습니다."),;
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문이 존재하지 않습니다."),
 
+    // answer
+    ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 질문입니다."),
+    ANSWER_INVALID_CONTENT(HttpStatus.BAD_REQUEST, "답변 내용은 1자 이상 2000자 이하여야 합니다.");
+
+  
     private final HttpStatus status;
     private final String message;
 

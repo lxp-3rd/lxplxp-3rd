@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.qna.application.dto.QuestionResult;
+import com.ohgiraffers.lxp.qna.application.port.in.AnswerQuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.in.QuestionUseCase;
 import com.ohgiraffers.lxp.qna.domain.model.entity.QuestionStatus;
 
@@ -46,6 +47,9 @@ class QuestionControllerTest {
 
     @MockitoBean
     private QuestionUseCase questionUseCase;
+
+    @MockitoBean
+    private AnswerQuestionUseCase answerQuestionUseCase;
 
     // ─── POST /api/questions ─────────────────────────────────────────────
 
@@ -236,13 +240,55 @@ class QuestionControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    // ─── POST /api/questions/{id}/answers ───────────────────────────────
+
+    @Test
+    @DisplayName("답변 등록 성공 시 200과 answer 필드를 반환한다")
+    void answerQuestion_success_returns200() throws Exception {
+        QuestionResult answered = new QuestionResult(QUESTION_ID, COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다",
+                QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), "답변 내용입니다.", 99L, LocalDateTime.now());
+        given(answerQuestionUseCase.answerQuestion(any())).willReturn(answered);
+
+        mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AnswerBody(99L, "답변 내용입니다."))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.answer").value("답변 내용입니다."))
+                .andExpect(jsonPath("$.answeredBy").value(99));
+    }
+
+    @Test
+    @DisplayName("답변 내용이 blank이면 400을 반환한다")
+    void answerQuestion_blankContent_returns400() throws Exception {
+        mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AnswerBody(99L, "  "))))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("이미 답변된 질문에 답변 시 409를 반환한다")
+    void answerQuestion_alreadyAnswered_returns409() throws Exception {
+        given(answerQuestionUseCase.answerQuestion(any()))
+                .willThrow(new BusinessException(ErrorCode.ANSWER_ALREADY_EXISTS));
+
+        mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(
+                                new AnswerBody(99L, "답변 내용입니다."))))
+                .andExpect(status().isConflict());
+    }
+
     // ─── helpers ──────────────────────────────────────────────────────────
 
     private QuestionResult questionResult(Long id) {
         return new QuestionResult(id, COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다",
-                QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now());
+                QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null, null, null);
     }
 
     record CreateBody(Long courseId, Long memberId, String title, String content) {}
     record UpdateBody(Long memberId, String title, String content) {}
+    record AnswerBody(Long instructorId, String content) {}
 }

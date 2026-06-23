@@ -16,4 +16,6 @@ public interface QuestionRepositoryPort {
     Optional<Question> findById(Long questionId);
 
     void deleteById(Long questionId);
+
+    Question saveAnswer(Question question);
 }
