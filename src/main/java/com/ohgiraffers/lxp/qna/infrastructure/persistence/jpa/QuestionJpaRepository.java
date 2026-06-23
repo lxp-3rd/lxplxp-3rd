@@ -1,0 +1,15 @@
+package com.ohgiraffers.lxp.qna.infrastructure.persistence.jpa;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface QuestionJpaRepository extends JpaRepository<QuestionJpaEntity, Long> {
+
+    List<QuestionJpaEntity> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+
+    List<QuestionJpaEntity> findAllByCourseIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long courseId);
+
+    Optional<QuestionJpaEntity> findByIdAndDeletedAtIsNull(Long id);
+}

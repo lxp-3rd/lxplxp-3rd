@@ -14,7 +14,10 @@ public enum ErrorCode {
     // instructor
     INSTRUCTOR_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 신청 내역을 찾을 수 없습니다."),
     INSTRUCTOR_APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 신청한 내역이 있습니다."),
+    INSTRUCTOR_APPLICATION_ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 처리된 강사 신청입니다."),
+    INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "반려 사유는 필수입니다."),
     INSTRUCTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 정보를 찾을 수 없습니다."),
+    INSTRUCTOR_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 강사 자격이 존재합니다."),
     INSTRUCTOR_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 프로필을 찾을 수 없습니다."),
     INSTRUCTOR_PROFILE_ALREADY_EXISTS(HttpStatus.CONFLICT, "강사 프로필이 이미 존재합니다."),
 
@@ -41,8 +44,21 @@ public enum ErrorCode {
     COURSE_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 강좌만 수강신청할 수 있습니다."),
 
     // member
-    MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
-    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다.");
+    MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "?? ?? ?? ??????."),
+    MEMBER_NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "?? ?? ?? ??????."),
+    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "???? ??? ???? ????."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "??? ?? ? ????."),
+    MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "????? ???? ????."),
+    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "???? ??? ???? ? ????."),
+
+    // question
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "?? ??? ???? ????."),
+
+    // token
+    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "?? ??? ?????."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "??? ???????."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "???? ?? ?????."),
+    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "?? ??? ???? ????.");
 
     private final HttpStatus status;
     private final String message;
