@@ -29,6 +29,10 @@ export function useAdminLogin() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
     if (!email || !password) {
       setError('이메일과 비밀번호를 입력해주세요.');
       return;

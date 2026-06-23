@@ -32,8 +32,10 @@ export const ADMIN_MEMBER_STATUS_OPTIONS: { value: AdminMemberStatus; label: str
 
 export function normalizeAdminMemberId(id?: string | string[]) {
   const rawId = Array.isArray(id) ? id[0] : id;
+  if (!rawId || !/^\d+$/.test(rawId)) return null;
+
   const memberId = Number(rawId);
-  return Number.isNaN(memberId) ? null : memberId;
+  return Number.isSafeInteger(memberId) && memberId > 0 ? memberId : null;
 }
 
 export function formatAdminMemberDate(value?: string) {
