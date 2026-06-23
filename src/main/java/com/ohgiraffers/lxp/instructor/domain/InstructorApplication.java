@@ -33,7 +33,7 @@ public class InstructorApplication {
         return application;
     }
 
-    public static InstructorApplication reconstitute(
+    public static InstructorApplication restore(
             Long id,
             Long memberId,
             String instructorName,
