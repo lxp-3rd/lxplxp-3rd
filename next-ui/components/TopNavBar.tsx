@@ -97,7 +97,7 @@ export function TopNavBar() {
               </Link>
               {/* 로그아웃 */}
               <button
-                onClick={() => { logout(); router.push('/login'); }}
+                onClick={() => { void logout('/login'); }}
                 className="p-xs rounded-full hover:bg-surface-container transition-colors text-on-surface-variant"
                 aria-label="로그아웃"
               >
