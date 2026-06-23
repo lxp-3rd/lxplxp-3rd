@@ -2,8 +2,12 @@ package com.ohgiraffers.lxp.course.presentation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.course.application.port.command.RegisterCourseCommand;
+import com.ohgiraffers.lxp.course.application.port.command.UpdateCourseCommand;
+import com.ohgiraffers.lxp.course.application.port.in.DeleteCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.RegisterCourseUseCase;
+import com.ohgiraffers.lxp.course.application.port.in.UpdateCourseUseCase;
 import com.ohgiraffers.lxp.course.presentation.dto.RegisterCourseRequest;
+import com.ohgiraffers.lxp.course.presentation.dto.UpdateCourseRequest;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +19,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +38,12 @@ class CourseControllerTest {
 
     @MockitoBean
     private RegisterCourseUseCase registerCourseUseCase;
+
+    @MockitoBean
+    private UpdateCourseUseCase updateCourseUseCase;
+
+    @MockitoBean
+    private DeleteCourseUseCase deleteCourseUseCase;
 
     @Test
     @DisplayName("강좌 등록 성공 시 201과 courseId를 반환한다")
@@ -99,6 +111,61 @@ class CourseControllerTest {
         mockMvc.perform(post("/api/courses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("강좌 수정 성공 시 200을 반환한다")
+    void update_success_returns200() throws Exception {
+        UpdateCourseRequest request = new UpdateCourseRequest("새 제목", "새 설명입니다.", null);
+        willDoNothing().given(updateCourseUseCase).update(any(UpdateCourseCommand.class));
+
+        mockMvc.perform(put("/api/courses/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 강좌 수정 시 404를 반환한다")
+    void update_courseNotFound_returns404() throws Exception {
+        UpdateCourseRequest request = new UpdateCourseRequest("새 제목", "새 설명입니다.", null);
+        willThrow(new BusinessException(ErrorCode.COURSE_NOT_FOUND))
+                .given(updateCourseUseCase).update(any(UpdateCourseCommand.class));
+
+        mockMvc.perform(put("/api/courses/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("수정 시 title이 빈 문자열이면 400을 반환한다")
+    void update_blankTitle_returns400() throws Exception {
+        UpdateCourseRequest request = new UpdateCourseRequest("", "새 설명입니다.", null);
+
+        mockMvc.perform(put("/api/courses/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("강좌 삭제 성공 시 204를 반환한다")
+    void delete_success_returns204() throws Exception {
+        willDoNothing().given(deleteCourseUseCase).delete(anyLong());
+
+        mockMvc.perform(delete("/api/courses/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 강좌 삭제 시 404를 반환한다")
+    void delete_courseNotFound_returns404() throws Exception {
+        willThrow(new BusinessException(ErrorCode.COURSE_NOT_FOUND))
+                .given(deleteCourseUseCase).delete(anyLong());
+
+        mockMvc.perform(delete("/api/courses/99"))
                 .andExpect(status().isNotFound());
     }
 }

@@ -9,4 +9,6 @@ public interface CourseRepositoryPort {
     Course save(Course course);
 
     Optional<Course> findById(Long id);
+
+    void delete(Long id);
 }
