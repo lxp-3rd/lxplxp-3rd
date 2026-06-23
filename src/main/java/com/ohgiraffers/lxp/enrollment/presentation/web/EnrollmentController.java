@@ -31,8 +31,7 @@ public class EnrollmentController {
     }
 
     @PostMapping
-    public ResponseEntity<EnrollmentResponse> enroll(
-            @Valid @RequestBody EnrollmentRequest request) {
+    public ResponseEntity<EnrollmentResponse> enroll(@Valid @RequestBody EnrollmentRequest request) {
         EnrollmentResult result = enrollUseCase.enroll(request.toCommand());
         return ResponseEntity
                 .created(URI.create("/enrollments/" + result.id()))
