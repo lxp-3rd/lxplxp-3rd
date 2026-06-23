@@ -25,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentCaptor.forClass;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
@@ -78,7 +79,7 @@ class MemberAccountServiceTest {
         )))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.MEMBER_INVALID_PASSWORD.getMessage());
-        then(memberRepositoryPort).should(never()).save(member);
+        then(memberRepositoryPort).should(never()).save(any(Member.class));
     }
 
     @Test
@@ -122,7 +123,7 @@ class MemberAccountServiceTest {
         assertThatThrownBy(() -> memberAccountService.withdraw(new WithdrawMemberCommand(1L, "current-password")))
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.MEMBER_NOT_ACTIVE.getMessage());
-        then(memberRepositoryPort).should(never()).save(member);
+        then(memberRepositoryPort).should(never()).save(any(Member.class));
     }
 
     private Member activeMember() {

@@ -31,11 +31,11 @@ public class Member {
     }
 
     public Member changePassword(EncodedPassword password) {
-        return new Member(id, email, nickname, password, role, status);
+        return Member.restore(id, email, nickname, password, role, status);
     }
 
     public Member withdraw() {
-        return new Member(id, email, nickname, password, role, MemberStatus.WITHDRAWN);
+        return Member.restore(id, email, nickname, password, role, MemberStatus.WITHDRAWN);
     }
 
     public Long getId() {
