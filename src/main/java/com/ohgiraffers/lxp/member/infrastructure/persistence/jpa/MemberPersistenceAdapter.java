@@ -1,12 +1,21 @@
 package com.ohgiraffers.lxp.member.infrastructure.persistence.jpa;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.member.application.port.out.MemberRepositoryPort;
 import com.ohgiraffers.lxp.member.domain.model.entity.Member;
 import com.ohgiraffers.lxp.member.domain.model.vo.Email;
+import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
+
+import java.util.Locale;
 
 @Repository
 public class MemberPersistenceAdapter implements MemberRepositoryPort {
+
+    private static final String NICKNAME_UNIQUE_CONSTRAINT = "uk_members_nickname";
 
     private final MemberJpaRepository memberJpaRepository;
 
@@ -20,7 +29,40 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
     }
 
     @Override
+    public boolean existsByNickname(Nickname nickname) {
+        return memberJpaRepository.existsByNickname(nickname.value());
+    }
+
+    @Override
     public Member save(Member member) {
-        return memberJpaRepository.save(MemberJpaEntity.from(member)).toDomain();
+        try {
+            return memberJpaRepository.saveAndFlush(MemberJpaEntity.from(member)).toDomain();
+        } catch (DataIntegrityViolationException e) {
+            if (isNicknameUniqueConstraintViolation(e)) {
+                throw new BusinessException(ErrorCode.MEMBER_NICKNAME_ALREADY_EXISTS);
+            }
+            throw e;
+        }
+    }
+
+    private boolean isNicknameUniqueConstraintViolation(DataIntegrityViolationException e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof ConstraintViolationException constraintViolationException) {
+                String constraintName = constraintViolationException.getConstraintName();
+                if (constraintName != null && constraintName.equalsIgnoreCase(NICKNAME_UNIQUE_CONSTRAINT)) {
+                    return true;
+                }
+            }
+            String message = cause.getMessage();
+            if (message != null) {
+                String lowerMessage = message.toLowerCase(Locale.ROOT);
+                if (lowerMessage.contains(NICKNAME_UNIQUE_CONSTRAINT)) {
+                    return true;
+                }
+            }
+            cause = cause.getCause();
+        }
+        return false;
     }
 }
