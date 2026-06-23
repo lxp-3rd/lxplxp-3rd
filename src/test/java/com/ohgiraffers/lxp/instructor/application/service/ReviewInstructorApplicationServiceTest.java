@@ -9,15 +9,18 @@ import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryP
 import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -50,8 +53,16 @@ class ReviewInstructorApplicationServiceTest {
 
         reviewInstructorApplicationService.review(command);
 
-        then(instructorApplicationRepository).should().save(any(InstructorApplication.class));
-        then(instructorRepository).should().save(any(Instructor.class));
+        ArgumentCaptor<InstructorApplication> applicationCaptor =
+                ArgumentCaptor.forClass(InstructorApplication.class);
+        then(instructorApplicationRepository).should().save(applicationCaptor.capture());
+        assertThat(applicationCaptor.getValue().getStatus()).isEqualTo(ApplicationStatus.APPROVED);
+
+        ArgumentCaptor<Instructor> instructorCaptor =
+                ArgumentCaptor.forClass(Instructor.class);
+        then(instructorRepository).should().save(instructorCaptor.capture());
+        assertThat(instructorCaptor.getValue().getMemberId()).isEqualTo(1L);
+        assertThat(instructorCaptor.getValue().getStatus()).isEqualTo(InstructorStatus.ACTIVE);
     }
 
     @Test
@@ -68,7 +79,12 @@ class ReviewInstructorApplicationServiceTest {
 
         reviewInstructorApplicationService.review(command);
 
-        then(instructorApplicationRepository).should().save(any(InstructorApplication.class));
+        ArgumentCaptor<InstructorApplication> applicationCaptor =
+                ArgumentCaptor.forClass(InstructorApplication.class);
+        then(instructorApplicationRepository).should().save(applicationCaptor.capture());
+        assertThat(applicationCaptor.getValue().getStatus()).isEqualTo(ApplicationStatus.REJECTED);
+        assertThat(applicationCaptor.getValue().getRejectionReason()).isEqualTo("기준 미달");
+
         then(instructorRepository).should(never()).save(any());
     }
 
