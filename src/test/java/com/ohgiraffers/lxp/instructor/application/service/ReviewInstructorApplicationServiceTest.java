@@ -136,4 +136,21 @@ class ReviewInstructorApplicationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
     }
+
+    @Test
+    @DisplayName("action이 null이면 400 예외가 발생한다")
+    void review_nullAction_throwsBusinessException() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        given(instructorApplicationRepository.findById(1L)).willReturn(Optional.of(application));
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(1L, null, null);
+
+        assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_INPUT);
+    }
 }
