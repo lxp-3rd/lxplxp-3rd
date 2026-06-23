@@ -18,6 +18,7 @@ class JwtAuthenticationInterceptorTest {
     void pre_handle_sets_authenticated_member_when_bearer_token_is_valid() {
         JwtAuthenticationInterceptor interceptor = new JwtAuthenticationInterceptor(token -> new AuthenticatedMember(1L, MemberRole.LEARNER));
         MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/members/me");
         request.addHeader("Authorization", "Bearer access-token");
 
         boolean result = interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
@@ -25,6 +26,33 @@ class JwtAuthenticationInterceptorTest {
         assertThat(result).isTrue();
         assertThat(request.getAttribute(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME))
                 .isEqualTo(new AuthenticatedMember(1L, MemberRole.LEARNER));
+    }
+
+    @Test
+    void pre_handle_allows_admin_when_admin_path_requires_admin_role() {
+        JwtAuthenticationInterceptor interceptor = new JwtAuthenticationInterceptor(token -> new AuthenticatedMember(1L, MemberRole.ADMIN));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/admin/members");
+        request.addHeader("Authorization", "Bearer access-token");
+
+        boolean result = interceptor.preHandle(request, new MockHttpServletResponse(), new Object());
+
+        assertThat(result).isTrue();
+        assertThat(request.getAttribute(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME))
+                .isEqualTo(new AuthenticatedMember(1L, MemberRole.ADMIN));
+    }
+
+    @Test
+    void pre_handle_fails_when_non_admin_accesses_admin_path() {
+        JwtAuthenticationInterceptor interceptor = new JwtAuthenticationInterceptor(token -> new AuthenticatedMember(1L, MemberRole.LEARNER));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI("/api/admin/members");
+        request.addHeader("Authorization", "Bearer access-token");
+
+        assertThatThrownBy(() -> interceptor.preHandle(request, new MockHttpServletResponse(), new Object()))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.FORBIDDEN);
     }
 
     @Test
