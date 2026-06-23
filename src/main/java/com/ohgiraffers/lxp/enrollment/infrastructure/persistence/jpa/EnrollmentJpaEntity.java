@@ -53,4 +53,15 @@ public class EnrollmentJpaEntity extends BaseEntity {
     public EnrollmentStatus getStatus() {
         return status;
     }
+
+    /**
+     * 도메인에서 전이된 상태를 영속 엔티티에 반영한다.
+     * CANCELED로 전이된 경우 soft delete(deletedAt)를 함께 기록한다.
+     */
+    public void applyStatus(EnrollmentStatus status) {
+        this.status = status;
+        if (status == EnrollmentStatus.CANCELED) {
+            delete();
+        }
+    }
 }
