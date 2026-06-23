@@ -2,6 +2,7 @@ package com.ohgiraffers.lxp.member.infrastructure.persistence.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Long> {
@@ -14,5 +15,5 @@ public interface MemberJpaRepository extends JpaRepository<MemberJpaEntity, Long
 
     Optional<MemberJpaEntity> findByEmail(String email);
 
-    Optional<MemberJpaEntity> findByIdAndDeletedAtIsNull(Long id);
+    List<MemberJpaEntity> findAllByDeletedAtIsNullOrderByIdDesc();
 }
