@@ -48,13 +48,28 @@
 ### 에러
 ```json
 {
-  "status": 400,
-  "message": "요청 값이 유효하지 않습니다.",
-  "errors": {
-    "title": "제목은 필수입니다."
-  }
+  "code": "INVALID_INPUT",
+  "message": "잘못된 입력값입니다."
 }
 ```
+
+- `code`: `ErrorCode` enum 이름 (예: `INVALID_INPUT`, `COURSE_NOT_FOUND`, `ENROLLMENT_NOT_FOUND`)
+- `message`: 사람이 읽을 수 있는 한국어 메시지
+- HTTP 상태 코드는 응답 헤더에 담긴다 (body에 `status` 필드 없음)
+
+주요 `ErrorCode` 값:
+
+| code | HTTP | 설명 |
+|------|------|------|
+| `INVALID_INPUT` | 400 | 유효성 검사 실패, 필수 파라미터 누락 |
+| `UNAUTHORIZED` | 401 | 인증 필요 |
+| `FORBIDDEN` | 403 | 권한 없음 |
+| `ENTITY_NOT_FOUND` | 404 | 공통 조회 실패 |
+| `COURSE_NOT_FOUND` | 404 | 강좌 없음 |
+| `ENROLLMENT_NOT_FOUND` | 404 | 수강 내역 없음 |
+| `QUESTION_NOT_FOUND` | 404 | 질문 없음 |
+| `ENROLLMENT_ALREADY_EXISTS` | 409 | 이미 수강 중 |
+| `INTERNAL_SERVER_ERROR` | 500 | 서버 오류 |
 
 ---
 
