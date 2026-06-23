@@ -3,8 +3,8 @@ package com.ohgiraffers.lxp.instructor.application.service;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorProfileUseCase;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepository;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GetInstructorProfileService implements GetInstructorProfileUseCase {
 
-    private final InstructorProfileRepository instructorProfileRepository;
+    private final InstructorProfileRepositoryPort instructorProfileRepository;
 
-    public GetInstructorProfileService(InstructorProfileRepository instructorProfileRepository) {
+    public GetInstructorProfileService(InstructorProfileRepositoryPort instructorProfileRepository) {
         this.instructorProfileRepository = instructorProfileRepository;
     }
 

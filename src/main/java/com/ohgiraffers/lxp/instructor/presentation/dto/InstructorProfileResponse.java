@@ -1,6 +1,6 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.dto;
 
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 
 public record InstructorProfileResponse(
         Long instructorId,
