@@ -25,12 +25,12 @@ export default function MyPage() {
 </div>
 </div>
 <nav className="flex flex-col gap-xs">
-<a className="flex items-center gap-sm p-sm rounded-lg bg-primary text-white font-bold" href="/courses">
+<a className="flex items-center gap-sm p-sm rounded-lg bg-primary text-white font-bold" href="/my-page">
 <span className="material-symbols-outlined text-md">account_circle</span>
 <span className="text-label-md font-label-md">프로필 정보</span>
 </a>
 
-<a className="flex items-center gap-sm p-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="/roadmaps">
+<a className="flex items-center gap-sm p-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-all" href="#">
 <span className="material-symbols-outlined text-md">settings</span>
 <span className="text-label-md font-label-md">회원 탈퇴&nbsp;</span>
 </a>

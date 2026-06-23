@@ -32,7 +32,11 @@ export default function EnrollmentsPage() {
             {enrollments.map((e) => (
               <Link
                 key={e.id}
+<<<<<<< HEAD
                 href={`/enrollments/${e.id}`}
+=======
+                href={`/courses/${e.courseId}`}
+>>>>>>> main
                 className="group block bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1"
               >
                 <div className="aspect-video relative overflow-hidden bg-surface-container">
@@ -66,6 +70,20 @@ export default function EnrollmentsPage() {
             ))}
           </div>
 
+<<<<<<< HEAD
+=======
+          {/* 더 보기 버튼 */}
+          <div className="flex justify-center mt-xl">
+            <button
+              type="button"
+              className="flex items-center gap-sm px-xl py-md border border-outline-variant rounded-xl text-label-md font-label-md text-on-surface hover:bg-surface-container-low transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">expand_more</span>
+              더 많은 강의 보기
+            </button>
+          </div>
+
+>>>>>>> main
         </div>
       </main>
       <Footer />

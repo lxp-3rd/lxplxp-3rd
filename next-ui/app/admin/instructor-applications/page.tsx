@@ -3,12 +3,12 @@
 import { useState } from 'react';
 
 const MOCK_APPLICATIONS = [
-  { id: 'a1', nickname: 'PixelMaster',      displayName: 'Kim Ji-hun',    expertise: 'UI/UX 디자인',  appliedAt: '2024.05.12', status: 'PENDING', bio: '저는 확장 가능한 클라우드 솔루션을 구축하는 데 10년 이상의 경험을 가진 열정적인 교육자입니다. LXP 플랫폼에서의 심습 중심 학습 경험을 통해 학술적 이론과 실무 엔지니어링 관련 사이의 간극을 메우는 것이 저의 목표입니다.' },
-  { id: 'a2', nickname: 'CodeNinja',        displayName: 'Lee Min-ho',    expertise: '풀스택 개발',    appliedAt: '2024.05.11', status: 'PENDING', bio: '10년 이상의 풀스택 개발 경험을 보유한 시니어 엔지니어로, React, Node.js, 클라우드 아키텍처를 전문으로 합니다.' },
-  { id: 'a3', nickname: 'DataGuru',         displayName: 'Sarah Park',    expertise: '데이터 사이언스', appliedAt: '2024.05.10', status: 'PENDING', bio: 'Python과 ML을 활용한 데이터 분석 전문가입니다. 대학원 연구 및 기업 프로젝트를 통해 다양한 데이터 파이프라인 구축 경험이 있습니다.' },
-  { id: 'a4', nickname: 'MarketingWiz',     displayName: 'Park Jun-su',   expertise: '그로스 마케팅', appliedAt: '2024.05.10', status: 'PENDING', bio: '스타트업에서 그로스 해킹, SEO, 퍼포먼스 마케팅을 담당해 온 마케터입니다. 실전 중심 커리큘럼을 제공하고자 합니다.' },
-  { id: 'a5', nickname: 'CloudArchitect',   displayName: 'Choi Da-in',    expertise: 'AWS/클라우드',  appliedAt: '2024.05.09', status: 'PENDING', bio: 'AWS, GCP 환경에서 대규모 인프라를 설계·운영한 경험을 가진 클라우드 아키텍트입니다.' },
-  { id: 'a6', nickname: 'SecureGuru',       displayName: 'Jung Han-byeol', expertise: '사이버 보안',  appliedAt: '2024.05.08', status: 'PENDING', bio: '화이트햇 해커 출신의 보안 전문가입니다. 침투 테스트 및 보안 취약점 분석 분야에서 다양한 프로젝트를 수행했습니다.' },
+  { id: 'a1', nickname: 'PixelMaster',      displayName: 'Kim Ji-hun',    expertise: 'UI/UX 디자인',  appliedAt: '2024.05.12', status: 'PENDING',  rejectReason: '', bio: '저는 확장 가능한 클라우드 솔루션을 구축하는 데 10년 이상의 경험을 가진 열정적인 교육자입니다. LXP 플랫폼에서의 심습 중심 학습 경험을 통해 학술적 이론과 실무 엔지니어링 관련 사이의 간극을 메우는 것이 저의 목표입니다.' },
+  { id: 'a2', nickname: 'CodeNinja',        displayName: 'Lee Min-ho',    expertise: '풀스택 개발',    appliedAt: '2024.05.11', status: 'PENDING',  rejectReason: '', bio: '10년 이상의 풀스택 개발 경험을 보유한 시니어 엔지니어로, React, Node.js, 클라우드 아키텍처를 전문으로 합니다.' },
+  { id: 'a3', nickname: 'DataGuru',         displayName: 'Sarah Park',    expertise: '데이터 사이언스', appliedAt: '2024.05.10', status: 'PENDING',  rejectReason: '', bio: 'Python과 ML을 활용한 데이터 분석 전문가입니다. 대학원 연구 및 기업 프로젝트를 통해 다양한 데이터 파이프라인 구축 경험이 있습니다.' },
+  { id: 'a4', nickname: 'MarketingWiz',     displayName: 'Park Jun-su',   expertise: '그로스 마케팅', appliedAt: '2024.05.10', status: 'PENDING',  rejectReason: '', bio: '스타트업에서 그로스 해킹, SEO, 퍼포먼스 마케팅을 담당해 온 마케터입니다. 실전 중심 커리큘럼을 제공하고자 합니다.' },
+  { id: 'a5', nickname: 'CloudArchitect',   displayName: 'Choi Da-in',    expertise: 'AWS/클라우드',  appliedAt: '2024.05.09', status: 'PENDING',  rejectReason: '', bio: 'AWS, GCP 환경에서 대규모 인프라를 설계·운영한 경험을 가진 클라우드 아키텍트입니다.' },
+  { id: 'a6', nickname: 'SecureGuru',       displayName: 'Jung Han-byeol', expertise: '사이버 보안',  appliedAt: '2024.05.08', status: 'PENDING',  rejectReason: '', bio: '화이트햇 해커 출신의 보안 전문가입니다. 침투 테스트 및 보안 취약점 분석 분야에서 다양한 프로젝트를 수행했습니다.' },
 ];
 
 type Application = typeof MOCK_APPLICATIONS[number];
@@ -16,19 +16,28 @@ type Application = typeof MOCK_APPLICATIONS[number];
 export default function AdminInstructorApplicationsPage() {
   const [applications, setApplications] = useState(MOCK_APPLICATIONS);
   const [selected, setSelected] = useState<Application | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<Application | null>(null);
+  const [rejectInput, setRejectInput] = useState('');
 
   const handleApprove = (id: string) => {
     setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status: 'APPROVED' } : a));
     setSelected(null);
   };
 
-  const handleReject = (id: string) => {
-    setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status: 'REJECTED' } : a));
+  const handleReject = (id: string, reason: string) => {
+    setApplications((prev) => prev.map((a) => a.id === id ? { ...a, status: 'REJECTED', rejectReason: reason } : a));
+    setRejectTarget(null);
+    setRejectInput('');
     setSelected(null);
   };
 
+  const openRejectModal = (app: Application) => {
+    setRejectTarget(app);
+    setRejectInput('');
+  };
+
   const statusBadge = (status: string) => {
-    if (status === 'APPROVED') return <span className="flex items-center gap-xs text-label-sm font-label-sm text-primary"><span className="w-2 h-2 rounded-full bg-primary inline-block" />승인됨</span>;
+    if (status === 'APPROVED') return <span className="flex items-center gap-xs text-label-sm font-label-sm text-green-600"><span className="w-2 h-2 rounded-full bg-green-600 inline-block" />승인됨</span>;
     if (status === 'REJECTED') return <span className="flex items-center gap-xs text-label-sm font-label-sm text-error"><span className="w-2 h-2 rounded-full bg-error inline-block" />반려됨</span>;
     return <span className="flex items-center gap-xs text-label-sm font-label-sm text-on-surface-variant"><span className="w-2 h-2 rounded-full bg-outline-variant inline-block" />대기 중</span>;
   };
@@ -69,6 +78,7 @@ export default function AdminInstructorApplicationsPage() {
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">전문 분야</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">신청일</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">상태</th>
+                <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">반려 사유</th>
                 <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant text-right">관리</th>
               </tr>
             </thead>
@@ -82,6 +92,12 @@ export default function AdminInstructorApplicationsPage() {
                   </td>
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{app.appliedAt}</td>
                   <td className="px-lg py-md">{statusBadge(app.status)}</td>
+                  <td className="px-lg py-md font-body-md text-body-md max-w-[200px]">
+                    {app.status === 'REJECTED' && app.rejectReason
+                      ? <span className="text-error line-clamp-2">{app.rejectReason}</span>
+                      : <span className="text-on-surface-variant">-</span>
+                    }
+                  </td>
                   <td className="px-lg py-md">
                     <div className="flex items-center justify-end gap-sm">
                       {/* 눈 아이콘 — 모달 열기 */}
@@ -103,7 +119,7 @@ export default function AdminInstructorApplicationsPage() {
                       </button>
                       {/* 반려 */}
                       <button
-                        onClick={() => handleReject(app.id)}
+                        onClick={() => openRejectModal(app)}
                         disabled={app.status !== 'PENDING'}
                         className="p-xs rounded-full hover:bg-error-container transition-colors text-on-surface-variant hover:text-error disabled:opacity-30 disabled:cursor-not-allowed"
                         title="반려"
@@ -132,6 +148,58 @@ export default function AdminInstructorApplicationsPage() {
           </div>
         </div>
       </div>
+
+      {/* 반려 사유 입력 모달 */}
+      {rejectTarget && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40" onClick={() => { setRejectTarget(null); setRejectInput(''); }}>
+          <div
+            className="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-sm mx-md p-xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => { setRejectTarget(null); setRejectInput(''); }}
+              className="absolute top-md right-md p-xs rounded-full hover:bg-surface-container transition-colors text-on-surface-variant"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+
+            <div className="flex items-center gap-sm mb-lg">
+              <div className="p-sm bg-error-container rounded-lg">
+                <span className="material-symbols-outlined text-error text-[20px]">cancel</span>
+              </div>
+              <div>
+                <p className="font-headline-sm text-headline-sm text-on-surface">반려 사유 입력</p>
+                <p className="text-label-sm font-label-sm text-on-surface-variant">{rejectTarget.nickname}</p>
+              </div>
+            </div>
+
+            <textarea
+              autoFocus
+              value={rejectInput}
+              onChange={(e) => setRejectInput(e.target.value)}
+              rows={4}
+              placeholder="반려 사유를 입력하세요. 신청자에게 전달되는 내용입니다."
+              className="w-full px-md py-sm border border-outline-variant rounded-lg text-body-md font-body-md text-on-surface resize-none focus:border-error focus:outline-none transition-all mb-lg"
+            />
+
+            <div className="flex gap-sm">
+              <button
+                onClick={() => { setRejectTarget(null); setRejectInput(''); }}
+                className="flex-1 py-sm rounded-xl border border-outline-variant text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all"
+              >
+                취소
+              </button>
+              <button
+                onClick={() => handleReject(rejectTarget.id, rejectInput.trim())}
+                disabled={!rejectInput.trim()}
+                className="flex-1 py-sm rounded-xl bg-error text-on-error font-label-md text-label-md hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                반려 확정
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 상세 모달 */}
       {selected && (
@@ -182,7 +250,7 @@ export default function AdminInstructorApplicationsPage() {
                   강사 승인
                 </button>
                 <button
-                  onClick={() => handleReject(selected.id)}
+                  onClick={() => openRejectModal(selected)}
                   className="px-lg py-sm rounded-xl bg-surface-container-high text-error font-label-md text-label-md hover:bg-error-container transition-all"
                 >
                   반려

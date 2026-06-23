@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getMyCourses } from '@/app/courses/mockData';
@@ -14,6 +15,7 @@ const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
 
 export default function CourseManagePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const courses = getMyCourses(user?.id ?? 'u2');
 
   return (
@@ -44,8 +46,11 @@ export default function CourseManagePage() {
               return (
                 <div
                   key={course.id}
-                  className={`bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1 ${course.status !== 'PUBLISHED' ? 'opacity-80' : ''}`}
+                  className={`relative bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col group transition-transform duration-300 hover:-translate-y-1 ${course.status !== 'PUBLISHED' ? 'opacity-80' : ''}`}
                 >
+                  {/* 카드 전체 클릭 → 강좌 수정 */}
+                  <Link href={`/courses/${course.id}/edit`} className="absolute inset-0 z-10" aria-label={course.title} />
+
                   <div className={`relative h-48 overflow-hidden ${course.status !== 'PUBLISHED' ? 'grayscale' : ''}`}>
                     <div
                       className="bg-cover bg-center w-full h-full transition-transform duration-500 group-hover:scale-105"
@@ -55,27 +60,21 @@ export default function CourseManagePage() {
                       <span className={`text-label-sm font-label-sm px-sm py-xs rounded-full ${statusInfo.cls}`}>{statusInfo.label}</span>
                     </div>
                   </div>
-                  <div className="p-md flex flex-col flex-grow">
+                  <div className="p-md flex flex-col flex-grow relative z-20 pointer-events-none">
                     <h3 className="font-headline-md text-headline-md text-on-surface mb-xs line-clamp-1">{course.title}</h3>
                     <div className="flex items-center gap-xs text-on-surface-variant mb-md">
                       <span className="material-symbols-outlined text-[18px]">group</span>
                       <span className="text-label-md font-label-md">{course.enrollmentCount.toLocaleString()}명 수강</span>
                     </div>
-                    <div className="mt-auto flex items-center justify-between gap-sm">
-                      <Link
-                        href={`/courses/${course.id}/stats`}
+                    <div className="mt-auto pointer-events-auto">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); router.push(`/courses/${course.id}/stats`); }}
                         className="flex items-center gap-xs bg-surface-container text-on-surface-variant px-sm py-xs rounded-lg text-label-sm font-label-sm hover:bg-surface-container-high transition-colors"
                       >
                         <span className="material-symbols-outlined text-[16px]">bar_chart</span>
                         통계 보기
-                      </Link>
-                      <Link
-                        href={`/courses/${course.id}/edit`}
-                        className="flex items-center gap-xs bg-primary-fixed/20 text-primary px-sm py-xs rounded-lg text-label-sm font-label-sm hover:bg-primary-fixed/40 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
-                        수정
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>

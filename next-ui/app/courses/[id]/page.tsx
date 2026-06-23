@@ -13,7 +13,7 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
     <>
       <TopNavBar />
       <main className="pt-16 min-h-screen bg-background">
-<div className="pt-xl mt-16 container-max mx-auto px-gutter pb-xl">
+<div className="pt-xl mt-16 max-w-container-max mx-auto px-gutter pb-xl">
 
 <a className="inline-flex items-center gap-xs text-label-md font-label-md text-primary mb-lg hover:opacity-80 transition-opacity" href="/courses">
 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -182,7 +182,16 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
 {/* Q&A 섹션 */}
 <section className="max-w-[800px] mt-xl">
   <div className="flex items-center justify-between mb-lg">
-    <h2 className="text-headline-md font-headline-md text-on-surface">Q&amp;A</h2>
+    <div className="flex items-center gap-sm">
+      <h2 className="text-headline-md font-headline-md text-on-surface">Q&amp;A</h2>
+      <Link
+        href={`/courses/${course.id}/questions`}
+        className="text-primary text-label-md font-label-md hover:underline flex items-center gap-xs"
+      >
+        전체 질문 보기
+        <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+      </Link>
+    </div>
     <Link
       href={`/courses/${course.id}/questions/new`}
       className="bg-primary text-on-primary px-lg py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity flex items-center gap-xs"
@@ -214,8 +223,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
               <span>{q.authorName}</span>
               <span>·</span>
               <span>{q.createdAt}</span>
-              <span>·</span>
-              <span>답변 {q.answerCount}개</span>
             </div>
           </div>
           <span className={`flex-shrink-0 px-sm py-1 rounded-full text-label-sm font-label-sm ${q.isAnswered ? 'bg-secondary-container text-on-secondary-container' : 'bg-primary-fixed text-on-primary-container'}`}>
@@ -223,14 +230,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
           </span>
         </Link>
       ))}
-      <div className="p-lg border-t border-outline-variant text-center">
-        <Link
-          href={`/courses/${course.id}/questions`}
-          className="text-primary text-label-md font-label-md hover:underline"
-        >
-          전체 질문 보기
-        </Link>
-      </div>
     </div>
   )}
 </section>

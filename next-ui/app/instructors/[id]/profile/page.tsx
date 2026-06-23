@@ -11,7 +11,7 @@ export default function InstructorProfileEditPage() {
 
   const [form, setForm] = useState({
     name: instructor.name,
-    email: instructor.email,
+    email: instructor.nickname,
     phone: '010-0000-0000',
     bio: instructor.bio,
     expertise: instructor.expertise.join(', '),

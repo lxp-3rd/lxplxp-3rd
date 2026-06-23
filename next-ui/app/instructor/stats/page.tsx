@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getMyCourses } from '@/app/courses/mockData';
+import { MOCK_QUESTIONS } from '@/app/questions/mockData';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function InstructorStatsPage() {
@@ -12,10 +13,15 @@ export default function InstructorStatsPage() {
 
   const totalStudents = courses.reduce((s, c) => s + c.enrollmentCount, 0);
   const totalCourses = courses.length;
-  const avgRating = courses.length
-    ? (courses.reduce((s, c) => s + c.rating, 0) / courses.length).toFixed(1)
-    : '0.0';
   const publishedCount = courses.filter((c) => c.status === 'PUBLISHED').length;
+
+  const totalQuestions = MOCK_QUESTIONS.length;
+  const totalUnanswered = MOCK_QUESTIONS.filter((q) => !q.isAnswered).length;
+
+  const questionCountByCourse = (courseId: string) =>
+    MOCK_QUESTIONS.filter((q) => q.courseId === courseId).length;
+  const unansweredCountByCourse = (courseId: string) =>
+    MOCK_QUESTIONS.filter((q) => q.courseId === courseId && !q.isAnswered).length;
 
   return (
     <>
@@ -33,8 +39,8 @@ export default function InstructorStatsPage() {
             {[
               { icon: 'book', label: '전체 강좌', value: `${totalCourses}개`, sub: `공개 ${publishedCount}개` },
               { icon: 'group', label: '전체 수강생', value: totalStudents.toLocaleString(), sub: '누적' },
-              { icon: 'star', label: '평균 평점', value: avgRating, sub: '/ 5.0' },
-              { icon: 'forum', label: '미답변 질문', value: '5', sub: '빠른 답변이 필요해요' },
+              { icon: 'forum', label: '전체 질문 수', value: `${totalQuestions}건`, sub: '누적 등록 질문' },
+              { icon: 'help', label: '미답변 질문', value: `${totalUnanswered}건`, sub: '빠른 답변이 필요해요' },
             ].map((stat) => (
               <div key={stat.label} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
                 <div className="flex items-center gap-sm mb-md">
@@ -60,7 +66,8 @@ export default function InstructorStatsPage() {
                   <tr>
                     <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider">강좌명</th>
                     <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">수강생</th>
-                    <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">평점</th>
+                    <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">질문 수</th>
+                    <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">미답변</th>
                     <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider text-center">상태</th>
                     <th className="px-xl py-lg text-label-md font-label-md text-on-surface-variant uppercase tracking-wider"></th>
                   </tr>
@@ -75,11 +82,17 @@ export default function InstructorStatsPage() {
                         </div>
                       </td>
                       <td className="px-xl py-lg text-body-md font-body-md text-on-surface text-center">{course.enrollmentCount.toLocaleString()}</td>
+                      <td className="px-xl py-lg text-body-md font-body-md text-on-surface text-center">
+                        {questionCountByCourse(course.id)}건
+                      </td>
                       <td className="px-xl py-lg text-center">
-                        <span className="flex items-center justify-center gap-xs text-tertiary">
-                          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                          {course.rating}
-                        </span>
+                        {unansweredCountByCourse(course.id) > 0 ? (
+                          <span className="px-sm py-1 rounded-full text-label-sm font-label-sm bg-error-container text-on-error-container">
+                            {unansweredCountByCourse(course.id)}건
+                          </span>
+                        ) : (
+                          <span className="text-label-sm font-label-sm text-on-surface-variant">-</span>
+                        )}
                       </td>
                       <td className="px-xl py-lg text-center">
                         <span className={`px-sm py-1 rounded-full text-label-sm font-label-sm ${
