@@ -4,21 +4,16 @@ import com.ohgiraffers.lxp.auth.application.dto.TokenPair;
 import com.ohgiraffers.lxp.auth.application.port.out.TokenIssuePort;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 
 @Component
 public class JwtTokenIssueAdapter implements TokenIssuePort {
-
-    private static final String ACCESS_TOKEN_TYPE = "ACCESS";
-    private static final String REFRESH_TOKEN_TYPE = "REFRESH";
 
     private final SecretKey secretKey;
     private final Duration accessTokenExpiration;
@@ -29,16 +24,13 @@ public class JwtTokenIssueAdapter implements TokenIssuePort {
             @Value("${lxp.auth.jwt.access-token-expiration-minutes:30}") long accessTokenExpirationMinutes,
             @Value("${lxp.auth.jwt.refresh-token-expiration-days:14}") long refreshTokenExpirationDays
     ) {
-        if (secret == null || secret.isBlank()) {
-            throw new IllegalStateException("lxp.auth.jwt.secret 설정이 필요합니다.");
-        }
         if (accessTokenExpirationMinutes <= 0) {
             throw new IllegalStateException("lxp.auth.jwt.access-token-expiration-minutes 값은 0보다 커야 합니다.");
         }
         if (refreshTokenExpirationDays <= 0) {
             throw new IllegalStateException("lxp.auth.jwt.refresh-token-expiration-days 값은 0보다 커야 합니다.");
         }
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.secretKey = JwtSecretKeyFactory.create(secret);
         this.accessTokenExpiration = Duration.ofMinutes(accessTokenExpirationMinutes);
         this.refreshTokenExpiration = Duration.ofDays(refreshTokenExpirationDays);
     }
@@ -50,8 +42,8 @@ public class JwtTokenIssueAdapter implements TokenIssuePort {
         Instant refreshTokenExpiresAt = now.plus(refreshTokenExpiration);
 
         return new TokenPair(
-                createToken(memberId, role, ACCESS_TOKEN_TYPE, now, accessTokenExpiresAt),
-                createToken(memberId, role, REFRESH_TOKEN_TYPE, now, refreshTokenExpiresAt),
+                createToken(memberId, role, JwtTokenType.ACCESS, now, accessTokenExpiresAt),
+                createToken(memberId, role, JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
                 refreshTokenExpiresAt
         );
     }

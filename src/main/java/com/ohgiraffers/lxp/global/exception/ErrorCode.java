@@ -34,7 +34,13 @@ public enum ErrorCode {
     MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
-    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "활성화된 회원만 로그인할 수 있습니다.");
+    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "활성화된 회원만 로그인할 수 있습니다."),
+
+    // token
+    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰 타입이 올바르지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
