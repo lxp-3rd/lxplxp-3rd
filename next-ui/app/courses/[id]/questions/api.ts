@@ -1,5 +1,5 @@
 import { fetcher } from '@/lib/fetcher';
-import type { QuestionResponse, CreateQuestionRequest, UpdateQuestionRequest } from './types';
+import type { QuestionResponse, CreateQuestionRequest, UpdateQuestionRequest, AnswerQuestionRequest } from './types';
 
 export const questionApi = {
   getAll: (courseId: number) =>
@@ -12,4 +12,6 @@ export const questionApi = {
     fetcher.put<QuestionResponse>(`/api/questions/${questionId}`, data),
   remove: (questionId: number, memberId: number) =>
     fetcher.delete(`/api/questions/${questionId}?memberId=${memberId}`),
+  answer: (questionId: number, data: AnswerQuestionRequest) =>
+    fetcher.post<QuestionResponse>(`/api/questions/${questionId}/answers`, data),
 };

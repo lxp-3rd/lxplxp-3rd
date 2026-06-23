@@ -201,10 +201,29 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
             )}
           </div>
 
-          {/* 강사 답변 영역 (추후 구현) */}
-          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex items-center gap-md text-on-surface-variant">
-            <span className="material-symbols-outlined text-[24px] text-tertiary">pending</span>
-            <p className="text-body-md font-body-md">강사 답변 기능이 곧 추가될 예정입니다.</p>
+          {/* 강사 답변 영역 */}
+          <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl">
+            <div className="flex items-center gap-sm mb-md">
+              <span className="material-symbols-outlined text-[20px] text-tertiary">question_answer</span>
+              <h2 className="text-title-md font-title-md text-on-surface">강사 답변</h2>
+            </div>
+            {question?.answer ? (
+              <>
+                <p className="text-body-lg font-body-md text-on-surface leading-relaxed whitespace-pre-wrap mb-lg">
+                  {question.answer}
+                </p>
+                <div className="flex items-center gap-md text-label-md font-label-md text-on-surface-variant border-t border-outline-variant pt-md">
+                  <span className="flex items-center gap-xs">
+                    <span className="material-symbols-outlined text-[16px]">school</span>
+                    강사 #{question.answeredBy}
+                  </span>
+                  <span>·</span>
+                  <span>{question.answeredAt && formatDate(question.answeredAt)}</span>
+                </div>
+              </>
+            ) : (
+              <p className="text-body-md font-body-md text-on-surface-variant">아직 답변이 등록되지 않았습니다.</p>
+            )}
           </div>
 
         </div>
