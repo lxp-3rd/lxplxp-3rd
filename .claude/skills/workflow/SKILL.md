@@ -14,6 +14,9 @@ allowed-tools: Bash Read Edit Write Glob Grep
 
 아래 6단계 워크플로우를 순서대로 진행한다. 각 단계 완료 후 다음 단계로 넘어가기 전에 반드시 명확히 표시한다.
 
+- PR body 템플릿: [template.md](template.md)
+- 실행 예시: [examples/sample.md](examples/sample.md)
+
 ---
 
 ## 1단계: 기능 탐색 및 컨텍스트 확립
@@ -67,8 +70,7 @@ PLAN MODE로 전환해 아래 항목을 포함한 구현 계획을 작성한다:
 - API 계약 (새 엔드포인트 또는 변경 사항)
 - 헥사고날 레이어별 역할 분담 (백엔드)
 - 프론트엔드 도메인 폴더 구조 (프론트엔드)
-- 테스트 전략
-- 예상 복잡도 및 리스크
+- 테스트 전략 및 예상 리스크
 
 사용자가 계획을 승인하면 3단계로 진행한다.
 
@@ -140,25 +142,20 @@ git add next-ui/
 git commit -m "feat: 프론트엔드 기능 설명 (#{이슈번호})"
 ```
 
-### 5-4. PR 생성 — 백엔드·프론트엔드 각각 별도 브랜치·PR로 분리
-
-백엔드와 프론트엔드 변경이 모두 있는 경우, 현재 브랜치에서 각각의 브랜치를 분기해 별도 PR을 생성한다:
+### 5-4. PR 생성 — 백엔드·프론트엔드 각각 별도 브랜치·PR
+`template.md`의 PR body 템플릿을 사용해 PR을 생성한다:
 
 ```bash
 # 백엔드 전용 브랜치 → PR
 git checkout -b feat/#{이슈번호}-{description}-be
 git push -u origin feat/#{이슈번호}-{description}-be
-gh pr create --title "feat: [BE] 기능 설명 (#{이슈번호})" \
-  --body "$(cat .github/PULL_REQUEST_TEMPLATE.md)"
+gh pr create --title "feat: [BE] 기능 설명 (#{이슈번호})" --body "..."
 
 # 프론트엔드 전용 브랜치 → PR
 git checkout -b feat/#{이슈번호}-{description}-fe
 git push -u origin feat/#{이슈번호}-{description}-fe
-gh pr create --title "feat: [FE] 기능 설명 (#{이슈번호})" \
-  --body "$(cat .github/PULL_REQUEST_TEMPLATE.md)"
+gh pr create --title "feat: [FE] 기능 설명 (#{이슈번호})" --body "..."
 ```
-
-PR 생성 후 `.github/PULL_REQUEST_TEMPLATE.md`의 각 항목을 실제 내용으로 채운다.
 
 ---
 
