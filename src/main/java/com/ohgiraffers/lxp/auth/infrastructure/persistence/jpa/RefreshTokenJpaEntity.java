@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.auth.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.entity.BaseEntity;
+import com.ohgiraffers.lxp.auth.application.dto.RefreshTokenInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import java.time.Instant;
 @Table(
         name = "refresh_tokens",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_refresh_tokens_token", columnNames = "token")
+                @UniqueConstraint(name = "uk_refresh_tokens_token_hash", columnNames = "token_hash")
         }
 )
 public class RefreshTokenJpaEntity extends BaseEntity {
@@ -27,8 +28,8 @@ public class RefreshTokenJpaEntity extends BaseEntity {
     @Column(nullable = false)
     private Long memberId;
 
-    @Column(nullable = false, length = 512)
-    private String token;
+    @Column(name = "token_hash", nullable = false, length = 64)
+    private String tokenHash;
 
     @Column(nullable = false)
     private Instant expiresAt;
@@ -39,14 +40,22 @@ public class RefreshTokenJpaEntity extends BaseEntity {
     protected RefreshTokenJpaEntity() {
     }
 
-    private RefreshTokenJpaEntity(Long memberId, String token, Instant expiresAt) {
+    private RefreshTokenJpaEntity(Long memberId, String tokenHash, Instant expiresAt) {
         this.memberId = memberId;
-        this.token = token;
+        this.tokenHash = tokenHash;
         this.expiresAt = expiresAt;
         this.revoked = false;
     }
 
-    public static RefreshTokenJpaEntity create(Long memberId, String token, Instant expiresAt) {
-        return new RefreshTokenJpaEntity(memberId, token, expiresAt);
+    public static RefreshTokenJpaEntity from(Long memberId, String tokenHash, Instant expiresAt) {
+        return new RefreshTokenJpaEntity(memberId, tokenHash, expiresAt);
+    }
+
+    public RefreshTokenInfo toDomain() {
+        return new RefreshTokenInfo(memberId, expiresAt, revoked);
+    }
+
+    public void revoke() {
+        this.revoked = true;
     }
 }
