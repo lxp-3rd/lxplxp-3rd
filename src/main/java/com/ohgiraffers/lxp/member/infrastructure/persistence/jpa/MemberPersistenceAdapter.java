@@ -36,7 +36,7 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
 
     @Override
     public Optional<Member> findById(Long memberId) {
-        return memberJpaRepository.findById(memberId)
+        return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
                 .map(MemberJpaEntity::toDomain);
     }
 

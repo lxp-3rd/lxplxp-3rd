@@ -12,25 +12,37 @@ import com.ohgiraffers.lxp.member.domain.model.vo.Email;
 import com.ohgiraffers.lxp.member.domain.model.vo.EncodedPassword;
 import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
+@ExtendWith(MockitoExtension.class)
 class MemberProfileServiceTest {
+
+    @Mock
+    private MemberRepositoryPort memberRepositoryPort;
+
+    @InjectMocks
+    private MemberProfileService service;
 
     @Test
     void get_my_profile_success() {
-        FakeMemberRepository memberRepository = new FakeMemberRepository();
-        Member savedMember = memberRepository.save(member("learner@lxp.com", "learner"));
-        MemberProfileService service = new MemberProfileService(memberRepository);
+        Member savedMember = member(1L, "learner@lxp.com", "learner");
+        given(memberRepositoryPort.findById(1L)).willReturn(Optional.of(savedMember));
 
-        MemberProfileResult result = service.getMyProfile(savedMember.getId());
+        MemberProfileResult result = service.getMyProfile(1L);
 
-        assertThat(result.memberId()).isEqualTo(savedMember.getId());
+        assertThat(result.memberId()).isEqualTo(1L);
         assertThat(result.email()).isEqualTo("learner@lxp.com");
         assertThat(result.nickname()).isEqualTo("learner");
         assertThat(result.role()).isEqualTo(MemberRole.LEARNER);
@@ -39,93 +51,48 @@ class MemberProfileServiceTest {
 
     @Test
     void update_my_profile_success() {
-        FakeMemberRepository memberRepository = new FakeMemberRepository();
-        Member savedMember = memberRepository.save(member("learner@lxp.com", "learner"));
-        MemberProfileService service = new MemberProfileService(memberRepository);
+        Member savedMember = member(1L, "learner@lxp.com", "learner");
+        Member updatedMember = member(1L, "learner@lxp.com", "updated");
+        given(memberRepositoryPort.findById(1L)).willReturn(Optional.of(savedMember));
+        given(memberRepositoryPort.existsByNickname(new Nickname("updated"))).willReturn(false);
+        given(memberRepositoryPort.save(any(Member.class))).willReturn(updatedMember);
 
-        MemberProfileResult result = service.updateMyProfile(new UpdateMyProfileCommand(savedMember.getId(), "updated"));
+        MemberProfileResult result = service.updateMyProfile(new UpdateMyProfileCommand(1L, "updated"));
 
-        assertThat(result.memberId()).isEqualTo(savedMember.getId());
+        assertThat(result.memberId()).isEqualTo(1L);
         assertThat(result.email()).isEqualTo("learner@lxp.com");
         assertThat(result.nickname()).isEqualTo("updated");
     }
 
     @Test
     void update_my_profile_fails_when_member_not_found() {
-        MemberProfileService service = new MemberProfileService(new FakeMemberRepository());
+        given(memberRepositoryPort.findById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> service.updateMyProfile(new UpdateMyProfileCommand(1L, "updated")))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+                .hasMessage(ErrorCode.MEMBER_NOT_FOUND.getMessage());
     }
 
     @Test
     void update_my_profile_fails_when_nickname_already_exists() {
-        FakeMemberRepository memberRepository = new FakeMemberRepository();
-        Member savedMember = memberRepository.save(member("learner@lxp.com", "learner"));
-        memberRepository.save(member("other@lxp.com", "other"));
-        MemberProfileService service = new MemberProfileService(memberRepository);
+        Member savedMember = member(1L, "learner@lxp.com", "learner");
+        given(memberRepositoryPort.findById(1L)).willReturn(Optional.of(savedMember));
+        given(memberRepositoryPort.existsByNickname(new Nickname("other"))).willReturn(true);
 
-        assertThatThrownBy(() -> service.updateMyProfile(new UpdateMyProfileCommand(savedMember.getId(), "other")))
+        assertThatThrownBy(() -> service.updateMyProfile(new UpdateMyProfileCommand(1L, "other")))
                 .isInstanceOf(BusinessException.class)
-                .extracting("errorCode")
-                .isEqualTo(ErrorCode.MEMBER_NICKNAME_ALREADY_EXISTS);
+                .hasMessage(ErrorCode.MEMBER_NICKNAME_ALREADY_EXISTS.getMessage());
+        then(memberRepositoryPort).should(never()).save(any(Member.class));
     }
 
-    private Member member(String email, String nickname) {
+    private Member member(Long id, String email, String nickname) {
         return Member.restore(
-                null,
+                id,
                 new Email(email),
                 new Nickname(nickname),
                 new EncodedPassword("encoded-password"),
                 MemberRole.LEARNER,
                 MemberStatus.ACTIVE
         );
-    }
-
-    private static class FakeMemberRepository implements MemberRepositoryPort {
-
-        private final Map<Long, Member> members = new HashMap<>();
-        private long sequence = 1L;
-
-        @Override
-        public boolean existsByEmail(Email email) {
-            return members.values().stream()
-                    .anyMatch(member -> member.getEmail().equals(email));
-        }
-
-        @Override
-        public boolean existsByNickname(Nickname nickname) {
-            return members.values().stream()
-                    .anyMatch(member -> member.getNickname().equals(nickname));
-        }
-
-        @Override
-        public Optional<Member> findById(Long memberId) {
-            return Optional.ofNullable(members.get(memberId));
-        }
-
-        @Override
-        public Optional<Member> findByEmail(Email email) {
-            return members.values().stream()
-                    .filter(member -> member.getEmail().equals(email))
-                    .findFirst();
-        }
-
-        @Override
-        public Member save(Member member) {
-            Long memberId = member.getId() == null ? sequence++ : member.getId();
-            Member savedMember = Member.restore(
-                    memberId,
-                    member.getEmail(),
-                    member.getNickname(),
-                    member.getPassword(),
-                    member.getRole(),
-                    member.getStatus()
-            );
-            members.put(savedMember.getId(), savedMember);
-            return savedMember;
-        }
     }
 }
