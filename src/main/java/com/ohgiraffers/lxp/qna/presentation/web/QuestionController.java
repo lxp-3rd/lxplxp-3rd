@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/questions")
+@RequestMapping("/api/questions")
 public class QuestionController {
 
     private final QuestionUseCase questionUseCase;

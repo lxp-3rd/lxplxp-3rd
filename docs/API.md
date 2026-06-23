@@ -161,19 +161,19 @@ const res = await fetch('/api/courses');
 | PUT | `/api/roadmaps/{id}` | 로드맵 수정 | 관리자 |
 | DELETE | `/api/roadmaps/{id}` | 로드맵 삭제 | 관리자 |
 
-### Q&A (`/questions`)
+### Q&A (`/api/questions`)
 | 메서드 | URL | 설명 | 인증 |
 |--------|-----|------|------|
-| GET | `/questions?courseId={courseId}` | 강좌별 질문 목록 | 불필요 |
-| GET | `/questions/{id}` | 질문 상세 | 불필요 |
-| POST | `/questions` | 질문 등록 | 필요 |
-| PUT | `/questions/{id}` | 질문 수정 | 작성자 |
-| DELETE | `/questions/{id}?memberId={memberId}` | 질문 삭제 | 작성자 |
+| GET | `/api/questions?courseId={courseId}` | 강좌별 질문 목록 | 불필요 |
+| GET | `/api/questions/{id}` | 질문 상세 | 불필요 |
+| POST | `/api/questions` | 질문 등록 | 필요 |
+| PUT | `/api/questions/{id}` | 질문 수정 | 작성자 |
+| DELETE | `/api/questions/{id}?memberId={memberId}` | 질문 삭제 | 작성자 |
 
 **Request / Response**
 
 ```
-POST /questions
+POST /api/questions
 {
   "courseId": 1,       // Long, 필수
   "memberId": 1,       // Long, 필수 — TODO: 인증 구현 후 JWT 추출로 교체 (#39)
@@ -181,7 +181,7 @@ POST /questions
   "content": "string"  // 최대 500자
 }
 
-PUT /questions/{id}
+PUT /api/questions/{id}
 {
   "memberId": 1,       // Long, 필수 — TODO: 인증 구현 후 JWT 추출로 교체 (#39)
   "title": "string",   // 2~200자
