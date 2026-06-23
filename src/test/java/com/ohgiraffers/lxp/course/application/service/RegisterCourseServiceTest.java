@@ -79,4 +79,17 @@ class RegisterCourseServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .hasMessage(ErrorCode.INSTRUCTOR_NOT_FOUND.getMessage());
     }
+
+    @Test
+    @DisplayName("입력값이 유효하지 않으면 INVALID_INPUT 예외가 발생한다")
+    void register_invalidInput_throwsException() {
+        RegisterCourseCommand command = new RegisterCourseCommand(
+                1L, " ", "강좌 설명", null
+        );
+        given(instructorValidation.isActiveInstructor(1L)).willReturn(true);
+
+        assertThatThrownBy(() -> registerCourseService.register(command))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
+    }
 }

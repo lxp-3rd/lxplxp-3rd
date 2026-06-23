@@ -29,16 +29,17 @@ public class RegisterCourseService implements RegisterCourseUseCase {
             throw new BusinessException(ErrorCode.INSTRUCTOR_NOT_FOUND);
         }
 
+        Course course;
         try {
-            Course course = Course.create(
+            course = Course.create(
                     command.instructorId(),
                     command.title(),
                     command.description(),
                     command.thumbnailUrl()
             );
-            return courseRepository.save(course).getId();
         } catch (IllegalArgumentException e) {
             throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
+        return courseRepository.save(course).getId();
     }
 }
