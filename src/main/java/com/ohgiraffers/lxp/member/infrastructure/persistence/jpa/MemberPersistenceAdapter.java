@@ -39,6 +39,12 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort, AdminMemb
     }
 
     @Override
+    public Optional<Member> findById(Long memberId) {
+        return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
+                .map(MemberJpaEntity::toDomain);
+    }
+
+    @Override
     public Optional<Member> findByEmail(Email email) {
         return memberJpaRepository.findByEmail(email.value())
                 .map(MemberJpaEntity::toDomain);

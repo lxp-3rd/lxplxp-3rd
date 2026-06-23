@@ -14,6 +14,8 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,6 +41,13 @@ public class QuestionJpaEntity extends BaseEntity {
     @Column(nullable = false, length = 20)
     private QuestionStatus status;
 
+    @Column(length = 2000)
+    private String answer;
+
+    private Long answeredBy;
+
+    private LocalDateTime answeredAt;
+
     private QuestionJpaEntity(Long courseId, Long memberId, String title, String content, QuestionStatus status) {
         this.courseId = courseId;
         this.memberId = memberId;
@@ -62,6 +71,12 @@ public class QuestionJpaEntity extends BaseEntity {
         this.content = content;
     }
 
+    public void updateAnswer(String answer, Long answeredBy, LocalDateTime answeredAt) {
+        this.answer = answer;
+        this.answeredBy = answeredBy;
+        this.answeredAt = answeredAt;
+    }
+
     public Question toDomain() {
         return new Question(
                 id,
@@ -72,7 +87,10 @@ public class QuestionJpaEntity extends BaseEntity {
                 status,
                 getCreatedAt(),
                 getUpdatedAt(),
-                getDeletedAt()
+                getDeletedAt(),
+                answer,
+                answeredBy,
+                answeredAt
         );
     }
 }

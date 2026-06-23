@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ohgiraffers.lxp.qna.application.port.in.AnswerQuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.in.QuestionUseCase;
+import com.ohgiraffers.lxp.qna.presentation.dto.AnswerQuestionRequest;
 import com.ohgiraffers.lxp.qna.presentation.dto.CreateQuestionRequest;
 import com.ohgiraffers.lxp.qna.presentation.dto.QuestionResponse;
 import com.ohgiraffers.lxp.qna.presentation.dto.UpdateQuestionRequest;
@@ -29,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class QuestionController {
 
     private final QuestionUseCase questionUseCase;
+    private final AnswerQuestionUseCase answerQuestionUseCase;
 
     @PostMapping
     public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody CreateQuestionRequest request) {
@@ -57,6 +60,15 @@ public class QuestionController {
             @Valid @RequestBody UpdateQuestionRequest request
     ) {
         QuestionResponse response = QuestionResponse.from(questionUseCase.updateQuestion(request.toCommand(questionId)));
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{questionId}/answers")
+    public ResponseEntity<QuestionResponse> answerQuestion(
+            @PathVariable("questionId") Long questionId,
+            @Valid @RequestBody AnswerQuestionRequest request
+    ) {
+        QuestionResponse response = QuestionResponse.from(answerQuestionUseCase.answerQuestion(request.toCommand(questionId)));
         return ResponseEntity.ok(response);
     }
 

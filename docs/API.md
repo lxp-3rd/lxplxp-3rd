@@ -169,6 +169,7 @@ const res = await fetch('/api/courses');
 | POST | `/api/questions` | 질문 등록 | 필요 |
 | PUT | `/api/questions/{id}` | 질문 수정 | 작성자 |
 | DELETE | `/api/questions/{id}?memberId={memberId}` | 질문 삭제 | 작성자 |
+| POST | `/api/questions/{id}/answers` | 강사 답변 등록 (1회, 수정 불가) | 강사 |
 
 **Request / Response**
 
@@ -188,6 +189,12 @@ PUT /api/questions/{id}
   "content": "string"  // 최대 500자
 }
 
+POST /api/questions/{id}/answers
+{
+  "instructorId": 1,   // Long, 필수 — Security 인증 통과한 강사 ID
+  "content": "string"  // 1~2000자, 등록 후 수정 불가
+}
+
 Response (단건)
 {
   "id": 1,
@@ -195,9 +202,12 @@ Response (단건)
   "memberId": 1,
   "title": "string",
   "content": "string",
-  "status": "PUBLISHED",   // enum: PUBLISHED | HIDDEN
+  "status": "PUBLISHED",          // enum: PUBLISHED | HIDDEN
   "createdAt": "2026-06-23T00:00:00",
-  "updatedAt": "2026-06-23T00:00:00"
+  "updatedAt": "2026-06-23T00:00:00",
+  "answer": "string | null",      // 답변 내용 (미답변 시 null)
+  "answeredBy": 1,                // 강사 ID (미답변 시 null)
+  "answeredAt": "2026-06-23T00:00:00"  // 답변 시각 (미답변 시 null)
 }
 ```
 

@@ -13,7 +13,10 @@ public record QuestionResponse(
         String content,
         QuestionStatus status,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String answer,
+        Long answeredBy,
+        LocalDateTime answeredAt
 ) {
 
     public static QuestionResponse from(QuestionResult result) {
@@ -25,7 +28,10 @@ public record QuestionResponse(
                 result.content(),
                 result.status(),
                 result.createdAt(),
-                result.updatedAt()
+                result.updatedAt(),
+                result.answer(),
+                result.answeredBy(),
+                result.answeredAt()
         );
     }
 }
