@@ -34,6 +34,19 @@ class ContentJpaEntityTest {
     }
 
     @Test
+    @DisplayName("콘텐츠를 soft-delete하면 findByIdAndDeletedAtIsNull로 조회되지 않는다")
+    void delete_softDelete_notFoundAfterDelete() {
+        ContentJpaEntity saved = contentJpaRepository.save(
+                ContentJpaEntity.from(Content.create(1L, 0, "Java 기초", "https://example.com/video")));
+        saved.delete();
+        contentJpaRepository.save(saved);
+
+        java.util.Optional<ContentJpaEntity> found = contentJpaRepository.findByIdAndDeletedAtIsNull(saved.getId());
+
+        assertThat(found).isEmpty();
+    }
+
+    @Test
     @DisplayName("같은 강좌에 여러 콘텐츠를 저장할 수 있다")
     void save_multipleContents_success() {
         contentJpaRepository.save(ContentJpaEntity.from(Content.create(1L, 0, "1강", "https://example.com/1")));
