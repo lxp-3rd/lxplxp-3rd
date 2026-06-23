@@ -25,7 +25,11 @@ public class UpdateInstructorProfileService implements UpdateInstructorProfileUs
                 .findByInstructorId(command.instructorId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND));
 
-        profile.update(command.profileImageUrl(), command.bio());
+        try {
+            profile.update(command.profileImageUrl(), command.bio());
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
+        }
         instructorProfileRepository.save(profile);
     }
 }
