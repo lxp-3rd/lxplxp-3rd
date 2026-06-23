@@ -222,4 +222,22 @@ Response (단건)
 
 ---
 
+### 이미지 업로드 (`/api/images`)
+| 메서드 | URL | 설명 | 인증 |
+|--------|-----|------|------|
+| POST | `/api/images` | 이미지 업로드 | 불필요 |
+
+**요청:**
+```
+Content-Type: multipart/form-data
+Body: image (file) — jpg, jpeg, png, gif, webp 허용
+```
+
+**응답 예시:**
+```json
+{ "imageUrl": "/images/550e8400-e29b-41d4-a716-446655440000.jpg" }
+```
+
+---
+
 > 새 엔드포인트 추가 시 이 파일에 반드시 업데이트할 것.
