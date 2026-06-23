@@ -89,22 +89,24 @@ PLAN MODE로 전환해 아래 항목을 포함한 구현 계획을 작성한다:
 - 도메인 폴더 하위 `api.ts` / `types.ts` / `components/` 구조 유지
 - 컴포넌트에서 직접 fetch 금지 — `api.ts` 경유 필수
 
-### 3-2. 테스트 실행 → 코드 리뷰 자동 진행
-구현 완료 후 테스트를 작성하고 Bash로 직접 실행한다:
+### 3-2. 테스트 실행 (Stop hook 트리거)
+구현 완료 후 테스트를 작성하고, 변경 범위에 따라 센티넬 파일을 작성해 Stop hook(`run-tests.sh`)을 트리거한다:
 
 ```bash
 # 백엔드만 변경
-./gradlew test 2>&1
+echo "backend" > .claude/.test-scope && touch .claude/.run-tests-now
 
 # 프론트엔드만 변경
-cd next-ui && npm run lint 2>&1
+echo "frontend" > .claude/.test-scope && touch .claude/.run-tests-now
 
-# 둘 다 변경: 백엔드 → 프론트엔드 순
-./gradlew test 2>&1 && cd next-ui && npm run lint 2>&1
+# 둘 다 변경
+echo "all" > .claude/.test-scope && touch .claude/.run-tests-now
 ```
 
-- **실패 시**: 원인 파악 후 수정, 통과할 때까지 반복
-- **통과 시**: 사용자 입력 없이 즉시 4단계로 진행
+센티넬 파일 생성 후 응답을 종료한다. Stop hook이 `.claude/hooks/run-tests.sh`를 자동 실행해 터미널에 결과를 출력한다.
+
+- **실패 시**: 원인 파악 후 수정하고 센티넬 파일을 다시 생성한다. 통과할 때까지 반복한다.
+- **통과 시**: 사용자 입력 없이 즉시 4단계로 진행한다.
 
 ---
 
