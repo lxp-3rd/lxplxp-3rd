@@ -85,4 +85,39 @@ class ReviewInstructorApplicationServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND);
     }
+
+    @Test
+    @DisplayName("이미 승인된 신청을 다시 승인하면 400 예외가 발생한다")
+    void review_approveAlreadyApproved_throwsBusinessException() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        application.approve(java.time.LocalDateTime.now());
+        given(instructorApplicationRepository.findById(1L)).willReturn(Optional.of(application));
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(1L, ReviewAction.APPROVE, null);
+
+        assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED);
+    }
+
+    @Test
+    @DisplayName("반려 사유 없이 반려하면 400 예외가 발생한다")
+    void review_rejectWithoutReason_throwsBusinessException() {
+        InstructorApplication application = InstructorApplication.apply(
+                1L, "홍길동", "10년 경력의 Java 개발자입니다.", "백엔드 개발"
+        );
+        given(instructorApplicationRepository.findById(1L)).willReturn(Optional.of(application));
+
+        ReviewInstructorApplicationCommand command =
+                new ReviewInstructorApplicationCommand(1L, ReviewAction.REJECT, null);
+
+        assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
+    }
 }

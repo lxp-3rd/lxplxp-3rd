@@ -35,13 +35,19 @@ public class ReviewInstructorApplicationService implements ReviewInstructorAppli
 
         LocalDateTime now = LocalDateTime.now();
 
-        if (command.action() == ReviewAction.APPROVE) {
-            application.approve(now);
-            instructorApplicationRepository.save(application);
-            instructorRepository.save(Instructor.create(application.getMemberId()));
-        } else {
-            application.reject(command.rejectionReason(), now);
-            instructorApplicationRepository.save(application);
+        try {
+            if (command.action() == ReviewAction.APPROVE) {
+                application.approve(now);
+                instructorApplicationRepository.save(application);
+                instructorRepository.save(Instructor.create(application.getMemberId()));
+            } else {
+                application.reject(command.rejectionReason(), now);
+                instructorApplicationRepository.save(application);
+            }
+        } catch (IllegalStateException e) {
+            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED);
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
         }
     }
 }
