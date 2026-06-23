@@ -43,6 +43,7 @@ interface AuthContextValue {
   user: MockUser | null;
   role: Role | null;
   isLoggedIn: boolean;
+  isInitializing: boolean;
   accessToken: string | null;
   refreshToken: string | null;
   login: (session: LoginSession) => void;
@@ -53,6 +54,7 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   role: null,
   isLoggedIn: false,
+  isInitializing: true,
   accessToken: null,
   refreshToken: null,
   login: () => {},
@@ -113,12 +115,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [storedUser, setStoredUser] = useState<StoredAuthUser | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     setAccessToken(localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY));
     setRefreshToken(localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY));
     setStoredUser(readStoredUser());
+    setIsInitializing(false);
   }, []);
 
   const login = (session: LoginSession) => {
@@ -138,6 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(session.accessToken);
     setRefreshToken(session.refreshToken);
     setStoredUser(user);
+    setIsInitializing(false);
     router.push(ROLE_HOME[role]);
   };
 
@@ -148,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
     setRefreshToken(null);
     setStoredUser(null);
+    setIsInitializing(false);
     router.push('/login');
   };
 
@@ -160,6 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         role,
         isLoggedIn: !!accessToken,
+        isInitializing,
         accessToken,
         refreshToken,
         login,

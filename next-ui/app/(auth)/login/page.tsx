@@ -1,32 +1,20 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/lib/AuthContext';
-import { authApi } from './api';
+import { useLoginForm } from './useLoginForm';
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setErrorMessage('');
-    setIsSubmitting(true);
-
-    try {
-      const tokenPair = await authApi.login({ email, password });
-      login({ ...tokenPair, email });
-    } catch {
-      setErrorMessage('이메일 또는 비밀번호를 확인해 주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
+    isSubmitting,
+    errorMessage,
+    handleSubmit,
+  } = useLoginForm();
 
   return (
     <>
@@ -96,7 +84,7 @@ export default function LoginPage() {
               </div>
 
               {errorMessage && (
-                <p className="text-label-sm font-label-sm text-error">
+                <p role="alert" className="text-label-sm font-label-sm text-error">
                   {errorMessage}
                 </p>
               )}
