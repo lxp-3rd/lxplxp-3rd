@@ -6,6 +6,7 @@ import com.ohgiraffers.lxp.member.application.port.out.MemberRepositoryPort;
 import com.ohgiraffers.lxp.member.domain.model.entity.Member;
 import com.ohgiraffers.lxp.member.domain.model.vo.Email;
 import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
@@ -47,6 +48,12 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
     private boolean isNicknameUniqueConstraintViolation(DataIntegrityViolationException e) {
         Throwable cause = e;
         while (cause != null) {
+            if (cause instanceof ConstraintViolationException constraintViolationException) {
+                String constraintName = constraintViolationException.getConstraintName();
+                if (constraintName != null && constraintName.equalsIgnoreCase(NICKNAME_UNIQUE_CONSTRAINT)) {
+                    return true;
+                }
+            }
             String message = cause.getMessage();
             if (message != null) {
                 String lowerMessage = message.toLowerCase(Locale.ROOT);
