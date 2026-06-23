@@ -1,12 +1,16 @@
 package com.ohgiraffers.lxp.auth.infrastructure.persistence.jpa;
 
+import com.ohgiraffers.lxp.auth.application.dto.RefreshTokenInfo;
+import com.ohgiraffers.lxp.auth.application.port.out.RefreshTokenQueryPort;
+import com.ohgiraffers.lxp.auth.application.port.out.RefreshTokenRevokePort;
 import com.ohgiraffers.lxp.auth.application.port.out.RefreshTokenSavePort;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Repository
-public class RefreshTokenPersistenceAdapter implements RefreshTokenSavePort {
+public class RefreshTokenPersistenceAdapter implements RefreshTokenSavePort, RefreshTokenQueryPort, RefreshTokenRevokePort {
 
     private final RefreshTokenJpaRepository refreshTokenJpaRepository;
 
@@ -16,6 +20,21 @@ public class RefreshTokenPersistenceAdapter implements RefreshTokenSavePort {
 
     @Override
     public void save(Long memberId, String refreshToken, Instant expiresAt) {
-        refreshTokenJpaRepository.save(RefreshTokenJpaEntity.create(memberId, refreshToken, expiresAt));
+        String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
+        refreshTokenJpaRepository.save(RefreshTokenJpaEntity.create(memberId, tokenHash, expiresAt));
+    }
+
+    @Override
+    public Optional<RefreshTokenInfo> findByToken(String refreshToken) {
+        String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
+        return refreshTokenJpaRepository.findByTokenHash(tokenHash)
+                .map(RefreshTokenJpaEntity::toInfo);
+    }
+
+    @Override
+    public void revoke(String refreshToken) {
+        String tokenHash = RefreshTokenHashProvider.hash(refreshToken);
+        refreshTokenJpaRepository.findByTokenHash(tokenHash)
+                .ifPresent(RefreshTokenJpaEntity::revoke);
     }
 }
