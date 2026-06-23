@@ -36,7 +36,7 @@ public class AnnouncementService implements CreateAnnouncementUseCase, UpdateAnn
     }
 
     @Override
-    public Long createAnnouncement(CreateAnnouncementCommand command) {
+    public AnnouncementResult createAnnouncement(CreateAnnouncementCommand command) {
         Announcement announcement = Announcement.create(
                 command.adminId(),
                 command.title(),
@@ -44,7 +44,7 @@ public class AnnouncementService implements CreateAnnouncementUseCase, UpdateAnn
                 command.status()
         );
         Announcement saved = saveAnnouncementPort.save(announcement);
-        return saved.getId();
+        return AnnouncementResult.from(saved);
     }
 
     @Override
