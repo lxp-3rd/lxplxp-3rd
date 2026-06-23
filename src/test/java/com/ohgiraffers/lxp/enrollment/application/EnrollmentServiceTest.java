@@ -11,10 +11,6 @@ import com.ohgiraffers.lxp.enrollment.application.dto.CourseInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
 import com.ohgiraffers.lxp.enrollment.application.dto.MemberInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.Role;
-import com.ohgiraffers.lxp.enrollment.application.exception.CourseNotPublicException;
-import com.ohgiraffers.lxp.enrollment.application.exception.DuplicateEnrollmentException;
-import com.ohgiraffers.lxp.enrollment.application.exception.MemberNotLearnerException;
-import com.ohgiraffers.lxp.enrollment.application.exception.MemberSuspendedException;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadCourseInfoPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadEnrollmentPort;
@@ -23,6 +19,8 @@ import com.ohgiraffers.lxp.enrollment.application.port.out.SaveEnrollmentPort;
 import com.ohgiraffers.lxp.enrollment.application.service.EnrollmentService;
 import com.ohgiraffers.lxp.enrollment.domain.model.entity.Enrollment;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,46 +70,54 @@ class EnrollmentServiceTest {
     }
 
     @Test
-    @DisplayName("수강생 역할이 아니면 MemberNotLearnerException - 저장하지 않는다")
+    @DisplayName("수강생 역할이 아니면 MEMBER_NOT_LEARNER - 저장하지 않는다")
     void notLearner() {
         given(loadMemberInfoPort.load(MEMBER_ID))
                 .willReturn(new MemberInfo(MEMBER_ID, Role.INSTRUCTOR, false));
 
         assertThatThrownBy(() -> service.enroll(COMMAND))
-                .isInstanceOf(MemberNotLearnerException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.MEMBER_NOT_LEARNER);
         verify(saveEnrollmentPort, never()).save(any());
     }
 
     @Test
-    @DisplayName("정지 회원이면 MemberSuspendedException - 저장하지 않는다")
+    @DisplayName("정지 회원이면 MEMBER_SUSPENDED - 저장하지 않는다")
     void suspended() {
         given(loadMemberInfoPort.load(MEMBER_ID)).willReturn(learner(true));
 
         assertThatThrownBy(() -> service.enroll(COMMAND))
-                .isInstanceOf(MemberSuspendedException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.MEMBER_SUSPENDED);
         verify(saveEnrollmentPort, never()).save(any());
     }
 
     @Test
-    @DisplayName("비공개 강좌면 CourseNotPublicException - 저장하지 않는다")
+    @DisplayName("비공개 강좌면 COURSE_NOT_PUBLIC - 저장하지 않는다")
     void courseNotPublic() {
         given(loadMemberInfoPort.load(MEMBER_ID)).willReturn(learner(false));
         given(loadCourseInfoPort.load(COURSE_ID)).willReturn(new CourseInfo(COURSE_ID, false));
 
         assertThatThrownBy(() -> service.enroll(COMMAND))
-                .isInstanceOf(CourseNotPublicException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.COURSE_NOT_PUBLIC);
         verify(saveEnrollmentPort, never()).save(any());
     }
 
     @Test
-    @DisplayName("ACTIVE 중복이 있으면 DuplicateEnrollmentException - 저장하지 않는다")
+    @DisplayName("ACTIVE 중복이 있으면 ENROLLMENT_ALREADY_EXISTS - 저장하지 않는다")
     void duplicateActive() {
         given(loadMemberInfoPort.load(MEMBER_ID)).willReturn(learner(false));
         given(loadCourseInfoPort.load(COURSE_ID)).willReturn(new CourseInfo(COURSE_ID, true));
         given(loadEnrollmentPort.existsActiveEnrollment(MEMBER_ID, COURSE_ID)).willReturn(true);
 
         assertThatThrownBy(() -> service.enroll(COMMAND))
-                .isInstanceOf(DuplicateEnrollmentException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.ENROLLMENT_ALREADY_EXISTS);
         verify(saveEnrollmentPort, never()).save(any());
     }
 }

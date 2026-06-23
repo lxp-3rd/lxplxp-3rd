@@ -3,10 +3,6 @@ package com.ohgiraffers.lxp.enrollment.application.service;
 import com.ohgiraffers.lxp.enrollment.application.dto.CourseInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
 import com.ohgiraffers.lxp.enrollment.application.dto.MemberInfo;
-import com.ohgiraffers.lxp.enrollment.application.exception.CourseNotPublicException;
-import com.ohgiraffers.lxp.enrollment.application.exception.DuplicateEnrollmentException;
-import com.ohgiraffers.lxp.enrollment.application.exception.MemberNotLearnerException;
-import com.ohgiraffers.lxp.enrollment.application.exception.MemberSuspendedException;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.in.EnrollUseCase;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadCourseInfoPort;
@@ -14,6 +10,8 @@ import com.ohgiraffers.lxp.enrollment.application.port.out.LoadEnrollmentPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadMemberInfoPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.SaveEnrollmentPort;
 import com.ohgiraffers.lxp.enrollment.domain.model.entity.Enrollment;
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,19 +41,19 @@ public class EnrollmentService implements EnrollUseCase {
         MemberInfo member = loadMemberInfoPort.load(command.memberId());
 
         if (!member.isLearner()) {
-            throw new MemberNotLearnerException();
+            throw new BusinessException(ErrorCode.MEMBER_NOT_LEARNER);
         }
         if (member.isSuspended()) {
-            throw new MemberSuspendedException();
+            throw new BusinessException(ErrorCode.MEMBER_SUSPENDED);
         }
 
         CourseInfo course = loadCourseInfoPort.load(command.courseId());
 
         if (!course.isPublished()) {
-            throw new CourseNotPublicException();
+            throw new BusinessException(ErrorCode.COURSE_NOT_PUBLIC);
         }
         if (loadEnrollmentPort.existsActiveEnrollment(command.memberId(), command.courseId())) {
-            throw new DuplicateEnrollmentException();
+            throw new BusinessException(ErrorCode.ENROLLMENT_ALREADY_EXISTS);
         }
 
         Enrollment enrollment = Enrollment.enroll(command.memberId(), command.courseId());

@@ -1,7 +1,8 @@
 package com.ohgiraffers.lxp.enrollment.domain.model.entity;
 
-import com.ohgiraffers.lxp.enrollment.domain.exception.EnrollmentAlreadyCanceledException;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 
 public class Enrollment {
 
@@ -40,7 +41,7 @@ public class Enrollment {
 
     public void cancel() {
         if (this.status == EnrollmentStatus.CANCELED) {
-            throw new EnrollmentAlreadyCanceledException();
+            throw new BusinessException(ErrorCode.ENROLLMENT_ALREADY_CANCELED);
         }
 
         this.status = EnrollmentStatus.CANCELED;

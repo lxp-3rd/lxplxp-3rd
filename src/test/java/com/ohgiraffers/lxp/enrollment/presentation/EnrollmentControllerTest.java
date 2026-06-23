@@ -2,11 +2,11 @@ package com.ohgiraffers.lxp.enrollment.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
-import com.ohgiraffers.lxp.enrollment.application.exception.DuplicateEnrollmentException;
-import com.ohgiraffers.lxp.enrollment.application.exception.MemberNotLearnerException;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.in.EnrollUseCase;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
 import com.ohgiraffers.lxp.enrollment.presentation.web.EnrollmentController;
 import org.junit.jupiter.api.DisplayName;
@@ -76,7 +76,7 @@ class EnrollmentControllerTest {
     @DisplayName("중복 예외 → 409 ENROLLMENT_ALREADY_EXISTS로 매핑")
     void duplicateMapsToConflict() throws Exception {
         given(enrollUseCase.enroll(any(EnrollCommand.class)))
-                .willThrow(new DuplicateEnrollmentException());
+                .willThrow(new BusinessException(ErrorCode.ENROLLMENT_ALREADY_EXISTS));
 
         mockMvc.perform(post("/enrollments")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ class EnrollmentControllerTest {
     @DisplayName("수강생 아님 예외 → 403 MEMBER_NOT_LEARNER로 매핑")
     void notLearnerMapsToForbidden() throws Exception {
         given(enrollUseCase.enroll(any(EnrollCommand.class)))
-                .willThrow(new MemberNotLearnerException());
+                .willThrow(new BusinessException(ErrorCode.MEMBER_NOT_LEARNER));
 
         mockMvc.perform(post("/enrollments")
                         .contentType(MediaType.APPLICATION_JSON)

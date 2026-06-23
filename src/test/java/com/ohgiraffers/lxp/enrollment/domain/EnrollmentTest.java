@@ -3,9 +3,10 @@ package com.ohgiraffers.lxp.enrollment.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ohgiraffers.lxp.enrollment.domain.exception.EnrollmentAlreadyCanceledException;
 import com.ohgiraffers.lxp.enrollment.domain.model.entity.Enrollment;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,9 @@ class EnrollmentTest {
                     1L, 1L, 2L, EnrollmentStatus.CANCELED);
 
             assertThatThrownBy(enrollment::cancel)
-                    .isInstanceOf(EnrollmentAlreadyCanceledException.class);
+                    .isInstanceOf(BusinessException.class)
+                    .extracting(e -> ((BusinessException) e).getErrorCode())
+                    .isEqualTo(ErrorCode.ENROLLMENT_ALREADY_CANCELED);
         }
     }
 
