@@ -12,6 +12,7 @@ import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class EnrollmentPersistenceAdapter
@@ -40,6 +41,7 @@ public class EnrollmentPersistenceAdapter
     }
 
     @Override
+    @Transactional
     public EnrollmentResult update(Enrollment enrollment) {
         EnrollmentJpaEntity entity = repository.findById(enrollment.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENROLLMENT_NOT_FOUND));
