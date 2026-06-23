@@ -29,10 +29,10 @@ const GUEST_LINKS = [
 
 export function TopNavBar() {
   const pathname = usePathname();
-  const { user, role, isLoggedIn, logout } = useAuth();
+  const { user, role, isLoggedIn, isInitializing, logout } = useAuth();
   const router = useRouter();
 
-  const links = (role && NAV_LINKS[role]) ?? GUEST_LINKS;
+  const links = isInitializing ? [] : (role && NAV_LINKS[role]) ?? GUEST_LINKS;
 
   const isActive = (href: string, exact?: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/');
@@ -70,7 +70,7 @@ export function TopNavBar() {
         <div className="flex items-center gap-md">
 
           {/* 검색 (관리자 제외) */}
-          {role !== 'admin' && (
+          {!isInitializing && role !== 'admin' && (
             <div className="hidden md:flex items-center gap-xs bg-surface-container rounded-full px-md py-xs border border-outline-variant">
               <span className="material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
               <input
@@ -83,7 +83,7 @@ export function TopNavBar() {
             </div>
           )}
 
-          {isLoggedIn ? (
+          {isInitializing ? null : isLoggedIn ? (
             <>
               {/* 역할 뱃지 */}
               {role && (

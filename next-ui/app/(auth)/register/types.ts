@@ -1,8 +1,16 @@
-// AuthRequest 도메인 타입 정의
-export type AuthRequest = {
-  id: string;
+export type SignUpRequest = {
   email: string;
+  nickname: string;
   password: string;
-  createdAt: string;
-  updatedAt: string;
+  passwordConfirm: string;
 };
+
+export type SignUpResponse = {
+  memberId: number;
+  email: string;
+  nickname: string;
+  role: 'LEARNER' | 'INSTRUCTOR' | 'ADMIN';
+  status: 'ACTIVE' | 'WITHDRAWN' | 'SUSPENDED';
+};
+
+export type AuthRequest = SignUpRequest;
