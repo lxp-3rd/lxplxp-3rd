@@ -48,7 +48,6 @@ class GetInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> getInstructorProfileService.get(99L))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND);
+                .hasMessage(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND.getMessage());
     }
 }
