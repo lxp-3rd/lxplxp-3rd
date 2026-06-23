@@ -32,11 +32,7 @@ export default function EnrollmentsPage() {
             {enrollments.map((e) => (
               <Link
                 key={e.id}
-<<<<<<< HEAD
-                href={`/enrollments/${e.id}`}
-=======
                 href={`/courses/${e.courseId}`}
->>>>>>> main
                 className="group block bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1"
               >
                 <div className="aspect-video relative overflow-hidden bg-surface-container">
@@ -70,8 +66,6 @@ export default function EnrollmentsPage() {
             ))}
           </div>
 
-<<<<<<< HEAD
-=======
           {/* 더 보기 버튼 */}
           <div className="flex justify-center mt-xl">
             <button
@@ -83,7 +77,6 @@ export default function EnrollmentsPage() {
             </button>
           </div>
 
->>>>>>> main
         </div>
       </main>
       <Footer />
