@@ -1,5 +1,6 @@
 package com.ohgiraffers.lxp.instructor.presentation;
 
+import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
 import jakarta.validation.Valid;
@@ -12,13 +13,16 @@ public class InstructorProfileController {
 
     private final RegisterInstructorProfileUseCase registerInstructorProfileUseCase;
     private final UpdateInstructorProfileUseCase updateInstructorProfileUseCase;
+    private final GetInstructorProfileUseCase getInstructorProfileUseCase;
 
     public InstructorProfileController(
             RegisterInstructorProfileUseCase registerInstructorProfileUseCase,
-            UpdateInstructorProfileUseCase updateInstructorProfileUseCase
+            UpdateInstructorProfileUseCase updateInstructorProfileUseCase,
+            GetInstructorProfileUseCase getInstructorProfileUseCase
     ) {
         this.registerInstructorProfileUseCase = registerInstructorProfileUseCase;
         this.updateInstructorProfileUseCase = updateInstructorProfileUseCase;
+        this.getInstructorProfileUseCase = getInstructorProfileUseCase;
     }
 
     @PostMapping("/{id}/profile")
@@ -37,5 +41,10 @@ public class InstructorProfileController {
     ) {
         updateInstructorProfileUseCase.update(request.toCommand(id));
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<InstructorProfileResponse> get(@PathVariable Long id) {
+        return ResponseEntity.ok(InstructorProfileResponse.from(getInstructorProfileUseCase.get(id)));
     }
 }
