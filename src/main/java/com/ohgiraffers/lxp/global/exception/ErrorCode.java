@@ -49,6 +49,7 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
     MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "활성화된 회원만 로그인할 수 있습니다."),
+    MEMBER_NICKNAME_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "해당 닉네임이 이미 존재합니다."),
 
     // token
     TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다."),
@@ -62,7 +63,7 @@ public enum ErrorCode {
     IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
 
     // question
-    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문이 존재하지 않습니다.");
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문이 존재하지 않습니다."),;
 
     private final HttpStatus status;
     private final String message;
