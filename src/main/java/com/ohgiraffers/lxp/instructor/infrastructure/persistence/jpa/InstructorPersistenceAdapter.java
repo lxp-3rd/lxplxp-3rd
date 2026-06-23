@@ -22,11 +22,6 @@ public class InstructorPersistenceAdapter implements InstructorRepositoryPort {
     }
 
     @Override
-    public boolean existsById(Long id) {
-        return jpaRepository.existsById(id);
-    }
-
-    @Override
     public boolean existsByIdAndStatusIn(Long id, List<InstructorStatus> statuses) {
         return jpaRepository.existsByIdAndStatusIn(id, statuses);
     }

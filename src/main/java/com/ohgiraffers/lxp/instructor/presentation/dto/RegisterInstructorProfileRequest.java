@@ -1,6 +1,6 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.dto;
 
-import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase.RegisterInstructorProfileCommand;
+import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
 import jakarta.validation.constraints.NotBlank;
 
 public record RegisterInstructorProfileRequest(

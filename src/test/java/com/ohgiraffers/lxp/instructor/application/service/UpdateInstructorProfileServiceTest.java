@@ -2,9 +2,9 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase.UpdateInstructorProfileCommand;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepository;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.application.port.command.UpdateInstructorProfileCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class UpdateInstructorProfileServiceTest {
     private UpdateInstructorProfileService updateInstructorProfileService;
 
     @Mock
-    private InstructorProfileRepository instructorProfileRepository;
+    private InstructorProfileRepositoryPort instructorProfileRepository;
 
     @Test
     @DisplayName("프로필 수정 성공 시 변경된 값이 저장된다")

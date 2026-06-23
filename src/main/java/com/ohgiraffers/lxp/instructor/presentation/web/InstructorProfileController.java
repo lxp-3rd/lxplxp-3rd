@@ -1,7 +1,9 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.web;
 
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
+import com.ohgiraffers.lxp.instructor.presentation.dto.RegisterInstructorProfileRequest;
+import com.ohgiraffers.lxp.instructor.presentation.dto.UpdateInstructorProfileRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

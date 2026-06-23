@@ -1,7 +1,7 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.config.JpaAuditingConfig;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
