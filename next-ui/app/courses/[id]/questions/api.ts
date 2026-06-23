@@ -3,13 +3,13 @@ import type { QuestionResponse, CreateQuestionRequest, UpdateQuestionRequest } f
 
 export const questionApi = {
   getAll: (courseId: number) =>
-    fetcher.get<QuestionResponse[]>(`/questions?courseId=${courseId}`),
+    fetcher.get<QuestionResponse[]>(`/api/questions?courseId=${courseId}`),
   getById: (questionId: number) =>
-    fetcher.get<QuestionResponse>(`/questions/${questionId}`),
+    fetcher.get<QuestionResponse>(`/api/questions/${questionId}`),
   create: (data: CreateQuestionRequest) =>
-    fetcher.post<QuestionResponse>('/questions', data),
+    fetcher.post<QuestionResponse>('/api/questions', data),
   update: (questionId: number, data: UpdateQuestionRequest) =>
-    fetcher.put<QuestionResponse>(`/questions/${questionId}`, data),
+    fetcher.put<QuestionResponse>(`/api/questions/${questionId}`, data),
   remove: (questionId: number, memberId: number) =>
-    fetcher.delete(`/questions/${questionId}?memberId=${memberId}`),
+    fetcher.delete(`/api/questions/${questionId}?memberId=${memberId}`),
 };
