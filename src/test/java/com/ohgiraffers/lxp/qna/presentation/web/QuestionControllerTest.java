@@ -47,14 +47,14 @@ class QuestionControllerTest {
     @MockitoBean
     private QuestionUseCase questionUseCase;
 
-    // ─── POST /questions ───────────────────────────────────────────────────
+    // ─── POST /api/questions ─────────────────────────────────────────────
 
     @Test
     @DisplayName("질문 등록 성공 시 201을 반환한다")
     void createQuestion_success_returns201() throws Exception {
         given(questionUseCase.createQuestion(any())).willReturn(questionResult(QUESTION_ID));
 
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다"))))
@@ -66,7 +66,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("courseId 누락 시 400을 반환한다")
     void createQuestion_missingCourseId_returns400() throws Exception {
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(null, MEMBER_ID, "제목입니다", "내용입니다"))))
@@ -76,7 +76,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("제목이 1자(최소 미달)이면 400을 반환한다")
     void createQuestion_titleTooShort_returns400() throws Exception {
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(COURSE_ID, MEMBER_ID, "짧", "내용입니다"))))
@@ -86,7 +86,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("제목이 201자(최대 초과)이면 400을 반환한다")
     void createQuestion_titleTooLong_returns400() throws Exception {
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(COURSE_ID, MEMBER_ID, "가".repeat(201), "내용입니다"))))
@@ -96,7 +96,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("내용이 501자(최대 초과)이면 400을 반환한다")
     void createQuestion_contentTooLong_returns400() throws Exception {
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(COURSE_ID, MEMBER_ID, "제목입니다", "가".repeat(501)))))
@@ -109,14 +109,14 @@ class QuestionControllerTest {
         given(questionUseCase.createQuestion(any()))
                 .willThrow(new BusinessException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
-        mockMvc.perform(post("/questions")
+        mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new CreateBody(COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다"))))
                 .andExpect(status().isNotFound());
     }
 
-    // ─── GET /questions ────────────────────────────────────────────────────
+    // ─── GET /api/questions ──────────────────────────────────────────────
 
     @Test
     @DisplayName("강좌별 질문 목록 조회 시 200과 목록을 반환한다")
@@ -124,7 +124,7 @@ class QuestionControllerTest {
         given(questionUseCase.getQuestions(COURSE_ID))
                 .willReturn(List.of(questionResult(1L), questionResult(2L)));
 
-        mockMvc.perform(get("/questions").param("courseId", String.valueOf(COURSE_ID)))
+        mockMvc.perform(get("/api/questions").param("courseId", String.valueOf(COURSE_ID)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));
     }
@@ -132,7 +132,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("courseId 파라미터 없이 목록 조회 시 400을 반환한다")
     void getQuestions_missingCourseId_returns400() throws Exception {
-        mockMvc.perform(get("/questions"))
+        mockMvc.perform(get("/api/questions"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -142,18 +142,18 @@ class QuestionControllerTest {
         given(questionUseCase.getQuestions(COURSE_ID))
                 .willThrow(new BusinessException(ErrorCode.COURSE_NOT_FOUND));
 
-        mockMvc.perform(get("/questions").param("courseId", String.valueOf(COURSE_ID)))
+        mockMvc.perform(get("/api/questions").param("courseId", String.valueOf(COURSE_ID)))
                 .andExpect(status().isNotFound());
     }
 
-    // ─── GET /questions/{id} ───────────────────────────────────────────────
+    // ─── GET /api/questions/{id} ─────────────────────────────────────────
 
     @Test
     @DisplayName("질문 단건 조회 성공 시 200을 반환한다")
     void getQuestion_success_returns200() throws Exception {
         given(questionUseCase.getQuestion(QUESTION_ID)).willReturn(questionResult(QUESTION_ID));
 
-        mockMvc.perform(get("/questions/{id}", QUESTION_ID))
+        mockMvc.perform(get("/api/questions/{id}", QUESTION_ID))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(QUESTION_ID));
     }
@@ -164,18 +164,18 @@ class QuestionControllerTest {
         given(questionUseCase.getQuestion(QUESTION_ID))
                 .willThrow(new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
-        mockMvc.perform(get("/questions/{id}", QUESTION_ID))
+        mockMvc.perform(get("/api/questions/{id}", QUESTION_ID))
                 .andExpect(status().isNotFound());
     }
 
-    // ─── PUT /questions/{id} ───────────────────────────────────────────────
+    // ─── PUT /api/questions/{id} ─────────────────────────────────────────
 
     @Test
     @DisplayName("질문 수정 성공 시 200을 반환한다")
     void updateQuestion_success_returns200() throws Exception {
         given(questionUseCase.updateQuestion(any())).willReturn(questionResult(QUESTION_ID));
 
-        mockMvc.perform(put("/questions/{id}", QUESTION_ID)
+        mockMvc.perform(put("/api/questions/{id}", QUESTION_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new UpdateBody(MEMBER_ID, "수정된 제목", "수정된 내용"))))
@@ -186,7 +186,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("수정 시 제목이 blank이면 400을 반환한다")
     void updateQuestion_blankTitle_returns400() throws Exception {
-        mockMvc.perform(put("/questions/{id}", QUESTION_ID)
+        mockMvc.perform(put("/api/questions/{id}", QUESTION_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new UpdateBody(MEMBER_ID, "  ", "수정된 내용"))))
@@ -199,21 +199,21 @@ class QuestionControllerTest {
         given(questionUseCase.updateQuestion(any()))
                 .willThrow(new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
 
-        mockMvc.perform(put("/questions/{id}", QUESTION_ID)
+        mockMvc.perform(put("/api/questions/{id}", QUESTION_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new UpdateBody(MEMBER_ID, "수정된 제목", "수정된 내용"))))
                 .andExpect(status().isNotFound());
     }
 
-    // ─── DELETE /questions/{id} ────────────────────────────────────────────
+    // ─── DELETE /api/questions/{id} ──────────────────────────────────────
 
     @Test
     @DisplayName("질문 삭제 성공 시 204를 반환한다")
     void deleteQuestion_success_returns204() throws Exception {
         willDoNothing().given(questionUseCase).deleteQuestion(eq(QUESTION_ID), eq(MEMBER_ID));
 
-        mockMvc.perform(delete("/questions/{id}", QUESTION_ID)
+        mockMvc.perform(delete("/api/questions/{id}", QUESTION_ID)
                         .param("memberId", String.valueOf(MEMBER_ID)))
                 .andExpect(status().isNoContent());
     }
@@ -221,7 +221,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("memberId 파라미터 없이 삭제 요청 시 400을 반환한다")
     void deleteQuestion_missingMemberId_returns400() throws Exception {
-        mockMvc.perform(delete("/questions/{id}", QUESTION_ID))
+        mockMvc.perform(delete("/api/questions/{id}", QUESTION_ID))
                 .andExpect(status().isBadRequest());
     }
 
@@ -231,7 +231,7 @@ class QuestionControllerTest {
         willThrow(new BusinessException(ErrorCode.QUESTION_NOT_FOUND))
                 .given(questionUseCase).deleteQuestion(eq(QUESTION_ID), eq(MEMBER_ID));
 
-        mockMvc.perform(delete("/questions/{id}", QUESTION_ID)
+        mockMvc.perform(delete("/api/questions/{id}", QUESTION_ID)
                         .param("memberId", String.valueOf(MEMBER_ID)))
                 .andExpect(status().isNotFound());
     }
