@@ -9,5 +9,7 @@ public interface InstructorJpaRepository extends JpaRepository<InstructorJpaEnti
 
     boolean existsByIdAndStatusInAndDeletedAtIsNull(Long id, List<InstructorStatus> statuses);
 
+    boolean existsByIdAndStatusInAndDeletedAtIsNull(Long id, List<InstructorStatus> statuses);
+
     boolean existsByMemberIdAndStatusIn(Long memberId, List<InstructorStatus> statuses);
 }
