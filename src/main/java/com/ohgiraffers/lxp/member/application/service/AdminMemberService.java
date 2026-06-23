@@ -36,7 +36,7 @@ public class AdminMemberService implements GetAdminMemberListUseCase, GetAdminMe
     @Transactional(readOnly = true)
     public AdminMemberResult getMember(AdminMemberDetailCommand command) {
         validateAdmin(command.requesterRole());
-        return adminMemberRepositoryPort.findById(command.memberId())
+        return adminMemberRepositoryPort.findAdminMemberById(command.memberId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
     }
 

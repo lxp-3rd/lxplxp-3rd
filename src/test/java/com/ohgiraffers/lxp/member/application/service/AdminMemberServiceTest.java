@@ -58,7 +58,7 @@ class AdminMemberServiceTest {
     @Test
     void get_member_success() {
         AdminMemberResult member = member(1L, MemberRole.LEARNER, MemberStatus.ACTIVE);
-        given(adminMemberRepositoryPort.findById(1L)).willReturn(Optional.of(member));
+        given(adminMemberRepositoryPort.findAdminMemberById(1L)).willReturn(Optional.of(member));
 
         AdminMemberResult result = adminMemberService.getMember(new AdminMemberDetailCommand(99L, MemberRole.ADMIN, 1L));
 
@@ -67,7 +67,7 @@ class AdminMemberServiceTest {
 
     @Test
     void get_member_fails_when_member_not_found() {
-        given(adminMemberRepositoryPort.findById(1L)).willReturn(Optional.empty());
+        given(adminMemberRepositoryPort.findAdminMemberById(1L)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> adminMemberService.getMember(new AdminMemberDetailCommand(99L, MemberRole.ADMIN, 1L)))
                 .isInstanceOf(BusinessException.class)
