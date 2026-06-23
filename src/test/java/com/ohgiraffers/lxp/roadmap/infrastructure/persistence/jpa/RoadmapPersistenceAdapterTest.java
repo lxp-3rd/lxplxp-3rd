@@ -1,6 +1,8 @@
 package com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa;
 
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
 import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
+import com.ohgiraffers.lxp.roadmap.domain.model.vo.ParticipatingRoadmapStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +72,8 @@ class RoadmapPersistenceAdapterTest {
     }
 
     @Test
-    @DisplayName("findAll: 삭제되지 않은 로드맵만 조회한다")
-    void findAll() {
+    @DisplayName("findAllCreatedByMemberId: 내가 만들었고 삭제되지 않은 로드맵만 조회한다")
+    void findAllCreatedByMemberId() {
         Roadmap active = adapter.save(Roadmap.create(
                 1L,
                 "백엔드 로드맵",
@@ -93,7 +95,67 @@ class RoadmapPersistenceAdapterTest {
                 List.of(1L, 3L)
         ));
 
-        List<Roadmap> roadmaps = adapter.findAllByMemberId(1L);
+        List<Roadmap> roadmaps = adapter.findAllCreatedByMemberId(1L);
+
+        assertThat(roadmaps)
+                .extracting(Roadmap::getId)
+                .containsExactly(active.getId());
+    }
+
+    @Test
+    @DisplayName("findAllAvailable: 내가 만들었거나 참여 중인 로드맵은 제외한다")
+    void findAllAvailable() {
+        Roadmap created = adapter.save(Roadmap.create(
+                1L,
+                "내 로드맵",
+                "내가 생성한 강좌 로드맵 소개 문장입니다.",
+                List.of(1L, 2L)
+        ));
+        Roadmap participating = adapter.save(Roadmap.create(
+                2L,
+                "참여 로드맵",
+                "이미 참여 중인 강좌 로드맵 소개 문장입니다.",
+                List.of(2L, 3L)
+        ));
+        Roadmap available = adapter.save(Roadmap.create(
+                3L,
+                "가능 로드맵",
+                "새롭게 참여 가능한 강좌 로드맵 소개 문장입니다.",
+                List.of(1L, 3L)
+        ));
+
+        List<Roadmap> roadmaps = adapter.findAllAvailable(
+                1L,
+                List.of(ParticipatingRoadmap.restore(1L, 1L, participating.getId(), ParticipatingRoadmapStatus.ACTIVE))
+        );
+
+        assertThat(roadmaps)
+                .extracting(Roadmap::getId)
+                .containsExactly(available.getId())
+                .doesNotContain(created.getId(), participating.getId());
+    }
+
+    @Test
+    @DisplayName("findAllByParticipatingRoadmaps: 참여 중인 로드맵 기준으로 삭제되지 않은 로드맵만 조회한다")
+    void findAllByParticipatingRoadmaps() {
+        Roadmap active = adapter.save(Roadmap.create(
+                2L,
+                "참여 로드맵",
+                "참여 중인 강좌 로드맵 소개 문장입니다.",
+                List.of(1L, 2L)
+        ));
+        Roadmap deleted = adapter.save(Roadmap.create(
+                2L,
+                "삭제 로드맵",
+                "삭제된 참여 강좌 로드맵 소개 문장입니다.",
+                List.of(2L, 3L)
+        ));
+        adapter.deleteById(deleted.getId());
+
+        List<Roadmap> roadmaps = adapter.findAllByParticipatingRoadmaps(List.of(
+                ParticipatingRoadmap.restore(1L, 1L, active.getId(), ParticipatingRoadmapStatus.ACTIVE),
+                ParticipatingRoadmap.restore(2L, 1L, deleted.getId(), ParticipatingRoadmapStatus.ACTIVE)
+        ));
 
         assertThat(roadmaps)
                 .extracting(Roadmap::getId)

@@ -6,6 +6,7 @@ import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import com.ohgiraffers.lxp.roadmap.application.dto.RoadmapResult;
+import com.ohgiraffers.lxp.roadmap.application.port.in.ParticipatingRoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.application.port.in.RoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.presentation.dto.RoadmapRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -45,6 +46,9 @@ class RoadmapControllerTest {
 
     @MockitoBean
     private RoadmapUseCase roadmapUseCase;
+
+    @MockitoBean
+    private ParticipatingRoadmapUseCase participatingRoadmapUseCase;
 
     @Test
     @DisplayName("로그인 정보 없이 로드맵 생성 시 401을 반환한다")
@@ -159,11 +163,34 @@ class RoadmapControllerTest {
     }
 
     @Test
-    @DisplayName("로드맵 목록 조회 성공 시 200을 반환한다")
-    void getAll_success() throws Exception {
-        given(roadmapUseCase.getRoadmaps(MEMBER_ID)).willReturn(List.of(result(1L), result(2L)));
+    @DisplayName("참여 가능한 로드맵 목록 조회 성공 시 200을 반환한다")
+    void getAvailable_success() throws Exception {
+        given(roadmapUseCase.getAvailableRoadmaps(MEMBER_ID)).willReturn(List.of(result(1L), result(2L)));
 
-        mockMvc.perform(get("/api/roadmaps")
+        mockMvc.perform(get("/api/roadmaps/available")
+                        .requestAttr(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME, loginMember()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("참여 중인 로드맵 목록 조회 성공 시 200을 반환한다")
+    void getParticipating_success() throws Exception {
+        given(participatingRoadmapUseCase.getParticipatingRoadmaps(MEMBER_ID))
+                .willReturn(List.of(result(1L), result(2L)));
+
+        mockMvc.perform(get("/api/roadmaps/participating")
+                        .requestAttr(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME, loginMember()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("내가 만든 로드맵 목록 조회 성공 시 200을 반환한다")
+    void getCreated_success() throws Exception {
+        given(roadmapUseCase.getCreatedRoadmaps(MEMBER_ID)).willReturn(List.of(result(1L), result(2L)));
+
+        mockMvc.perform(get("/api/roadmaps/created")
                         .requestAttr(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME, loginMember()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2));

@@ -7,7 +7,9 @@ import com.ohgiraffers.lxp.roadmap.application.port.command.CreateRoadmapCommand
 import com.ohgiraffers.lxp.roadmap.application.port.command.UpdateRoadmapCommand;
 import com.ohgiraffers.lxp.roadmap.application.port.in.RoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.application.port.out.CoursePort;
+import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapParticipationPort;
 import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapRepositoryPort;
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
 import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,16 @@ public class RoadmapService implements RoadmapUseCase {
 
     private final RoadmapRepositoryPort roadmapRepositoryPort;
     private final CoursePort coursePort;
+    private final RoadmapParticipationPort roadmapParticipationPort;
 
-    public RoadmapService(RoadmapRepositoryPort roadmapRepositoryPort, CoursePort coursePort) {
+    public RoadmapService(
+            RoadmapRepositoryPort roadmapRepositoryPort,
+            CoursePort coursePort,
+            RoadmapParticipationPort roadmapParticipationPort
+    ) {
         this.roadmapRepositoryPort = roadmapRepositoryPort;
         this.coursePort = coursePort;
+        this.roadmapParticipationPort = roadmapParticipationPort;
     }
 
     @Override
@@ -37,13 +45,21 @@ public class RoadmapService implements RoadmapUseCase {
     @Override
     public RoadmapResult getRoadmap(Long roadmapId, Long memberId) {
         Roadmap roadmap = getRoadmapOrThrow(roadmapId);
-        validateOwner(roadmap, memberId);
         return RoadmapResult.from(roadmap);
     }
 
     @Override
-    public List<RoadmapResult> getRoadmaps(Long memberId) {
-        return roadmapRepositoryPort.findAllByMemberId(memberId)
+    public List<RoadmapResult> getAvailableRoadmaps(Long memberId) {
+        List<ParticipatingRoadmap> participatingRoadmaps = roadmapParticipationPort.findAllByMemberId(memberId);
+        return roadmapRepositoryPort.findAllAvailable(memberId, participatingRoadmaps)
+                .stream()
+                .map(RoadmapResult::from)
+                .toList();
+    }
+
+    @Override
+    public List<RoadmapResult> getCreatedRoadmaps(Long memberId) {
+        return roadmapRepositoryPort.findAllCreatedByMemberId(memberId)
                 .stream()
                 .map(RoadmapResult::from)
                 .toList();

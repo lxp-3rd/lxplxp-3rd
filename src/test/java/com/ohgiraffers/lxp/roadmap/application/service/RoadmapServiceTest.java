@@ -6,8 +6,11 @@ import com.ohgiraffers.lxp.roadmap.application.dto.RoadmapResult;
 import com.ohgiraffers.lxp.roadmap.application.port.command.CreateRoadmapCommand;
 import com.ohgiraffers.lxp.roadmap.application.port.command.UpdateRoadmapCommand;
 import com.ohgiraffers.lxp.roadmap.application.port.out.CoursePort;
+import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapParticipationPort;
 import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapRepositoryPort;
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
 import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
+import com.ohgiraffers.lxp.roadmap.domain.model.vo.ParticipatingRoadmapStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +39,9 @@ class RoadmapServiceTest {
 
     @Mock
     private CoursePort coursePort;
+
+    @Mock
+    private RoadmapParticipationPort roadmapParticipationPort;
 
     @Test
     @DisplayName("로드맵 생성 성공 시 강좌 존재를 검증하고 저장한다")
@@ -91,6 +97,20 @@ class RoadmapServiceTest {
     }
 
     @Test
+    @DisplayName("로드맵 단건 조회 시 소유자가 아니어도 조회할 수 있다")
+    void getRoadmap_success() {
+        Roadmap roadmap = Roadmap.restore(
+                1L, 2L, "기존 로드맵", "기존 강좌 로드맵 소개 문장을 충분히 작성합니다.", List.of(1L, 2L), null, null
+        );
+        given(roadmapRepositoryPort.findById(1L)).willReturn(Optional.of(roadmap));
+
+        RoadmapResult result = roadmapService.getRoadmap(1L, 1L);
+
+        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.memberId()).isEqualTo(2L);
+    }
+
+    @Test
     @DisplayName("존재하지 않는 로드맵 조회 시 예외가 발생한다")
     void getRoadmap_notFound() {
         given(roadmapRepositoryPort.findById(99L)).willReturn(Optional.empty());
@@ -99,6 +119,36 @@ class RoadmapServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.ROADMAP_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("참여 가능한 로드맵은 내가 만들지 않았고 참여 중이지 않은 로드맵을 조회한다")
+    void getAvailableRoadmaps_success() {
+        Roadmap roadmap = Roadmap.restore(
+                3L, 2L, "가능 로드맵", "참여 가능한 강좌 로드맵 소개 문장입니다.", List.of(1L, 2L), null, null
+        );
+        List<ParticipatingRoadmap> participatingRoadmaps = List.of(
+                ParticipatingRoadmap.restore(1L, 1L, 2L, ParticipatingRoadmapStatus.ACTIVE)
+        );
+        given(roadmapParticipationPort.findAllByMemberId(1L)).willReturn(participatingRoadmaps);
+        given(roadmapRepositoryPort.findAllAvailable(1L, participatingRoadmaps)).willReturn(List.of(roadmap));
+
+        List<RoadmapResult> results = roadmapService.getAvailableRoadmaps(1L);
+
+        assertThat(results).extracting(RoadmapResult::id).containsExactly(3L);
+    }
+
+    @Test
+    @DisplayName("내가 만든 로드맵은 생성자 memberId 기준으로 조회한다")
+    void getCreatedRoadmaps_success() {
+        Roadmap roadmap = Roadmap.restore(
+                1L, 1L, "생성 로드맵", "내가 생성한 강좌 로드맵 소개 문장입니다.", List.of(1L, 2L), null, null
+        );
+        given(roadmapRepositoryPort.findAllCreatedByMemberId(1L)).willReturn(List.of(roadmap));
+
+        List<RoadmapResult> results = roadmapService.getCreatedRoadmaps(1L);
+
+        assertThat(results).extracting(RoadmapResult::id).containsExactly(1L);
     }
 
     @Test

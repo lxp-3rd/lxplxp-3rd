@@ -1,5 +1,6 @@
 package com.ohgiraffers.lxp.roadmap.application.port.out;
 
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
 import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
 
 import java.util.List;
@@ -11,7 +12,11 @@ public interface RoadmapRepositoryPort {
 
     Optional<Roadmap> findById(Long roadmapId);
 
-    List<Roadmap> findAllByMemberId(Long memberId);
+    List<Roadmap> findAllAvailable(Long memberId, List<ParticipatingRoadmap> participatingRoadmaps);
+
+    List<Roadmap> findAllByParticipatingRoadmaps(List<ParticipatingRoadmap> participatingRoadmaps);
+
+    List<Roadmap> findAllCreatedByMemberId(Long memberId);
 
     void deleteById(Long roadmapId);
 }

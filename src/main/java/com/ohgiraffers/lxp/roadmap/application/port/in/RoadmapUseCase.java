@@ -12,7 +12,9 @@ public interface RoadmapUseCase {
 
     RoadmapResult getRoadmap(Long roadmapId, Long memberId);
 
-    List<RoadmapResult> getRoadmaps(Long memberId);
+    List<RoadmapResult> getAvailableRoadmaps(Long memberId);
+
+    List<RoadmapResult> getCreatedRoadmaps(Long memberId);
 
     RoadmapResult updateRoadmap(UpdateRoadmapCommand command);
 

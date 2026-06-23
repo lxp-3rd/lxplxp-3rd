@@ -3,6 +3,7 @@ package com.ohgiraffers.lxp.roadmap.presentation.web;
 import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
 import com.ohgiraffers.lxp.auth.presentation.support.LoginMember;
 import com.ohgiraffers.lxp.roadmap.application.dto.RoadmapResult;
+import com.ohgiraffers.lxp.roadmap.application.port.in.ParticipatingRoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.application.port.in.RoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.presentation.dto.RoadmapRequest;
 import com.ohgiraffers.lxp.roadmap.presentation.dto.RoadmapResponse;
@@ -25,9 +26,14 @@ import java.util.List;
 public class RoadmapController {
 
     private final RoadmapUseCase roadmapUseCase;
+    private final ParticipatingRoadmapUseCase participatingRoadmapUseCase;
 
-    public RoadmapController(RoadmapUseCase roadmapUseCase) {
+    public RoadmapController(
+            RoadmapUseCase roadmapUseCase,
+            ParticipatingRoadmapUseCase participatingRoadmapUseCase
+    ) {
         this.roadmapUseCase = roadmapUseCase;
+        this.participatingRoadmapUseCase = participatingRoadmapUseCase;
     }
 
     @PostMapping
@@ -49,9 +55,27 @@ public class RoadmapController {
         return ResponseEntity.ok(RoadmapResponse.from(roadmapUseCase.getRoadmap(id, authenticatedMember.memberId())));
     }
 
-    @GetMapping
-    public ResponseEntity<List<RoadmapResponse>> getAll(@LoginMember AuthenticatedMember authenticatedMember) {
-        return ResponseEntity.ok(roadmapUseCase.getRoadmaps(authenticatedMember.memberId())
+    @GetMapping("/available")
+    public ResponseEntity<List<RoadmapResponse>> getAvailable(@LoginMember AuthenticatedMember authenticatedMember) {
+        return ResponseEntity.ok(roadmapUseCase.getAvailableRoadmaps(authenticatedMember.memberId())
+                .stream()
+                .map(RoadmapResponse::from)
+                .toList());
+    }
+
+    @GetMapping("/participating")
+    public ResponseEntity<List<RoadmapResponse>> getParticipating(
+            @LoginMember AuthenticatedMember authenticatedMember
+    ) {
+        return ResponseEntity.ok(participatingRoadmapUseCase.getParticipatingRoadmaps(authenticatedMember.memberId())
+                .stream()
+                .map(RoadmapResponse::from)
+                .toList());
+    }
+
+    @GetMapping("/created")
+    public ResponseEntity<List<RoadmapResponse>> getCreated(@LoginMember AuthenticatedMember authenticatedMember) {
+        return ResponseEntity.ok(roadmapUseCase.getCreatedRoadmaps(authenticatedMember.memberId())
                 .stream()
                 .map(RoadmapResponse::from)
                 .toList());

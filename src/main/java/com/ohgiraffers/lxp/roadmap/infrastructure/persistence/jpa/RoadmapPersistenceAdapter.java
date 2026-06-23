@@ -3,6 +3,7 @@ package com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapRepositoryPort;
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
 import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,45 @@ public class RoadmapPersistenceAdapter implements RoadmapRepositoryPort {
     }
 
     @Override
-    public List<Roadmap> findAllByMemberId(Long memberId) {
+    public List<Roadmap> findAllAvailable(Long memberId, List<ParticipatingRoadmap> participatingRoadmaps) {
+        List<Long> participatingRoadmapIds = toRoadmapIds(participatingRoadmaps);
+        if (participatingRoadmapIds.isEmpty()) {
+            return roadmapJpaRepository.findAllByMemberIdNotAndDeletedAtIsNullOrderByCreatedAtDesc(memberId)
+                    .stream()
+                    .map(RoadmapJpaEntity::toDomain)
+                    .toList();
+        }
+
+        return roadmapJpaRepository.findAllByMemberIdNotAndIdNotInAndDeletedAtIsNullOrderByCreatedAtDesc(
+                        memberId,
+                        participatingRoadmapIds
+                )
+                .stream()
+                .map(RoadmapJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Roadmap> findAllByParticipatingRoadmaps(List<ParticipatingRoadmap> participatingRoadmaps) {
+        List<Long> roadmapIds = toRoadmapIds(participatingRoadmaps);
+        if (roadmapIds.isEmpty()) {
+            return List.of();
+        }
+
+        return roadmapJpaRepository.findAllByIdInAndDeletedAtIsNullOrderByCreatedAtDesc(roadmapIds)
+                .stream()
+                .map(RoadmapJpaEntity::toDomain)
+                .toList();
+    }
+
+    private List<Long> toRoadmapIds(List<ParticipatingRoadmap> participatingRoadmaps) {
+        return participatingRoadmaps.stream()
+                .map(ParticipatingRoadmap::getRoadmapId)
+                .toList();
+    }
+
+    @Override
+    public List<Roadmap> findAllCreatedByMemberId(Long memberId) {
         return roadmapJpaRepository.findAllByMemberIdAndDeletedAtIsNullOrderByCreatedAtDesc(memberId)
                 .stream()
                 .map(RoadmapJpaEntity::toDomain)
