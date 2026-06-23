@@ -184,4 +184,30 @@ class InstructorProfileControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @DisplayName("등록 시 잘못된 URL 형식이면 400을 반환한다")
+    void register_invalidUrl_returns400() throws Exception {
+        RegisterInstructorProfileRequest request = new RegisterInstructorProfileRequest(
+                "not-a-url", "자기소개"
+        );
+
+        mockMvc.perform(post("/api/instructors/1/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("수정 시 잘못된 URL 형식이면 400을 반환한다")
+    void update_invalidUrl_returns400() throws Exception {
+        UpdateInstructorProfileRequest request = new UpdateInstructorProfileRequest(
+                "not-a-url", "새로운 자기소개"
+        );
+
+        mockMvc.perform(put("/api/instructors/1/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
 }
