@@ -4,6 +4,7 @@ import com.ohgiraffers.lxp.course.application.port.out.CourseRepositoryPort;
 import com.ohgiraffers.lxp.course.domain.model.entity.Course;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,6 +25,13 @@ public class CoursePersistenceAdapter implements CourseRepositoryPort {
     public Optional<Course> findById(Long id) {
         return jpaRepository.findByIdAndDeletedAtIsNull(id)
                 .map(CourseJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Course> findAll() {
+        return jpaRepository.findAllByDeletedAtIsNull().stream()
+                .map(CourseJpaEntity::toDomain)
+                .toList();
     }
 
     @Override
