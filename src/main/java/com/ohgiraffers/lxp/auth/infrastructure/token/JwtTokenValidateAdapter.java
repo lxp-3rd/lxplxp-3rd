@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.auth.infrastructure.token;
 
 import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
+import com.ohgiraffers.lxp.auth.application.port.out.RefreshTokenValidatePort;
 import com.ohgiraffers.lxp.auth.application.port.out.TokenValidatePort;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 
 @Component
-public class JwtTokenValidateAdapter implements TokenValidatePort {
+public class JwtTokenValidateAdapter implements TokenValidatePort, RefreshTokenValidatePort {
 
     private final SecretKey secretKey;
 
@@ -25,13 +26,22 @@ public class JwtTokenValidateAdapter implements TokenValidatePort {
 
     @Override
     public AuthenticatedMember validateAccessToken(String token) {
+        return validate(token, JwtTokenType.ACCESS);
+    }
+
+    @Override
+    public AuthenticatedMember validateRefreshToken(String token) {
+        return validate(token, JwtTokenType.REFRESH);
+    }
+
+    private AuthenticatedMember validate(String token, String requiredTokenType) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return toAuthenticatedMember(claims);
+            return toAuthenticatedMember(claims, requiredTokenType);
         } catch (ExpiredJwtException e) {
             throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
         } catch (BusinessException e) {
@@ -41,9 +51,9 @@ public class JwtTokenValidateAdapter implements TokenValidatePort {
         }
     }
 
-    private AuthenticatedMember toAuthenticatedMember(Claims claims) {
+    private AuthenticatedMember toAuthenticatedMember(Claims claims, String requiredTokenType) {
         String tokenType = claims.get("type", String.class);
-        if (!JwtTokenType.ACCESS.equals(tokenType)) {
+        if (!requiredTokenType.equals(tokenType)) {
             throw new BusinessException(ErrorCode.TOKEN_TYPE_MISMATCH);
         }
 
@@ -57,9 +67,13 @@ public class JwtTokenValidateAdapter implements TokenValidatePort {
             throw new BusinessException(ErrorCode.TOKEN_INVALID);
         }
 
-        return new AuthenticatedMember(
-                memberIdNumber.longValue(),
-                MemberRole.valueOf(roleName)
-        );
+        try {
+            return new AuthenticatedMember(
+                    memberIdNumber.longValue(),
+                    MemberRole.valueOf(roleName)
+            );
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException(ErrorCode.TOKEN_INVALID);
+        }
     }
 }

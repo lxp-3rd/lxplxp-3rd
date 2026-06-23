@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.auth.infrastructure.token;
 
 import com.ohgiraffers.lxp.auth.application.dto.TokenPair;
+import com.ohgiraffers.lxp.auth.application.port.out.AccessTokenIssuePort;
 import com.ohgiraffers.lxp.auth.application.port.out.TokenIssuePort;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +14,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @Component
-public class JwtTokenIssueAdapter implements TokenIssuePort {
+public class JwtTokenIssueAdapter implements TokenIssuePort, AccessTokenIssuePort {
 
     private final SecretKey secretKey;
     private final Duration accessTokenExpiration;
@@ -46,6 +47,12 @@ public class JwtTokenIssueAdapter implements TokenIssuePort {
                 createToken(memberId, role, JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
                 refreshTokenExpiresAt
         );
+    }
+
+    @Override
+    public String issueAccessToken(Long memberId, MemberRole role) {
+        Instant now = Instant.now();
+        return createToken(memberId, role, JwtTokenType.ACCESS, now, now.plus(accessTokenExpiration));
     }
 
     private String createToken(Long memberId, MemberRole role, String tokenType, Instant issuedAt, Instant expiresAt) {
