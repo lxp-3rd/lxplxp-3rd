@@ -32,6 +32,6 @@ public class InstructorJpaEntity extends BaseEntity {
     }
 
     public Instructor toDomain() {
-        return Instructor.reconstitute(id, memberId, status);
+        return Instructor.restore(id, memberId, status);
     }
 }

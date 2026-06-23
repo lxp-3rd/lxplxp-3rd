@@ -16,7 +16,7 @@ public class Instructor {
         return instructor;
     }
 
-    public static Instructor reconstitute(Long id, Long memberId, InstructorStatus status) {
+    public static Instructor restore(Long id, Long memberId, InstructorStatus status) {
         Instructor instructor = new Instructor();
         instructor.id = id;
         instructor.memberId = memberId;
