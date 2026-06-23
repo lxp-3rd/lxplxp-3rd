@@ -31,6 +31,7 @@ public enum ErrorCode {
 
     // member
     MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
+    MEMBER_NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
     MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다.");
 
     private final HttpStatus status;
