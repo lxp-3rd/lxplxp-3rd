@@ -22,6 +22,11 @@ public class InstructorRepositoryImpl implements InstructorRepository {
     }
 
     @Override
+    public boolean existsById(Long id) {
+        return jpaRepository.existsById(id);
+    }
+
+    @Override
     public boolean existsByMemberIdAndStatusIn(Long memberId, List<InstructorStatus> statuses) {
         return jpaRepository.existsByMemberIdAndStatusIn(memberId, statuses);
     }
