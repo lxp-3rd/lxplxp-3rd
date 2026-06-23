@@ -38,3 +38,8 @@ out/
 
 ### Project ###
 scripts/
+
+### Claude Code ###
+.DS_Store
+.claude/.run-tests-now
+.claude/.test-scope
