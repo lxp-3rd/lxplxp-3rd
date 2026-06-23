@@ -5,6 +5,7 @@ import com.ohgiraffers.lxp.announcement.domain.model.entity.Announcement;
 import com.ohgiraffers.lxp.announcement.infrastructure.persistence.jpa.AnnouncementJpaEntity;
 import com.ohgiraffers.lxp.announcement.infrastructure.persistence.jpa.AnnouncementRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class AnnouncementPersistenceAdapter implements SaveAnnouncementPort {
@@ -16,6 +17,7 @@ public class AnnouncementPersistenceAdapter implements SaveAnnouncementPort {
     }
 
     @Override
+    @Transactional
     public Announcement save(Announcement announcement) {
         AnnouncementJpaEntity entity = AnnouncementMapper.toJpaEntity(announcement);
         AnnouncementJpaEntity saved = announcementRepository.save(entity);
