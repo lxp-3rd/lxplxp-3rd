@@ -1,7 +1,6 @@
 package com.ohgiraffers.lxp.qna.domain.model.entity;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
@@ -27,19 +26,21 @@ public class Question {
 	private final LocalDateTime deletedAt;
 
 	public static Question create(Long courseId, Long memberId, String title, String content) {
-		Objects.requireNonNull(memberId);
-		Objects.requireNonNull(courseId);
-
-		validateTitle(Objects.requireNonNull(title));
-		validateContent(Objects.requireNonNull(content));
+		if (courseId == null || memberId == null || title == null || content == null) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+		validateTitle(title);
+		validateContent(content);
 		return new Question(null, courseId, memberId, title, content, QuestionStatus.PUBLISHED, null, null, null);
 	}
 
 	public Question update(Long writerId, String title, String content) {
 		validateWriter(writerId);
-
-		validateTitle(Objects.requireNonNull(title));
-		validateContent(Objects.requireNonNull(content));
+		if (title == null || content == null) {
+			throw new BusinessException(ErrorCode.INVALID_INPUT);
+		}
+		validateTitle(title);
+		validateContent(content);
 		return new Question(id, courseId, memberId, title, content, status, createdAt, updatedAt, deletedAt);
 	}
 
