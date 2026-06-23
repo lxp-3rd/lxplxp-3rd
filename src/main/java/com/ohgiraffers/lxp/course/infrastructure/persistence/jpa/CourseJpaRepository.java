@@ -10,4 +10,6 @@ public interface CourseJpaRepository extends JpaRepository<CourseJpaEntity, Long
     Optional<CourseJpaEntity> findByIdAndDeletedAtIsNull(Long id);
 
     List<CourseJpaEntity> findAllByDeletedAtIsNull();
+
+    boolean existsByIdAndDeletedAtIsNull(Long id);
 }
