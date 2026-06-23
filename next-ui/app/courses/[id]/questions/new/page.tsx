@@ -3,23 +3,38 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
+import { questionApi } from '../api';
 
 export default function QuestionNewPage({ params }: { params: { id: string } }) {
-  const course = getCourseById(params.id) ?? MOCK_COURSES[0];
   const router = useRouter();
-
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // BE 연동 후 실제 저장
-    router.push(`/courses/${params.id}`);
+    setSubmitting(true);
+    setError(null);
+
+    // TODO: 인증 구현 후 JWT에서 memberId 추출로 교체
+    const memberId = 1;
+
+    try {
+      await questionApi.create({
+        courseId: Number(params.id),
+        memberId,
+        title,
+        content,
+      });
+      router.push(`/courses/${params.id}/questions`);
+    } catch {
+      setError('질문 등록 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -30,16 +45,10 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
 
           {/* 뒤로가기 */}
           <div className="mb-lg">
-            <Link href={`/courses/${params.id}`} className="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
+            <Link href={`/courses/${params.id}/questions`} className="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors">
               <span className="material-symbols-outlined text-[20px]">arrow_back</span>
-              <span className="text-label-md font-label-md">강좌로 돌아가기</span>
+              <span className="text-label-md font-label-md">질문 목록으로</span>
             </Link>
-          </div>
-
-          {/* 강좌 정보 */}
-          <div className="bg-primary-fixed/30 border border-primary/20 rounded-xl px-lg py-md mb-xl flex items-center gap-md">
-            <span className="material-symbols-outlined text-primary text-[20px]">book</span>
-            <p className="text-label-md font-label-md text-on-surface">{course.title}</p>
           </div>
 
           <h1 className="text-headline-md font-headline-md text-on-surface mb-xl">질문하기</h1>
@@ -57,7 +66,9 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                placeholder="질문 제목을 입력하세요"
+                minLength={2}
+                maxLength={200}
+                placeholder="질문 제목을 입력하세요 (2~200자)"
                 className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface focus:border-primary focus:outline-none transition-all"
               />
             </div>
@@ -72,26 +83,34 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
+                maxLength={500}
                 rows={8}
-                placeholder="궁금한 내용을 자세히 설명해 주세요. 어떤 부분에서 막혔는지, 어떤 것을 시도해 봤는지 함께 작성하면 빠른 답변을 받을 수 있어요."
+                placeholder="궁금한 내용을 자세히 설명해 주세요. (최대 500자)"
                 className="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md font-body-md text-on-surface resize-none focus:border-primary focus:outline-none transition-all"
               />
+              <p className="text-label-sm font-label-sm text-on-surface-variant text-right mt-xs">
+                {content.length} / 500
+              </p>
             </div>
+
+            {error && (
+              <p className="text-error text-label-md font-label-md">{error}</p>
+            )}
 
             {/* 버튼 */}
             <div className="flex items-center justify-end gap-md">
               <Link
-                href={`/courses/${params.id}`}
+                href={`/courses/${params.id}/questions`}
                 className="border border-outline-variant text-on-surface px-xl py-sm rounded-lg text-label-md font-label-md hover:bg-surface-container transition-colors"
               >
                 취소
               </Link>
               <button
                 type="submit"
-                disabled={!title || !content}
+                disabled={!title || !content || submitting}
                 className="bg-primary text-on-primary px-xl py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                질문 등록
+                {submitting ? '등록 중...' : '질문 등록'}
               </button>
             </div>
 

@@ -35,10 +35,15 @@ public class SignUpService implements SignUpUseCase {
             throw new BusinessException(ErrorCode.MEMBER_EMAIL_ALREADY_EXISTS);
         }
 
+        Nickname nickname = new Nickname(command.nickname());
+        if (memberRepositoryPort.existsByNickname(nickname)) {
+            throw new BusinessException(ErrorCode.MEMBER_NICKNAME_ALREADY_EXISTS);
+        }
+
         String encodedPassword = passwordEncodePort.encode(command.password());
         Member member = Member.signUp(
                 email,
-                new Nickname(command.nickname()),
+                nickname,
                 new EncodedPassword(encodedPassword)
         );
 

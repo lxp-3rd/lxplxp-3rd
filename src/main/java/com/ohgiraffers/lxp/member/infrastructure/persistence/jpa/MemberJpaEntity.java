@@ -21,7 +21,8 @@ import jakarta.persistence.UniqueConstraint;
 @Table(
         name = "members",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_members_email", columnNames = "email")
+                @UniqueConstraint(name = "uk_members_email", columnNames = "email"),
+                @UniqueConstraint(name = "uk_members_nickname", columnNames = "nickname")
         }
 )
 public class MemberJpaEntity extends BaseEntity {
