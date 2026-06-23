@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface InstructorProfileJpaRepository extends JpaRepository<InstructorProfileJpaEntity, Long> {
 
-    Optional<InstructorProfileJpaEntity> findByInstructorId(Long instructorId);
+    Optional<InstructorProfileJpaEntity> findByInstructorIdAndDeletedAtIsNull(Long instructorId);
 }
