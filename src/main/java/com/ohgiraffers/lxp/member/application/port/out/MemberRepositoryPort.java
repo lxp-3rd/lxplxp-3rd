@@ -12,6 +12,8 @@ public interface MemberRepositoryPort {
 
     boolean existsByNickname(Nickname nickname);
 
+    Optional<Member> findById(Long memberId);
+
     Optional<Member> findByEmail(Email email);
 
     Member save(Member member);
