@@ -69,7 +69,7 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
     }
 
     public InstructorApplication toDomain() {
-        return InstructorApplication.reconstitute(
+        return InstructorApplication.restore(
                 id,
                 memberId,
                 instructorName,
