@@ -2,9 +2,9 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase.UpdateInstructorProfileCommand;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepository;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.application.port.command.UpdateInstructorProfileCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class UpdateInstructorProfileServiceTest {
     private UpdateInstructorProfileService updateInstructorProfileService;
 
     @Mock
-    private InstructorProfileRepository instructorProfileRepository;
+    private InstructorProfileRepositoryPort instructorProfileRepository;
 
     @Test
     @DisplayName("프로필 수정 성공 시 변경된 값이 저장된다")
@@ -61,5 +61,39 @@ class UpdateInstructorProfileServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.INSTRUCTOR_PROFILE_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("빈 profileImageUrl로 수정하면 400 예외가 발생한다")
+    void update_blankProfileImageUrl_throwsBusinessException() {
+        UpdateInstructorProfileCommand command = new UpdateInstructorProfileCommand(
+                1L, "  ", "새로운 자기소개"
+        );
+        InstructorProfile existing = InstructorProfile.create(
+                1L, "https://example.com/image.jpg", "기존 자기소개"
+        );
+        given(instructorProfileRepository.findByInstructorId(1L)).willReturn(Optional.of(existing));
+
+        assertThatThrownBy(() -> updateInstructorProfileService.update(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_INPUT);
+    }
+
+    @Test
+    @DisplayName("빈 bio로 수정하면 400 예외가 발생한다")
+    void update_blankBio_throwsBusinessException() {
+        UpdateInstructorProfileCommand command = new UpdateInstructorProfileCommand(
+                1L, "https://example.com/new.jpg", "  "
+        );
+        InstructorProfile existing = InstructorProfile.create(
+                1L, "https://example.com/image.jpg", "기존 자기소개"
+        );
+        given(instructorProfileRepository.findByInstructorId(1L)).willReturn(Optional.of(existing));
+
+        assertThatThrownBy(() -> updateInstructorProfileService.update(command))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_INPUT);
     }
 }

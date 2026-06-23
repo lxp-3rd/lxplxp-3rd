@@ -16,3 +16,10 @@ spring:
 
 server:
   port: 8080
+
+lxp:
+  auth:
+    jwt:
+      secret: ${JWT_SECRET:}
+      access-token-expiration-minutes: 30
+      refresh-token-expiration-days: 14

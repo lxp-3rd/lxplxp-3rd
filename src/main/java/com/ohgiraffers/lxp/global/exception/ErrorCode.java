@@ -14,6 +14,8 @@ public enum ErrorCode {
     // instructor
     INSTRUCTOR_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 신청 내역을 찾을 수 없습니다."),
     INSTRUCTOR_APPLICATION_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 신청한 내역이 있습니다."),
+    INSTRUCTOR_APPLICATION_ALREADY_REVIEWED(HttpStatus.BAD_REQUEST, "이미 처리된 강사 신청입니다."),
+    INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED(HttpStatus.BAD_REQUEST, "반려 사유는 필수입니다."),
     INSTRUCTOR_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 정보를 찾을 수 없습니다."),
     INSTRUCTOR_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 강사 자격이 존재합니다."),
     INSTRUCTOR_PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "강사 프로필을 찾을 수 없습니다."),
@@ -30,9 +32,34 @@ public enum ErrorCode {
     CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다."),
     CONTENT_LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "학습 이력을 찾을 수 없습니다."),
 
+    // enrollment
+    ENROLLMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 수강 중인 강좌입니다."),
+    ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "수강 내역을 찾을 수 없습니다."),
+    ENROLLMENT_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 수강입니다."),
+    MEMBER_NOT_LEARNER(HttpStatus.FORBIDDEN, "수강생만 수강신청할 수 있습니다."),
+    MEMBER_SUSPENDED(HttpStatus.FORBIDDEN, "정지된 회원은 수강신청할 수 없습니다."),
+    COURSE_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 강좌만 수강신청할 수 있습니다."),
+
     // member
     MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
-    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다.");
+    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
+    MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "활성화된 회원만 로그인할 수 있습니다."),
+
+    // token
+    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰 타입이 올바르지 않습니다."),
+
+    // image upload
+    IMAGE_INVALID_FILE(HttpStatus.BAD_REQUEST, "이미지 파일이 비어 있습니다."),
+    IMAGE_INVALID_TYPE(HttpStatus.BAD_REQUEST, "허용되지 않는 이미지 형식입니다. (jpg, jpeg, png, gif, webp)"),
+    IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드에 실패했습니다."),
+
+    // question
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 질문이 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -2,11 +2,11 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase.RegisterInstructorProfileCommand;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepository;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepositoryPort;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,10 +32,10 @@ class RegisterInstructorProfileServiceTest {
     private RegisterInstructorProfileService registerInstructorProfileService;
 
     @Mock
-    private InstructorRepository instructorRepository;
+    private InstructorRepositoryPort instructorRepository;
 
     @Mock
-    private InstructorProfileRepository instructorProfileRepository;
+    private InstructorProfileRepositoryPort instructorProfileRepository;
 
     @Test
     @DisplayName("프로필 등록 성공 시 저장소에 저장된다")

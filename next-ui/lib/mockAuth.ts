@@ -4,6 +4,7 @@ export interface MockUser {
   id: string;
   name: string;
   email: string;
+  nickname: string;
   role: Role;
   avatarInitial: string;
 }
@@ -12,6 +13,7 @@ export const MOCK_USERS: Record<Role, MockUser> = {
   member: {
     id: 'u1',
     name: '김지혜',
+    email: 'member@lxp.com',
     nickname: 'member@lxp.com',
     role: 'member',
     avatarInitial: '김',
@@ -19,6 +21,7 @@ export const MOCK_USERS: Record<Role, MockUser> = {
   instructor: {
     id: 'u2',
     name: '이하연',
+    email: 'instructor@lxp.com',
     nickname: 'instructor@lxp.com',
     role: 'instructor',
     avatarInitial: '이',
@@ -26,6 +29,7 @@ export const MOCK_USERS: Record<Role, MockUser> = {
   admin: {
     id: 'u3',
     name: '관리자',
+    email: 'admin@lxp.com',
     nickname: 'admin@lxp.com',
     role: 'admin',
     avatarInitial: '관',

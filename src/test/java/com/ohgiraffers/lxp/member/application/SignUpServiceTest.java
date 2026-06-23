@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -65,6 +66,27 @@ class SignUpServiceTest {
     }
 
     @Test
+    void already_used_nickname_throws_exception() {
+        FakeMemberRepository memberRepository = new FakeMemberRepository();
+        memberRepository.save(Member.signUp(
+                new Email("existing@lxp.com"),
+                new Nickname("learning"),
+                new EncodedPassword("encoded")
+        ));
+        SignUpService signUpService = new SignUpService(memberRepository, PasswordEncodePortStub.INSTANCE);
+
+        assertThatThrownBy(() -> signUpService.signUp(new SignUpCommand(
+                "learner@lxp.com",
+                "learning",
+                "password123",
+                "password123"
+        )))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(ErrorCode.MEMBER_NICKNAME_ALREADY_EXISTS);
+    }
+
+    @Test
     void 비밀번호_확인이_일치하지_않으면_예외가_발생한다() {
         SignUpService signUpService = new SignUpService(new FakeMemberRepository(), PasswordEncodePortStub.INSTANCE);
 
@@ -96,6 +118,17 @@ class SignUpServiceTest {
         @Override
         public boolean existsByEmail(Email email) {
             return members.containsKey(email.value());
+        }
+
+        @Override
+        public boolean existsByNickname(Nickname nickname) {
+            return members.values().stream()
+                    .anyMatch(member -> member.getNickname().equals(nickname));
+        }
+
+        @Override
+        public Optional<Member> findByEmail(Email email) {
+            return Optional.ofNullable(members.get(email.value()));
         }
 
         @Override

@@ -2,11 +2,12 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepository;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.InstructorProfile;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorProfileRepositoryPort;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RegisterInstructorProfileService implements RegisterInstructorProfileUseCase {
 
-    private final InstructorRepository instructorRepository;
-    private final InstructorProfileRepository instructorProfileRepository;
+    private final InstructorRepositoryPort instructorRepository;
+    private final InstructorProfileRepositoryPort instructorProfileRepository;
 
     public RegisterInstructorProfileService(
-            InstructorRepository instructorRepository,
-            InstructorProfileRepository instructorProfileRepository
+            InstructorRepositoryPort instructorRepository,
+            InstructorProfileRepositoryPort instructorProfileRepository
     ) {
         this.instructorRepository = instructorRepository;
         this.instructorProfileRepository = instructorProfileRepository;
