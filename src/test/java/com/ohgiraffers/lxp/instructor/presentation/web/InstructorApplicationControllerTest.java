@@ -1,13 +1,15 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.instructor.application.port.command.ApplyInstructorCommand;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewInstructorApplicationCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase;
-import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase.ApplyInstructorCommand;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewAction;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase;
+import com.ohgiraffers.lxp.instructor.presentation.dto.ApplyInstructorRequest;
+import com.ohgiraffers.lxp.instructor.presentation.dto.ReviewInstructorApplicationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

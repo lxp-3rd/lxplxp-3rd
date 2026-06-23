@@ -2,13 +2,13 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewAction;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationCommand;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.Instructor;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewInstructorApplicationCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepositoryPort;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +31,10 @@ class ReviewInstructorApplicationServiceTest {
     private ReviewInstructorApplicationService reviewInstructorApplicationService;
 
     @Mock
-    private InstructorApplicationRepository instructorApplicationRepository;
+    private InstructorApplicationRepositoryPort instructorApplicationRepository;
 
     @Mock
-    private InstructorRepository instructorRepository;
+    private InstructorRepositoryPort instructorRepository;
 
     @Test
     @DisplayName("승인 시 신청 상태가 APPROVED로 변경되고 Instructor가 생성된다")

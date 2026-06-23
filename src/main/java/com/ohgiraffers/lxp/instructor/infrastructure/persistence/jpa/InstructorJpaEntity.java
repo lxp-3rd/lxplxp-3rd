@@ -1,8 +1,8 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.entity.BaseEntity;
-import com.ohgiraffers.lxp.instructor.domain.Instructor;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import jakarta.persistence.*;
 
 @Entity

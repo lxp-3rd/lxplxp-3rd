@@ -1,11 +1,11 @@
 package com.ohgiraffers.lxp.instructor.application.port.out;
 
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 
 import java.util.Optional;
 
-public interface InstructorApplicationRepository {
+public interface InstructorApplicationRepositoryPort {
 
     InstructorApplication save(InstructorApplication application);
 

@@ -2,13 +2,14 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.instructor.application.port.command.ApplyInstructorCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.Instructor;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepositoryPort;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +19,12 @@ import java.util.List;
 @Transactional
 public class ApplyInstructorService implements ApplyInstructorUseCase {
 
-    private final InstructorApplicationRepository instructorApplicationRepository;
-    private final InstructorRepository instructorRepository;
+    private final InstructorApplicationRepositoryPort instructorApplicationRepository;
+    private final InstructorRepositoryPort instructorRepository;
 
     public ApplyInstructorService(
-            InstructorApplicationRepository instructorApplicationRepository,
-            InstructorRepository instructorRepository
+            InstructorApplicationRepositoryPort instructorApplicationRepository,
+            InstructorRepositoryPort instructorRepository
     ) {
         this.instructorApplicationRepository = instructorApplicationRepository;
         this.instructorRepository = instructorRepository;

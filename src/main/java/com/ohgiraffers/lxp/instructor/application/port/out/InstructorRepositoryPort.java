@@ -1,11 +1,11 @@
 package com.ohgiraffers.lxp.instructor.application.port.out;
 
-import com.ohgiraffers.lxp.instructor.domain.Instructor;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 
 import java.util.List;
 
-public interface InstructorRepository {
+public interface InstructorRepositoryPort {
 
     Instructor save(Instructor instructor);
 

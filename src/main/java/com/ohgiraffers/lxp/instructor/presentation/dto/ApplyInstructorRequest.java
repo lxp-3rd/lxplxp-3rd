@@ -1,6 +1,6 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.dto;
 
-import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase.ApplyInstructorCommand;
+import com.ohgiraffers.lxp.instructor.application.port.command.ApplyInstructorCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

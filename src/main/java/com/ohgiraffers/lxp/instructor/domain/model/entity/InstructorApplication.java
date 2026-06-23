@@ -1,4 +1,4 @@
-package com.ohgiraffers.lxp.instructor.domain;
+package com.ohgiraffers.lxp.instructor.domain.model.entity;
 
 import java.time.LocalDateTime;
 

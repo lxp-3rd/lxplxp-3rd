@@ -1,7 +1,7 @@
-package com.ohgiraffers.lxp.instructor.presentation;
+package com.ohgiraffers.lxp.instructor.presentation.dto;
 
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewAction;
-import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationCommand;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewAction;
+import com.ohgiraffers.lxp.instructor.application.port.command.ReviewInstructorApplicationCommand;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 

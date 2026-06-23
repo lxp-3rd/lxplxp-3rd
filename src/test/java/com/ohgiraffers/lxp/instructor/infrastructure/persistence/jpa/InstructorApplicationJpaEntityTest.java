@@ -1,7 +1,7 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import com.ohgiraffers.lxp.global.config.JpaAuditingConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

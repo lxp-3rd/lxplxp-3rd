@@ -1,18 +1,18 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.Instructor;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class InstructorRepositoryImpl implements InstructorRepository {
+public class InstructorPersistenceAdapter implements InstructorRepositoryPort {
 
     private final InstructorJpaRepository jpaRepository;
 
-    public InstructorRepositoryImpl(InstructorJpaRepository jpaRepository) {
+    public InstructorPersistenceAdapter(InstructorJpaRepository jpaRepository) {
         this.jpaRepository = jpaRepository;
     }
 
