@@ -1,8 +1,8 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.entity.BaseEntity;
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -55,6 +55,7 @@ public class InstructorApplicationJpaEntity extends BaseEntity {
 
     public static InstructorApplicationJpaEntity from(InstructorApplication domain) {
         InstructorApplicationJpaEntity entity = new InstructorApplicationJpaEntity();
+        entity.id = domain.getId();
         entity.memberId = domain.getMemberId();
         entity.instructorName = domain.getInstructorName();
         entity.introduction = domain.getIntroduction();

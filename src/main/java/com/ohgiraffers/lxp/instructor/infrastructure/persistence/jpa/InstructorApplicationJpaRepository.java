@@ -1,6 +1,6 @@
-package com.ohgiraffers.lxp.instructor.infrastructure;
+package com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa;
 
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InstructorApplicationJpaRepository

@@ -1,4 +1,4 @@
-package com.ohgiraffers.lxp.instructor.domain;
+package com.ohgiraffers.lxp.instructor.domain.model.entity;
 
 import java.time.LocalDateTime;
 
@@ -91,5 +91,31 @@ public class InstructorApplication {
 
     public LocalDateTime getResolvedAt() {
         return resolvedAt;
+    }
+
+    public void approve(LocalDateTime resolvedAt) {
+        if (this.status != ApplicationStatus.PENDING) {
+            throw new IllegalStateException("PENDING 상태에서만 승인할 수 있습니다.");
+        }
+        if (resolvedAt == null) {
+            throw new IllegalArgumentException("처리 시각은 필수입니다.");
+        }
+        this.status = ApplicationStatus.APPROVED;
+        this.resolvedAt = resolvedAt;
+    }
+
+    public void reject(String rejectionReason, LocalDateTime resolvedAt) {
+        if (this.status != ApplicationStatus.PENDING) {
+            throw new IllegalStateException("PENDING 상태에서만 반려할 수 있습니다.");
+        }
+        if (rejectionReason == null || rejectionReason.isBlank()) {
+            throw new IllegalArgumentException("반려 사유는 필수입니다.");
+        }
+        if (resolvedAt == null) {
+            throw new IllegalArgumentException("처리 시각은 필수입니다.");
+        }
+        this.status = ApplicationStatus.REJECTED;
+        this.rejectionReason = rejectionReason;
+        this.resolvedAt = resolvedAt;
     }
 }
