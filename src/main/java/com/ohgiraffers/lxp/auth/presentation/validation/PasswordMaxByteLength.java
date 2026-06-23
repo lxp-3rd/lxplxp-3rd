@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordMaxByteLength {
 
-    String message() default "비밀번호는 72바이트 이하여야 합니다.";
+    String message() default "비밀번호는 {max}바이트 이하여야 합니다.";
 
     Class<?>[] groups() default {};
 

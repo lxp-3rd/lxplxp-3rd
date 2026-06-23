@@ -25,10 +25,19 @@ public class JwtTokenIssueAdapter implements TokenIssuePort {
     private final Duration refreshTokenExpiration;
 
     public JwtTokenIssueAdapter(
-            @Value("${lxp.auth.jwt.secret:lxp-jwt-secret-key-for-local-development-1234567890}") String secret,
+            @Value("${lxp.auth.jwt.secret}") String secret,
             @Value("${lxp.auth.jwt.access-token-expiration-minutes:30}") long accessTokenExpirationMinutes,
             @Value("${lxp.auth.jwt.refresh-token-expiration-days:14}") long refreshTokenExpirationDays
     ) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("lxp.auth.jwt.secret 설정이 필요합니다.");
+        }
+        if (accessTokenExpirationMinutes <= 0) {
+            throw new IllegalStateException("lxp.auth.jwt.access-token-expiration-minutes 값은 0보다 커야 합니다.");
+        }
+        if (refreshTokenExpirationDays <= 0) {
+            throw new IllegalStateException("lxp.auth.jwt.refresh-token-expiration-days 값은 0보다 커야 합니다.");
+        }
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiration = Duration.ofMinutes(accessTokenExpirationMinutes);
         this.refreshTokenExpiration = Duration.ofDays(refreshTokenExpirationDays);

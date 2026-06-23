@@ -1,0 +1,4 @@
+lxp:
+  auth:
+    jwt:
+      secret: lxp-jwt-secret-key-for-test-environment-1234567890

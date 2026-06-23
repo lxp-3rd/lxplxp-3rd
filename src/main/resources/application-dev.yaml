@@ -17,3 +17,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+lxp:
+  auth:
+    jwt:
+      secret: lxp-jwt-secret-key-for-local-development-1234567890
