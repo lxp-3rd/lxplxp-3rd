@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ohgiraffers.lxp.auth.presentation.support.RequireRole;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import com.ohgiraffers.lxp.qna.application.port.in.AnswerQuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.in.QuestionUseCase;
 import com.ohgiraffers.lxp.qna.presentation.dto.AnswerQuestionRequest;
@@ -63,6 +65,7 @@ public class QuestionController {
         return ResponseEntity.ok(response);
     }
 
+    @RequireRole(MemberRole.INSTRUCTOR)
     @PostMapping("/{questionId}/answers")
     public ResponseEntity<QuestionResponse> answerQuestion(
             @PathVariable("questionId") Long questionId,
