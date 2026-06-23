@@ -108,6 +108,49 @@ class QuestionTest {
         assertThat(question.getContent()).hasSize(500);
     }
 
+    @Test
+    @DisplayName("강사가 답변을 등록하면 answer 필드가 설정된다")
+    void answerQuestion_success() {
+        Question question = Question.create(1L, 1L, "제목", "내용");
+
+        Question answered = question.answer(99L, "답변 내용입니다.");
+
+        assertThat(answered.getAnswer()).isEqualTo("답변 내용입니다.");
+        assertThat(answered.getAnsweredBy()).isEqualTo(99L);
+        assertThat(answered.getAnsweredAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("이미 답변된 질문에 다시 답변하면 ANSWER_ALREADY_EXISTS 예외가 발생한다")
+    void answerQuestion_alreadyAnswered_throwsException() {
+        Question question = Question.create(1L, 1L, "제목", "내용");
+        Question answered = question.answer(99L, "첫 번째 답변");
+
+        assertThatThrownBy(() -> answered.answer(99L, "두 번째 답변"))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ANSWER_ALREADY_EXISTS.getMessage());
+    }
+
+    @Test
+    @DisplayName("답변 내용이 blank이면 ANSWER_INVALID_CONTENT 예외가 발생한다")
+    void answerQuestion_blankContent_throwsException() {
+        Question question = Question.create(1L, 1L, "제목", "내용");
+
+        assertThatThrownBy(() -> question.answer(99L, "  "))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ANSWER_INVALID_CONTENT.getMessage());
+    }
+
+    @Test
+    @DisplayName("답변 내용이 2000자를 초과하면 ANSWER_INVALID_CONTENT 예외가 발생한다")
+    void answerQuestion_tooLongContent_throwsException() {
+        Question question = Question.create(1L, 1L, "제목", "내용");
+
+        assertThatThrownBy(() -> question.answer(99L, "가".repeat(2001)))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.ANSWER_INVALID_CONTENT.getMessage());
+    }
+
     private void assertInvalidInput(Runnable executable) {
         assertThatThrownBy(executable::run)
                 .isInstanceOf(BusinessException.class)

@@ -8,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.qna.application.dto.QuestionResult;
+import com.ohgiraffers.lxp.qna.application.port.command.AnswerQuestionCommand;
 import com.ohgiraffers.lxp.qna.application.port.command.CreateQuestionCommand;
 import com.ohgiraffers.lxp.qna.application.port.command.UpdateQuestionCommand;
+import com.ohgiraffers.lxp.qna.application.port.in.AnswerQuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.in.QuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.out.CourseQueryPort;
 import com.ohgiraffers.lxp.qna.application.port.out.EnrollmentQueryPort;
@@ -21,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class QuestionService implements QuestionUseCase {
+public class QuestionService implements QuestionUseCase, AnswerQuestionUseCase {
 
 	private final QuestionRepositoryPort questionRepositoryPort;
 	private final CourseQueryPort courseQueryPort;
@@ -73,6 +75,14 @@ public class QuestionService implements QuestionUseCase {
 		question.validateWriter(memberId);
 
 		questionRepositoryPort.deleteById(questionId);
+	}
+
+	@Override
+	@Transactional
+	public QuestionResult answerQuestion(AnswerQuestionCommand command) {
+		Question question = getQuestionOrThrow(command.questionId());
+		Question answered = question.answer(command.instructorId(), command.content());
+		return QuestionResult.from(questionRepositoryPort.saveAnswer(answered));
 	}
 
 	private Question getQuestionOrThrow(Long questionId) {

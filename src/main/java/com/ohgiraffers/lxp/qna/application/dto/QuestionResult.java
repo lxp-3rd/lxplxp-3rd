@@ -13,7 +13,10 @@ public record QuestionResult(
         String content,
         QuestionStatus status,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        String answer,
+        Long answeredBy,
+        LocalDateTime answeredAt
 ) {
 
     public static QuestionResult from(Question question) {
@@ -25,7 +28,10 @@ public record QuestionResult(
                 question.getContent(),
                 question.getStatus(),
                 question.getCreatedAt(),
-                question.getUpdatedAt()
+                question.getUpdatedAt(),
+                question.getAnswer(),
+                question.getAnsweredBy(),
+                question.getAnsweredAt()
         );
     }
 }

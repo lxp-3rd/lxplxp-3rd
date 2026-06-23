@@ -55,7 +55,12 @@ public enum ErrorCode {
     TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "?? ??? ?????."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "??? ???????."),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "???? ?? ?????."),
-    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "?? ??? ???? ????.");
+    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "?? ??? ???? ????."),
+
+    // answer
+    ANSWER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 답변이 등록된 질문입니다."),
+    ANSWER_INVALID_CONTENT(HttpStatus.BAD_REQUEST, "답변 내용은 1자 이상 2000자 이하여야 합니다.");
+
 
     private final HttpStatus status;
     private final String message;

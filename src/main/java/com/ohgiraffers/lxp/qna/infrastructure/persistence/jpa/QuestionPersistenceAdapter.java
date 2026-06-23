@@ -58,4 +58,13 @@ public class QuestionPersistenceAdapter implements QuestionRepositoryPort {
                 .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
         entity.delete();
     }
+
+    @Override
+    @Transactional
+    public Question saveAnswer(Question question) {
+        QuestionJpaEntity entity = questionJpaRepository.findByIdAndDeletedAtIsNull(question.getId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.QUESTION_NOT_FOUND));
+        entity.updateAnswer(question.getAnswer(), question.getAnsweredBy(), question.getAnsweredAt());
+        return entity.toDomain();
+    }
 }
