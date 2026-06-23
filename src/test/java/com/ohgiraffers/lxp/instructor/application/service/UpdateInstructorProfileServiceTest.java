@@ -14,10 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateInstructorProfileServiceTest {
@@ -29,7 +31,7 @@ class UpdateInstructorProfileServiceTest {
     private InstructorProfileRepository instructorProfileRepository;
 
     @Test
-    @DisplayName("프로필 수정 성공 시 변경된 내용이 저장된다")
+    @DisplayName("프로필 수정 성공 시 변경된 값이 저장된다")
     void update_success() {
         UpdateInstructorProfileCommand command = new UpdateInstructorProfileCommand(
                 1L, "https://example.com/new.jpg", "새로운 자기소개"
@@ -41,7 +43,10 @@ class UpdateInstructorProfileServiceTest {
 
         updateInstructorProfileService.update(command);
 
-        then(instructorProfileRepository).should().save(any(InstructorProfile.class));
+        ArgumentCaptor<InstructorProfile> captor = forClass(InstructorProfile.class);
+        then(instructorProfileRepository).should().save(captor.capture());
+        assertThat(captor.getValue().getProfileImageUrl()).isEqualTo("https://example.com/new.jpg");
+        assertThat(captor.getValue().getBio()).isEqualTo("새로운 자기소개");
     }
 
     @Test

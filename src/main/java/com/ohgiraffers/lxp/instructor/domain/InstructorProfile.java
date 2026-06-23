@@ -11,6 +11,9 @@ public class InstructorProfile {
     }
 
     public static InstructorProfile create(Long instructorId, String profileImageUrl, String bio) {
+        if (instructorId == null) {
+            throw new IllegalArgumentException("강사 ID는 필수입니다.");
+        }
         if (profileImageUrl == null || profileImageUrl.isBlank()) {
             throw new IllegalArgumentException("프로필 이미지 URL은 필수입니다.");
         }
@@ -30,6 +33,10 @@ public class InstructorProfile {
             String profileImageUrl,
             String bio
     ) {
+        if (id == null) throw new IllegalArgumentException("프로필 ID는 필수입니다.");
+        if (instructorId == null) throw new IllegalArgumentException("강사 ID는 필수입니다.");
+        if (profileImageUrl == null || profileImageUrl.isBlank()) throw new IllegalArgumentException("프로필 이미지 URL은 필수입니다.");
+        if (bio == null || bio.isBlank()) throw new IllegalArgumentException("자기소개는 필수입니다.");
         InstructorProfile profile = new InstructorProfile();
         profile.id = id;
         profile.instructorId = instructorId;

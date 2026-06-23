@@ -11,5 +11,7 @@ public interface InstructorRepository {
 
     boolean existsById(Long id);
 
+    boolean existsByIdAndStatusIn(Long id, List<InstructorStatus> statuses);
+
     boolean existsByMemberIdAndStatusIn(Long memberId, List<InstructorStatus> statuses);
 }

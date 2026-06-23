@@ -9,6 +9,41 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class InstructorProfileTest {
 
     @Test
+    @DisplayName("강사 ID가 null이면 예외가 발생한다")
+    void create_nullInstructorId_throwsException() {
+        assertThatThrownBy(() -> InstructorProfile.create(null, "https://example.com/image.jpg", "자기소개"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 id가 null이면 예외가 발생한다")
+    void restore_nullId_throwsException() {
+        assertThatThrownBy(() -> InstructorProfile.restore(null, 1L, "https://example.com/image.jpg", "자기소개"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 instructorId가 null이면 예외가 발생한다")
+    void restore_nullInstructorId_throwsException() {
+        assertThatThrownBy(() -> InstructorProfile.restore(1L, null, "https://example.com/image.jpg", "자기소개"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 profileImageUrl이 blank이면 예외가 발생한다")
+    void restore_blankProfileImageUrl_throwsException() {
+        assertThatThrownBy(() -> InstructorProfile.restore(1L, 1L, "", "자기소개"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("restore 시 bio가 blank이면 예외가 발생한다")
+    void restore_blankBio_throwsException() {
+        assertThatThrownBy(() -> InstructorProfile.restore(1L, 1L, "https://example.com/image.jpg", ""))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("프로필 생성 시 입력값이 정상 저장된다")
     void create_fieldsAreStoredCorrectly() {
         InstructorProfile profile = InstructorProfile.create(
