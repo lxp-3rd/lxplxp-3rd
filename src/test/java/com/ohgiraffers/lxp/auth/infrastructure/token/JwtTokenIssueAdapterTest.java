@@ -36,6 +36,19 @@ class JwtTokenIssueAdapterTest {
         assertThat(tokenPair.refreshTokenExpiresAt()).isNotNull();
     }
 
+    @Test
+    void issue_access_token_creates_access_token_only() {
+        JwtTokenIssueAdapter tokenIssueAdapter = new JwtTokenIssueAdapter(SECRET, 30, 14);
+
+        String accessToken = tokenIssueAdapter.issueAccessToken(1L, MemberRole.LEARNER);
+
+        Claims claims = parse(accessToken);
+        assertThat(claims.getSubject()).isEqualTo("1");
+        assertThat(claims.get("memberId", Long.class)).isEqualTo(1L);
+        assertThat(claims.get("role", String.class)).isEqualTo("LEARNER");
+        assertThat(claims.get("type", String.class)).isEqualTo("ACCESS");
+    }
+
     private Claims parse(String token) {
         SecretKey secretKey = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser()
