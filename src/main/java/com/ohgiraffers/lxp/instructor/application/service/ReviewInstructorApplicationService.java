@@ -51,9 +51,11 @@ public class ReviewInstructorApplicationService implements ReviewInstructorAppli
             application.approve(now);
             instructorApplicationRepository.save(application);
             instructorRepository.save(Instructor.create(application.getMemberId()));
-        } else {
+        } else if (command.action() == ReviewAction.REJECT) {
             application.reject(command.rejectionReason(), now);
             instructorApplicationRepository.save(application);
+        } else {
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
     }
 }

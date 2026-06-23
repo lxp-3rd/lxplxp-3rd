@@ -9,5 +9,7 @@ public interface InstructorRepositoryPort {
 
     Instructor save(Instructor instructor);
 
+    boolean existsByIdAndStatusIn(Long id, List<InstructorStatus> statuses);
+
     boolean existsByMemberIdAndStatusIn(Long memberId, List<InstructorStatus> statuses);
 }
