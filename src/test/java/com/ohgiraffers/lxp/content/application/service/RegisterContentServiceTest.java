@@ -38,10 +38,14 @@ class RegisterContentServiceTest {
         RegisterContentCommand command = new RegisterContentCommand(1L, 0, "Java 기초", "https://example.com/video");
         given(courseValidation.existsById(1L)).willReturn(true);
         given(contentRepository.save(any(Content.class)))
-                .willAnswer(inv -> inv.getArgument(0));
+                .willAnswer(inv -> {
+                    Content c = inv.getArgument(0);
+                    return Content.restore(10L, c.getCourseId(), c.getSequence(), c.getTitle(), c.getContentUrl());
+                });
 
-        registerContentService.register(command);
+        Long contentId = registerContentService.register(command);
 
+        assertThat(contentId).isEqualTo(10L);
         ArgumentCaptor<Content> captor = ArgumentCaptor.forClass(Content.class);
         then(contentRepository).should().save(captor.capture());
         assertThat(captor.getValue().getCourseId()).isEqualTo(1L);
