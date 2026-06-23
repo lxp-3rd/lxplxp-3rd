@@ -1,6 +1,6 @@
 // 담당: A
 import { fetcher } from '@/lib/fetcher';
-import type { Question } from './types';
+import type { Question, Answer } from './types';
 
 // TODO: 실제 엔드포인트로 교체
 export const questionApi = {

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const ADMIN_NAV_LINKS = [
   { href: '/admin',                         label: '대시보드',    exact: true  },
@@ -15,6 +15,11 @@ const ADMIN_NAV_LINKS = [
 
 export function AdminNavBar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    router.push('/admin/login');
+  };
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(href + '/');
@@ -87,6 +92,17 @@ export function AdminNavBar() {
           <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden cursor-pointer">
             <span className="material-symbols-outlined text-[20px]">person</span>
           </div>
+
+          {/* 로그아웃 */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            aria-label="로그아웃"
+            className="flex items-center gap-xs px-md py-xs border border-outline-variant rounded-lg text-on-surface-variant hover:text-error hover:border-error hover:bg-error-container/20 font-label-sm text-label-sm transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            로그아웃
+          </button>
         </div>
 
       </div>
