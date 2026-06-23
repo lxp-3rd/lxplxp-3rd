@@ -18,7 +18,7 @@ public class InstructorValidationAdapter implements InstructorValidationPort {
 
     @Override
     public boolean isActiveInstructor(Long instructorId) {
-        return instructorJpaRepository.existsByIdAndStatusIn(
+        return instructorJpaRepository.existsByIdAndStatusInAndDeletedAtIsNull(
                 instructorId,
                 List.of(InstructorStatus.ACTIVE, InstructorStatus.SUSPENDED)
         );
