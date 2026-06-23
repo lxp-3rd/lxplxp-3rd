@@ -25,4 +25,13 @@ public class CoursePersistenceAdapter implements CourseRepositoryPort {
         return jpaRepository.findByIdAndDeletedAtIsNull(id)
                 .map(CourseJpaEntity::toDomain);
     }
+
+    @Override
+    public void delete(Long id) {
+        jpaRepository.findByIdAndDeletedAtIsNull(id)
+                .ifPresent(entity -> {
+                    entity.delete();
+                    jpaRepository.save(entity);
+                });
+    }
 }
