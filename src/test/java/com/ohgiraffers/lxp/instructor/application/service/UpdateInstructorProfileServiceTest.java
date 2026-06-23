@@ -76,8 +76,7 @@ class UpdateInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> updateInstructorProfileService.update(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INVALID_INPUT);
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
@@ -93,7 +92,6 @@ class UpdateInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> updateInstructorProfileService.update(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INVALID_INPUT);
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 }

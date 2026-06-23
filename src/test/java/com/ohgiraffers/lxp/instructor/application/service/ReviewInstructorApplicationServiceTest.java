@@ -150,7 +150,6 @@ class ReviewInstructorApplicationServiceTest {
 
         assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INVALID_INPUT);
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 }
