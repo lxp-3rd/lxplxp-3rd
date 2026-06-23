@@ -6,6 +6,7 @@ import com.ohgiraffers.lxp.qna.application.port.out.QuestionRepositoryPort;
 import com.ohgiraffers.lxp.qna.domain.model.entity.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public class QuestionPersistenceAdapter implements QuestionRepositoryPort {
     private final QuestionJpaRepository questionJpaRepository;
 
     @Override
+	@Transactional
     public Question save(Question question) {
         if (question.getId() == null) {
             return questionJpaRepository.save(QuestionJpaEntity.from(question)).toDomain();
