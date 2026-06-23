@@ -2,19 +2,23 @@ package com.ohgiraffers.lxp.member.infrastructure.persistence.jpa;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.member.application.dto.AdminMemberResult;
+import com.ohgiraffers.lxp.member.application.port.out.AdminMemberRepositoryPort;
 import com.ohgiraffers.lxp.member.application.port.out.MemberRepositoryPort;
 import com.ohgiraffers.lxp.member.domain.model.entity.Member;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberStatus;
 import com.ohgiraffers.lxp.member.domain.model.vo.Email;
 import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 @Repository
-public class MemberPersistenceAdapter implements MemberRepositoryPort {
+public class MemberPersistenceAdapter implements MemberRepositoryPort, AdminMemberRepositoryPort {
 
     private static final String NICKNAME_UNIQUE_CONSTRAINT = "uk_members_nickname";
 
@@ -35,6 +39,12 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
     }
 
     @Override
+    public Optional<Member> findById(Long memberId) {
+        return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
+                .map(MemberJpaEntity::toDomain);
+    }
+
+    @Override
     public Optional<Member> findByEmail(Email email) {
         return memberJpaRepository.findByEmail(email.value())
                 .map(MemberJpaEntity::toDomain);
@@ -50,6 +60,40 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort {
             }
             throw e;
         }
+    }
+
+    @Override
+    public List<AdminMemberResult> findAll() {
+        return memberJpaRepository.findAllByDeletedAtIsNullOrderByIdDesc().stream()
+                .map(this::toAdminMemberResult)
+                .toList();
+    }
+
+    @Override
+    public Optional<AdminMemberResult> findAdminMemberById(Long memberId) {
+        return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
+                .map(this::toAdminMemberResult);
+    }
+
+    @Override
+    public Optional<AdminMemberResult> changeStatus(Long memberId, MemberStatus status) {
+        return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
+                .map(member -> {
+                    member.changeStatus(status);
+                    return toAdminMemberResult(member);
+                });
+    }
+
+    private AdminMemberResult toAdminMemberResult(MemberJpaEntity member) {
+        return new AdminMemberResult(
+                member.getId(),
+                member.getEmail(),
+                member.getNickname(),
+                member.getRole(),
+                member.getStatus(),
+                member.getCreatedAt(),
+                member.getUpdatedAt()
+        );
     }
 
     private boolean isNicknameUniqueConstraintViolation(DataIntegrityViolationException e) {

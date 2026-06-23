@@ -132,6 +132,13 @@ class SignUpServiceTest {
         }
 
         @Override
+        public Optional<Member> findById(Long memberId) {
+            return members.values().stream()
+                    .filter(member -> member.getId().equals(memberId))
+                    .findFirst();
+        }
+
+        @Override
         public Member save(Member member) {
             Member savedMember = Member.restore(
                     sequence++,

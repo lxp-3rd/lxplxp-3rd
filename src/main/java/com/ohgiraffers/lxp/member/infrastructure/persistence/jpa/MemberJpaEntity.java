@@ -81,4 +81,28 @@ public class MemberJpaEntity extends BaseEntity {
                 status
         );
     }
+
+    public void changeStatus(MemberStatus status) {
+        this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public MemberRole getRole() {
+        return role;
+    }
+
+    public MemberStatus getStatus() {
+        return status;
+    }
 }

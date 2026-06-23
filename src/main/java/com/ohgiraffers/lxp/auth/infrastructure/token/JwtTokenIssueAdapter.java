@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.auth.infrastructure.token;
 
 import com.ohgiraffers.lxp.auth.application.dto.TokenPair;
+import com.ohgiraffers.lxp.auth.application.port.out.AccessTokenIssuePort;
 import com.ohgiraffers.lxp.auth.application.port.out.TokenIssuePort;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +14,7 @@ import java.time.Instant;
 import java.util.Date;
 
 @Component
-public class JwtTokenIssueAdapter implements TokenIssuePort {
+public class JwtTokenIssueAdapter implements TokenIssuePort, AccessTokenIssuePort {
 
     private final SecretKey secretKey;
     private final Duration accessTokenExpiration;
@@ -42,17 +43,23 @@ public class JwtTokenIssueAdapter implements TokenIssuePort {
         Instant refreshTokenExpiresAt = now.plus(refreshTokenExpiration);
 
         return new TokenPair(
-                createToken(memberId, role, JwtTokenType.ACCESS, now, accessTokenExpiresAt),
-                createToken(memberId, role, JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
+                createToken(memberId, role.name(), JwtTokenType.ACCESS, now, accessTokenExpiresAt),
+                createToken(memberId, role.name(), JwtTokenType.REFRESH, now, refreshTokenExpiresAt),
                 refreshTokenExpiresAt
         );
     }
 
-    private String createToken(Long memberId, MemberRole role, String tokenType, Instant issuedAt, Instant expiresAt) {
+    @Override
+    public String issueAccessToken(Long memberId, String role) {
+        Instant now = Instant.now();
+        return createToken(memberId, role, JwtTokenType.ACCESS, now, now.plus(accessTokenExpiration));
+    }
+
+    private String createToken(Long memberId, String role, String tokenType, Instant issuedAt, Instant expiresAt) {
         return Jwts.builder()
                 .subject(String.valueOf(memberId))
                 .claim("memberId", memberId)
-                .claim("role", role.name())
+                .claim("role", role)
                 .claim("type", tokenType)
                 .issuedAt(Date.from(issuedAt))
                 .expiration(Date.from(expiresAt))
