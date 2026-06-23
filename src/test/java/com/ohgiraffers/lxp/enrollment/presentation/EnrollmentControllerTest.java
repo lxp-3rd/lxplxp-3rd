@@ -2,7 +2,9 @@ package com.ohgiraffers.lxp.enrollment.presentation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
+import com.ohgiraffers.lxp.enrollment.application.port.command.CancelEnrollmentCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
+import com.ohgiraffers.lxp.enrollment.application.port.in.CancelEnrollmentUseCase;
 import com.ohgiraffers.lxp.enrollment.application.port.in.EnrollUseCase;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +43,9 @@ class EnrollmentControllerTest {
 
     @MockBean
     private EnrollUseCase enrollUseCase;
+
+    @MockBean
+    private CancelEnrollmentUseCase cancelEnrollmentUseCase;
 
     private String body(Long memberId, Long courseId) throws Exception {
         return objectMapper.writeValueAsString(new EnrollmentRequest(memberId, courseId));
@@ -96,5 +102,39 @@ class EnrollmentControllerTest {
                         .content(body(1L, 2L)))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("MEMBER_NOT_LEARNER"));
+    }
+
+    @Test
+    @DisplayName("취소 정상 요청 → 200 OK + CANCELED 응답 본문")
+    void cancelOk() throws Exception {
+        given(cancelEnrollmentUseCase.cancel(any(CancelEnrollmentCommand.class)))
+                .willReturn(new EnrollmentResult(10L, 1L, 2L, EnrollmentStatus.CANCELED, LocalDateTime.now()));
+
+        mockMvc.perform(delete("/enrollments/10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("CANCELED"));
+    }
+
+    @Test
+    @DisplayName("취소 대상 없음 → 404 ENROLLMENT_NOT_FOUND로 매핑")
+    void cancelNotFoundMapsToNotFound() throws Exception {
+        given(cancelEnrollmentUseCase.cancel(any(CancelEnrollmentCommand.class)))
+                .willThrow(new BusinessException(ErrorCode.ENROLLMENT_NOT_FOUND));
+
+        mockMvc.perform(delete("/enrollments/10"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("ENROLLMENT_NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("이미 취소된 수강 → 400 ENROLLMENT_ALREADY_CANCELED로 매핑")
+    void cancelAlreadyCanceledMapsToBadRequest() throws Exception {
+        given(cancelEnrollmentUseCase.cancel(any(CancelEnrollmentCommand.class)))
+                .willThrow(new BusinessException(ErrorCode.ENROLLMENT_ALREADY_CANCELED));
+
+        mockMvc.perform(delete("/enrollments/10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("ENROLLMENT_ALREADY_CANCELED"));
     }
 }

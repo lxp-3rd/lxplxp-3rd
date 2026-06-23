@@ -77,4 +77,43 @@ class EnrollmentPersistenceAdapterTest {
         assertThat(adapter.existsActiveEnrollment(99L, COURSE_ID)).isFalse();
         assertThat(adapter.existsActiveEnrollment(MEMBER_ID, 99L)).isFalse();
     }
+
+    @Test
+    @DisplayName("findById: 저장된 수강을 도메인으로 복원한다")
+    void findByIdReturnsDomain() {
+        EnrollmentJpaEntity seeded = em.persistFlushFind(
+                new EnrollmentJpaEntity(MEMBER_ID, COURSE_ID, EnrollmentStatus.ACTIVE));
+
+        Enrollment found = adapter.findById(seeded.getId()).orElseThrow();
+
+        assertThat(found.getId()).isEqualTo(seeded.getId());
+        assertThat(found.getMemberId()).isEqualTo(MEMBER_ID);
+        assertThat(found.getCourseId()).isEqualTo(COURSE_ID);
+        assertThat(found.getStatus()).isEqualTo(EnrollmentStatus.ACTIVE);
+    }
+
+    @Test
+    @DisplayName("findById: 없는 id면 Optional.empty")
+    void findByIdEmpty() {
+        assertThat(adapter.findById(999L)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("update: CANCELED 도메인을 반영하면 status=CANCELED + deletedAt(soft delete)가 기록된다")
+    void updateReflectsCancelAndSoftDelete() {
+        EnrollmentJpaEntity seeded = em.persistFlushFind(
+                new EnrollmentJpaEntity(MEMBER_ID, COURSE_ID, EnrollmentStatus.ACTIVE));
+        Enrollment canceled = Enrollment.restore(
+                seeded.getId(), MEMBER_ID, COURSE_ID, EnrollmentStatus.CANCELED);
+
+        EnrollmentResult result = adapter.update(canceled);
+
+        assertThat(result.status()).isEqualTo(EnrollmentStatus.CANCELED);
+
+        em.flush();
+        em.clear();
+        EnrollmentJpaEntity reloaded = repository.findById(seeded.getId()).orElseThrow();
+        assertThat(reloaded.getStatus()).isEqualTo(EnrollmentStatus.CANCELED);
+        assertThat(reloaded.getDeletedAt()).isNotNull();
+    }
 }

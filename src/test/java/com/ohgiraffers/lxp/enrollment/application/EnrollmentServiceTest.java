@@ -7,15 +7,20 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+
 import com.ohgiraffers.lxp.enrollment.application.dto.CourseInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
 import com.ohgiraffers.lxp.enrollment.application.dto.MemberInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.Role;
+import com.ohgiraffers.lxp.enrollment.application.port.command.CancelEnrollmentCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadCourseInfoPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadEnrollmentPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadMemberInfoPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.SaveEnrollmentPort;
+import com.ohgiraffers.lxp.enrollment.application.port.out.UpdateEnrollmentPort;
 import com.ohgiraffers.lxp.enrollment.application.service.EnrollmentService;
 import com.ohgiraffers.lxp.enrollment.domain.model.entity.Enrollment;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
@@ -35,7 +40,9 @@ class EnrollmentServiceTest {
 
     private static final long MEMBER_ID = 1L;
     private static final long COURSE_ID = 2L;
+    private static final long ENROLLMENT_ID = 10L;
     private static final EnrollCommand COMMAND = new EnrollCommand(MEMBER_ID, COURSE_ID);
+    private static final CancelEnrollmentCommand CANCEL_COMMAND = new CancelEnrollmentCommand(ENROLLMENT_ID);
 
     @Mock
     private LoadMemberInfoPort loadMemberInfoPort;
@@ -45,6 +52,8 @@ class EnrollmentServiceTest {
     private LoadEnrollmentPort loadEnrollmentPort;
     @Mock
     private SaveEnrollmentPort saveEnrollmentPort;
+    @Mock
+    private UpdateEnrollmentPort updateEnrollmentPort;
 
     @InjectMocks
     private EnrollmentService service;
@@ -119,5 +128,46 @@ class EnrollmentServiceTest {
                 .extracting(e -> ((BusinessException) e).getErrorCode())
                 .isEqualTo(ErrorCode.ENROLLMENT_ALREADY_EXISTS);
         verify(saveEnrollmentPort, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("취소: ACTIVE 수강을 조회해 cancel 후 영속 결과를 반환한다")
+    void cancelHappyPath() {
+        Enrollment active = Enrollment.restore(ENROLLMENT_ID, MEMBER_ID, COURSE_ID, EnrollmentStatus.ACTIVE);
+        given(loadEnrollmentPort.findById(ENROLLMENT_ID)).willReturn(of(active));
+        EnrollmentResult expected = new EnrollmentResult(
+                ENROLLMENT_ID, MEMBER_ID, COURSE_ID, EnrollmentStatus.CANCELED, LocalDateTime.now());
+        given(updateEnrollmentPort.update(active)).willReturn(expected);
+
+        EnrollmentResult result = service.cancel(CANCEL_COMMAND);
+
+        assertThat(result).isEqualTo(expected);
+        assertThat(active.getStatus()).isEqualTo(EnrollmentStatus.CANCELED);
+        verify(updateEnrollmentPort).update(active);
+    }
+
+    @Test
+    @DisplayName("취소: 수강이 없으면 ENROLLMENT_NOT_FOUND - 영속하지 않는다")
+    void cancelNotFound() {
+        given(loadEnrollmentPort.findById(ENROLLMENT_ID)).willReturn(empty());
+
+        assertThatThrownBy(() -> service.cancel(CANCEL_COMMAND))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.ENROLLMENT_NOT_FOUND);
+        verify(updateEnrollmentPort, never()).update(any());
+    }
+
+    @Test
+    @DisplayName("취소: 이미 CANCELED면 ENROLLMENT_ALREADY_CANCELED - 영속하지 않는다")
+    void cancelAlreadyCanceled() {
+        Enrollment canceled = Enrollment.restore(ENROLLMENT_ID, MEMBER_ID, COURSE_ID, EnrollmentStatus.CANCELED);
+        given(loadEnrollmentPort.findById(ENROLLMENT_ID)).willReturn(of(canceled));
+
+        assertThatThrownBy(() -> service.cancel(CANCEL_COMMAND))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.ENROLLMENT_ALREADY_CANCELED);
+        verify(updateEnrollmentPort, never()).update(any());
     }
 }
