@@ -177,6 +177,13 @@ class LoginServiceTest {
         }
 
         @Override
+        public Optional<Member> findById(Long memberId) {
+            return members.values().stream()
+                    .filter(member -> member.getId().equals(memberId))
+                    .findFirst();
+        }
+
+        @Override
         public boolean existsByNickname(Nickname nickname) {
             return members.values().stream()
                     .anyMatch(member -> member.getNickname().equals(nickname));
