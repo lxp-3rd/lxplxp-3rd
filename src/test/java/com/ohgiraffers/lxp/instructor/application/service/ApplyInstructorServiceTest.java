@@ -2,12 +2,12 @@ package com.ohgiraffers.lxp.instructor.application.service;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
-import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase.ApplyInstructorCommand;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepository;
-import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepository;
-import com.ohgiraffers.lxp.instructor.domain.ApplicationStatus;
-import com.ohgiraffers.lxp.instructor.domain.InstructorApplication;
-import com.ohgiraffers.lxp.instructor.domain.InstructorStatus;
+import com.ohgiraffers.lxp.instructor.application.port.command.ApplyInstructorCommand;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepositoryPort;
+import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +31,10 @@ class ApplyInstructorServiceTest {
     private ApplyInstructorService applyInstructorService;
 
     @Mock
-    private InstructorApplicationRepository instructorApplicationRepository;
+    private InstructorApplicationRepositoryPort instructorApplicationRepository;
 
     @Mock
-    private InstructorRepository instructorRepository;
+    private InstructorRepositoryPort instructorRepository;
 
     @Test
     @DisplayName("강사 신청 성공 시 저장소에 저장된다")
