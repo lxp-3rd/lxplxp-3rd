@@ -7,6 +7,7 @@ import com.ohgiraffers.lxp.instructor.application.port.command.ReviewInstructorA
 import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.out.InstructorApplicationRepositoryPort;
 import com.ohgiraffers.lxp.instructor.application.port.out.InstructorRepositoryPort;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import org.springframework.stereotype.Service;
@@ -35,21 +36,24 @@ public class ReviewInstructorApplicationService implements ReviewInstructorAppli
                 .findById(command.applicationId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND));
 
+        if (application.getStatus() != ApplicationStatus.PENDING) {
+            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED);
+        }
+
+        if (command.action() == ReviewAction.REJECT &&
+                (command.rejectionReason() == null || command.rejectionReason().isBlank())) {
+            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
+        }
+
         LocalDateTime now = LocalDateTime.now();
 
-        try {
-            if (command.action() == ReviewAction.APPROVE) {
-                application.approve(now);
-                instructorApplicationRepository.save(application);
-                instructorRepository.save(Instructor.create(application.getMemberId()));
-            } else {
-                application.reject(command.rejectionReason(), now);
-                instructorApplicationRepository.save(application);
-            }
-        } catch (IllegalStateException e) {
-            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED);
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
+        if (command.action() == ReviewAction.APPROVE) {
+            application.approve(now);
+            instructorApplicationRepository.save(application);
+            instructorRepository.save(Instructor.create(application.getMemberId()));
+        } else {
+            application.reject(command.rejectionReason(), now);
+            instructorApplicationRepository.save(application);
         }
     }
 }
