@@ -70,7 +70,7 @@ public class MemberPersistenceAdapter implements MemberRepositoryPort, AdminMemb
     }
 
     @Override
-    public Optional<AdminMemberResult> findById(Long memberId) {
+    public Optional<AdminMemberResult> findAdminMemberById(Long memberId) {
         return memberJpaRepository.findByIdAndDeletedAtIsNull(memberId)
                 .map(this::toAdminMemberResult);
     }

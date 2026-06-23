@@ -10,7 +10,7 @@ public interface AdminMemberRepositoryPort {
 
     List<AdminMemberResult> findAll();
 
-    Optional<AdminMemberResult> findById(Long memberId);
+    Optional<AdminMemberResult> findAdminMemberById(Long memberId);
 
     Optional<AdminMemberResult> changeStatus(Long memberId, MemberStatus status);
 }
