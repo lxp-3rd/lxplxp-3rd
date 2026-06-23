@@ -21,4 +21,4 @@ spring:
 lxp:
   auth:
     jwt:
-      secret: lxp-jwt-secret-key-for-local-development-1234567890
+      secret: ${LXP_JWT_SECRET:lxp-jwt-secret-key-for-local-development-1234567890}
