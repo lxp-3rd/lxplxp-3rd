@@ -177,6 +177,12 @@ class LoginServiceTest {
         }
 
         @Override
+        public boolean existsByNickname(Nickname nickname) {
+            return members.values().stream()
+                    .anyMatch(member -> member.getNickname().equals(nickname));
+        }
+
+        @Override
         public Member save(Member member) {
             Member savedMember = Member.restore(
                     sequence++,

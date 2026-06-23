@@ -7,10 +7,8 @@ import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-@Component
 public class JwtAuthenticationInterceptor implements HandlerInterceptor {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";

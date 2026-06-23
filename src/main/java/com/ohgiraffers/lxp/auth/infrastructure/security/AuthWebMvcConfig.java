@@ -1,6 +1,8 @@
 package com.ohgiraffers.lxp.auth.infrastructure.security;
 
+import com.ohgiraffers.lxp.auth.application.port.out.TokenValidatePort;
 import com.ohgiraffers.lxp.auth.presentation.support.LoginMemberArgumentResolver;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -11,21 +13,22 @@ import java.util.List;
 @Configuration
 public class AuthWebMvcConfig implements WebMvcConfigurer {
 
-    private final JwtAuthenticationInterceptor jwtAuthenticationInterceptor;
+    private final ObjectProvider<TokenValidatePort> tokenValidatePortProvider;
     private final LoginMemberArgumentResolver loginMemberArgumentResolver;
 
     public AuthWebMvcConfig(
-            JwtAuthenticationInterceptor jwtAuthenticationInterceptor,
+            ObjectProvider<TokenValidatePort> tokenValidatePortProvider,
             LoginMemberArgumentResolver loginMemberArgumentResolver
     ) {
-        this.jwtAuthenticationInterceptor = jwtAuthenticationInterceptor;
+        this.tokenValidatePortProvider = tokenValidatePortProvider;
         this.loginMemberArgumentResolver = loginMemberArgumentResolver;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtAuthenticationInterceptor)
-                .addPathPatterns(AuthPathPolicy.PROTECTED_PATH_PATTERNS);
+        tokenValidatePortProvider.ifAvailable(tokenValidatePort -> registry
+                .addInterceptor(new JwtAuthenticationInterceptor(tokenValidatePort))
+                .addPathPatterns(AuthPathPolicy.PROTECTED_PATH_PATTERNS));
     }
 
     @Override

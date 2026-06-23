@@ -29,18 +29,30 @@ public enum ErrorCode {
     CONTENT_NOT_FOUND(HttpStatus.NOT_FOUND, "콘텐츠를 찾을 수 없습니다."),
     CONTENT_LEARNING_NOT_FOUND(HttpStatus.NOT_FOUND, "학습 이력을 찾을 수 없습니다."),
 
+    // enrollment
+    ENROLLMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 수강 중인 강좌입니다."),
+    ENROLLMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "수강 내역을 찾을 수 없습니다."),
+    ENROLLMENT_ALREADY_CANCELED(HttpStatus.BAD_REQUEST, "이미 취소된 수강입니다."),
+    MEMBER_NOT_LEARNER(HttpStatus.FORBIDDEN, "수강생만 수강신청할 수 있습니다."),
+    MEMBER_SUSPENDED(HttpStatus.FORBIDDEN, "정지된 회원은 수강신청할 수 없습니다."),
+    COURSE_NOT_PUBLIC(HttpStatus.FORBIDDEN, "공개된 강좌만 수강신청할 수 있습니다."),
+
     // member
-    MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
-    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호 확인이 일치하지 않습니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
-    MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
-    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "활성화된 회원만 로그인할 수 있습니다."),
+    MEMBER_EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "?? ?? ?? ??????."),
+    MEMBER_NICKNAME_ALREADY_EXISTS(HttpStatus.CONFLICT, "?? ?? ?? ??????."),
+    MEMBER_PASSWORD_CONFIRM_NOT_MATCHED(HttpStatus.BAD_REQUEST, "???? ??? ???? ????."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "??? ?? ? ????."),
+    MEMBER_INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "????? ???? ????."),
+    MEMBER_NOT_ACTIVE(HttpStatus.FORBIDDEN, "???? ??? ???? ? ????."),
+
+    // question
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "?? ??? ???? ????."),
 
     // token
-    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "인증 토큰이 필요합니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
-    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
-    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "토큰 타입이 올바르지 않습니다.");
+    TOKEN_REQUIRED(HttpStatus.UNAUTHORIZED, "?? ??? ?????."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "??? ???????."),
+    TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "???? ?? ?????."),
+    TOKEN_TYPE_MISMATCH(HttpStatus.UNAUTHORIZED, "?? ??? ???? ????.");
 
     private final HttpStatus status;
     private final String message;
