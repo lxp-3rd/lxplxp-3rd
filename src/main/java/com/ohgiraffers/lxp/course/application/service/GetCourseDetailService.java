@@ -39,6 +39,7 @@ public class GetCourseDetailService implements GetCourseDetailUseCase {
         return new CourseDetail(
                 view.id(),
                 view.title(),
+                view.summary(),
                 view.description(),
                 view.thumbnailUrl(),
                 status.enrollmentCount(),

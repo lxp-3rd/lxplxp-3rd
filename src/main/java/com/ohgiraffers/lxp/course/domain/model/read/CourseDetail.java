@@ -8,6 +8,7 @@ import java.util.List;
 public record CourseDetail(
         Long id,
         String title,
+        String summary,
         String description,
         String thumbnailUrl,
         long enrollmentCount,

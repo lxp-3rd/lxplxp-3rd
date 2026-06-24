@@ -9,7 +9,6 @@ import com.ohgiraffers.lxp.content.infrastructure.persistence.jpa.ContentJpaEnti
 import com.ohgiraffers.lxp.content.infrastructure.persistence.jpa.ContentJpaRepository;
 import com.ohgiraffers.lxp.course.application.port.out.CourseDetailView;
 import com.ohgiraffers.lxp.course.application.port.out.LoadCourseDetailPort;
-import com.ohgiraffers.lxp.course.domain.model.entity.Course;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
 import com.ohgiraffers.lxp.course.domain.model.read.CurriculumItem;
 
@@ -28,12 +27,12 @@ public class LoadCourseDetailPersistenceAdapter implements LoadCourseDetailPort 
     @Override
     public Optional<CourseDetailView> loadPublicCourseDetail(Long courseId) {
         return courseJpaRepository.findByIdAndStatusAndDeletedAtIsNull(courseId, CourseStatus.PUBLIC)
-                .map(CourseJpaEntity::toDomain)
-                .map(course -> new CourseDetailView(
-                        course.getId(),
-                        course.getTitle(),
-                        course.getDescription(),
-                        course.getThumbnailUrl(),
+                .map(entity -> new CourseDetailView(
+                        entity.getId(),
+                        entity.getTitle(),
+                        entity.getSummary(),
+                        entity.getDescription(),
+                        entity.getThumbnailUrl(),
                         loadCurriculum(courseId)
                 ));
     }
