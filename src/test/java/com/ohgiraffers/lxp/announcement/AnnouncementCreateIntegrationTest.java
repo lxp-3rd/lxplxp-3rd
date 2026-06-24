@@ -4,6 +4,7 @@ import com.ohgiraffers.lxp.announcement.infrastructure.persistence.jpa.Announcem
 import com.ohgiraffers.lxp.auth.infrastructure.token.JwtTokenIssueAdapter;
 import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,12 @@ class AnnouncementCreateIntegrationTest {
 
     @Autowired
     private JwtTokenIssueAdapter jwtTokenIssueAdapter;
+
+    @BeforeEach
+    void clearSeededData() {
+        // dev 프로파일에서 MockDataInitializer가 시드한 공지사항을 비워 count 검증을 격리한다.
+        announcementRepository.deleteAll();
+    }
 
     @AfterEach
     void cleanup() {
