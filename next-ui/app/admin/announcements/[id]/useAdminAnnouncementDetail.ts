@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminAnnouncementMockApi } from '../../api';
+import { adminAnnouncementApi } from '../../api';
 import type { AdminAnnouncement } from '../../types';
 import { toError } from '../../utils';
 
@@ -15,7 +15,7 @@ export function useAdminAnnouncementDetail(id: string) {
 
     setIsLoading(true);
 
-    adminAnnouncementMockApi.getAnnouncement(id)
+    adminAnnouncementApi.getById(id)
       .then((nextAnnouncement) => {
         if (!isMounted) return;
         setAnnouncement(nextAnnouncement);

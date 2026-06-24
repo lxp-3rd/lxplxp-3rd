@@ -2,5 +2,8 @@ package com.ohgiraffers.lxp.announcement.infrastructure.persistence.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface AnnouncementRepository extends JpaRepository<AnnouncementJpaEntity, Long> {
+    List<AnnouncementJpaEntity> findAllByOrderByCreatedAtDesc();
 }

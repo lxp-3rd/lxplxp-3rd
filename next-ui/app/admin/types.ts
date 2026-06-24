@@ -1,4 +1,3 @@
-import type { Announcement } from '@/app/announcements/types';
 import type { Course } from '@/app/courses/types';
 import type { Instructor } from '@/app/instructors/types';
 import type { Roadmap } from '@/app/roadmaps/types';
@@ -47,7 +46,14 @@ export type AdminInstructorApplication = {
   bio: string;
 };
 
-export type AdminAnnouncement = Announcement;
+export type AdminAnnouncement = {
+  id: number;
+  title: string;
+  content: string;
+  status: 'PUBLISH' | 'HIDDEN';
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type AdminCourseEnrollment = {
   id: string;

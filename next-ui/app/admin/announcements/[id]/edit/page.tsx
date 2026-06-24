@@ -53,12 +53,19 @@ export default function AdminAnnouncementEditPage() {
           <button
             type="button"
             onClick={form.save}
-            className="px-lg py-sm font-label-md bg-primary text-on-primary rounded-lg shadow-sm hover:brightness-110 transition-all active:scale-95"
+            disabled={form.isSubmitting}
+            className="px-lg py-sm font-label-md bg-primary text-on-primary rounded-lg shadow-sm hover:brightness-110 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            저장하기
+            {form.isSubmitting ? '저장 중...' : '저장하기'}
           </button>
         </div>
       </div>
+
+      {form.errorMessage && (
+        <p className="mb-lg font-body-md text-error" role="alert">
+          {form.errorMessage}
+        </p>
+      )}
 
       <AdminAnnouncementForm
         title={form.title}

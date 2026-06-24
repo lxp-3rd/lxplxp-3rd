@@ -5,6 +5,8 @@ import com.ohgiraffers.lxp.announcement.application.port.command.CreateAnnouncem
 import com.ohgiraffers.lxp.announcement.application.port.command.UpdateAnnouncementCommand;
 import com.ohgiraffers.lxp.announcement.application.port.in.CreateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.DeleteAnnouncementUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementListUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.UpdateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.presentation.dto.AnnouncementResponse;
 import com.ohgiraffers.lxp.announcement.presentation.dto.CreateAnnouncementRequest;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/announcements")
 public class AnnouncementController {
@@ -24,13 +28,33 @@ public class AnnouncementController {
     private final CreateAnnouncementUseCase createAnnouncementUseCase;
     private final UpdateAnnouncementUseCase updateAnnouncementUseCase;
     private final DeleteAnnouncementUseCase deleteAnnouncementUseCase;
+    private final GetAnnouncementListUseCase getAnnouncementListUseCase;
+    private final GetAnnouncementUseCase getAnnouncementUseCase;
 
     public AnnouncementController(CreateAnnouncementUseCase createAnnouncementUseCase,
                                   UpdateAnnouncementUseCase updateAnnouncementUseCase,
-                                  DeleteAnnouncementUseCase deleteAnnouncementUseCase) {
+                                  DeleteAnnouncementUseCase deleteAnnouncementUseCase,
+                                  GetAnnouncementListUseCase getAnnouncementListUseCase,
+                                  GetAnnouncementUseCase getAnnouncementUseCase) {
         this.createAnnouncementUseCase = createAnnouncementUseCase;
         this.updateAnnouncementUseCase = updateAnnouncementUseCase;
         this.deleteAnnouncementUseCase = deleteAnnouncementUseCase;
+        this.getAnnouncementListUseCase = getAnnouncementListUseCase;
+        this.getAnnouncementUseCase = getAnnouncementUseCase;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AnnouncementResponse>> getAll() {
+        return ResponseEntity.ok(
+                getAnnouncementListUseCase.getAnnouncements().stream()
+                        .map(AnnouncementResponse::from)
+                        .toList()
+        );
+    }
+
+    @GetMapping("/{announcementId}")
+    public ResponseEntity<AnnouncementResponse> get(@PathVariable Long announcementId) {
+        return ResponseEntity.ok(AnnouncementResponse.from(getAnnouncementUseCase.getAnnouncement(announcementId)));
     }
 
     @RequireRole(MemberRole.ADMIN)

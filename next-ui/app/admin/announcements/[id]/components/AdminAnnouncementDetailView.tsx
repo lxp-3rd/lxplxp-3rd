@@ -4,9 +4,17 @@ import type { AdminAnnouncement } from '../../../types';
 
 interface AdminAnnouncementDetailViewProps {
   announcement: AdminAnnouncement;
+  onDelete: () => void;
+  isDeleting: boolean;
 }
 
-export function AdminAnnouncementDetailView({ announcement }: AdminAnnouncementDetailViewProps) {
+function formatDate(iso: string) {
+  return iso.slice(0, 10).replace(/-/g, '.');
+}
+
+export function AdminAnnouncementDetailView({ announcement, onDelete, isDeleting }: AdminAnnouncementDetailViewProps) {
+  const idPadded = String(announcement.id).padStart(4, '0');
+
   return (
     <div className="max-w-[1280px] mx-auto px-margin-desktop py-xl min-h-[calc(100vh-128px)]">
       <BackLink href="/admin/announcements" className="mb-lg">
@@ -16,16 +24,15 @@ export function AdminAnnouncementDetailView({ announcement }: AdminAnnouncementD
       <article className="bento-card rounded-xl p-xl mb-lg">
         <div className="flex flex-col gap-sm mb-lg">
           <div className="flex items-center gap-sm">
-            <span className="bg-secondary-container text-on-secondary-container px-md py-xs rounded-full font-label-sm text-label-sm">
-              {announcement.category}
+            <span className={`px-md py-xs rounded-full font-label-sm text-label-sm ${announcement.status === 'PUBLISH' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant'}`}>
+              {announcement.status === 'PUBLISH' ? '공개' : '비공개'}
             </span>
-            <span className="text-outline font-label-md text-label-md">ID: #NOT-{announcement.id.padStart(4, '0')}</span>
+            <span className="text-outline font-label-md text-label-md">ID: #NOT-{idPadded}</span>
           </div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight">{announcement.title}</h1>
           <div className="flex flex-wrap items-center gap-md mt-xs">
-            <MetaItem icon="person" label={announcement.authorName} />
-            <MetaItem icon="calendar_today" label={announcement.createdAt} />
-            <MetaItem icon="visibility" label={`${announcement.views.toLocaleString()}회 조회`} />
+            <MetaItem icon="calendar_today" label={formatDate(announcement.createdAt)} />
+            <MetaItem icon="update" label={`수정: ${formatDate(announcement.updatedAt)}`} />
           </div>
         </div>
 
@@ -44,8 +51,12 @@ export function AdminAnnouncementDetailView({ announcement }: AdminAnnouncementD
               수정
             </Link>
           </div>
-          <button className="w-full md:w-auto px-xl h-11 flex items-center justify-center border-2 border-error-container text-error hover:bg-error-container transition-all font-label-md text-label-md rounded-lg active:scale-95">
-            삭제
+          <button
+            onClick={onDelete}
+            disabled={isDeleting}
+            className="w-full md:w-auto px-xl h-11 flex items-center justify-center border-2 border-error-container text-error hover:bg-error-container transition-all font-label-md text-label-md rounded-lg active:scale-95 disabled:opacity-50"
+          >
+            {isDeleting ? '삭제 중...' : '삭제'}
           </button>
         </div>
       </article>

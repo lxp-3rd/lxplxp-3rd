@@ -2,6 +2,8 @@ package com.ohgiraffers.lxp.announcement.presentation.web;
 import com.ohgiraffers.lxp.announcement.application.dto.AnnouncementResult;
 import com.ohgiraffers.lxp.announcement.application.port.in.CreateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.DeleteAnnouncementUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementListUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.UpdateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.domain.model.vo.AnnouncementStatus;
 import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
@@ -50,6 +52,12 @@ class AnnouncementControllerTest {
 
     @MockitoBean
     private DeleteAnnouncementUseCase deleteAnnouncementUseCase;
+
+    @MockitoBean
+    private GetAnnouncementUseCase getAnnouncementUseCase;
+
+    @MockitoBean
+    private GetAnnouncementListUseCase getAnnouncementListUseCase;
 
     @DisplayName("정상 요청 시 공지사항이 등록되고 201을 반환한다.")
     @Test
@@ -191,6 +199,7 @@ class AnnouncementControllerTest {
         given(updateAnnouncementUseCase.updateAnnouncement(any())).willReturn(result);
 
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -209,6 +218,7 @@ class AnnouncementControllerTest {
     @Test
     void update_titleIsBlank() throws Exception {
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -223,6 +233,7 @@ class AnnouncementControllerTest {
     @Test
     void update_titleTooShort() throws Exception {
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -240,6 +251,7 @@ class AnnouncementControllerTest {
         String longTitle = "공".repeat(101);
 
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -255,6 +267,7 @@ class AnnouncementControllerTest {
     @Test
     void update_contentIsBlank() throws Exception {
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -269,6 +282,7 @@ class AnnouncementControllerTest {
     @Test
     void update_statusIsNull() throws Exception {
         mockMvc.perform(put("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -284,7 +298,8 @@ class AnnouncementControllerTest {
     void deleteAnnouncement() throws Exception {
         given(deleteAnnouncementUseCase.deleteAnnouncement(anyLong())).willReturn(1L);
 
-        mockMvc.perform(delete("/api/announcements/1"))
+        mockMvc.perform(delete("/api/announcements/1")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
     }

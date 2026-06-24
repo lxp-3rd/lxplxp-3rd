@@ -1,14 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { AdminAnnouncementDetailView } from './components/AdminAnnouncementDetailView';
 import { useAdminAnnouncementDetail } from './useAdminAnnouncementDetail';
+import { adminAnnouncementApi } from '../../api';
 
 export default function AdminAnnouncementDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
   const { announcement, isLoading, error } = useAdminAnnouncementDetail(id);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
+    setIsDeleting(true);
+    try {
+      await adminAnnouncementApi.remove(id);
+      router.push('/admin/announcements');
+    } catch {
+      alert('삭제에 실패했습니다. 다시 시도해 주세요.');
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return <div className="max-w-[1280px] mx-auto px-margin-desktop py-xl">Loading...</div>;
@@ -31,5 +47,11 @@ export default function AdminAnnouncementDetailPage() {
     );
   }
 
-  return <AdminAnnouncementDetailView announcement={announcement} />;
+  return (
+    <AdminAnnouncementDetailView
+      announcement={announcement}
+      onDelete={handleDelete}
+      isDeleting={isDeleting}
+    />
+  );
 }

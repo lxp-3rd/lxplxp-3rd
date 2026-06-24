@@ -12,6 +12,7 @@ import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -35,6 +36,14 @@ public class AnnouncementPersistenceAdapter implements SaveAnnouncementPort, Loa
     public Optional<Announcement> findById(Long id) {
         return announcementRepository.findById(id)
                 .map(AnnouncementMapper::toDomain);
+    }
+
+    @Override
+    public List<Announcement> findAll() {
+        return announcementRepository.findAllByOrderByCreatedAtDesc()
+                .stream()
+                .map(AnnouncementMapper::toDomain)
+                .toList();
     }
 
     @Override

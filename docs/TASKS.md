@@ -165,15 +165,15 @@
 - [x] 🔑관리자 `DELETE /api/courses/{id}` — 강좌 삭제
 
 **`admin/announcements/page.tsx`** — 공지사항 관리
-- [ ] 🔑관리자 `GET /api/announcements` — 목록 (mock 교체)
-- [ ] 🔑관리자 `DELETE /api/announcements/{id}` — 삭제
+- [x] 🔑관리자 `GET /api/announcements` — 목록 (mock 교체)
+- [x] 🔑관리자 `DELETE /api/announcements/{id}` — 삭제
 
 **`admin/announcements/new/page.tsx`** — 공지사항 작성
-- [ ] 🔑관리자 `POST /api/announcements` — 공지사항 생성
+- [x] 🔑관리자 `POST /api/announcements` — 공지사항 생성
 
 **`admin/announcements/[id]/edit/page.tsx`** — 공지사항 수정
-- [ ] 🔑관리자 `GET /api/announcements/{id}` — 현재 내용 로드
-- [ ] 🔑관리자 `PUT /api/announcements/{id}` — 수정 저장
+- [x] 🔑관리자 `GET /api/announcements/{id}` — 현재 내용 로드
+- [x] 🔑관리자 `PUT /api/announcements/{id}` — 수정 저장
 
 **`admin/instructors/page.tsx`** — 강사 관리
 - [ ] 🔑관리자 `GET /api/instructors` — 강사 목록 (mock 교체)

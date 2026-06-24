@@ -5,6 +5,8 @@ import com.ohgiraffers.lxp.announcement.application.port.command.CreateAnnouncem
 import com.ohgiraffers.lxp.announcement.application.port.command.UpdateAnnouncementCommand;
 import com.ohgiraffers.lxp.announcement.application.port.in.CreateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.DeleteAnnouncementUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementListUseCase;
+import com.ohgiraffers.lxp.announcement.application.port.in.GetAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.UpdateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.out.DeleteAnnouncementPort;
 import com.ohgiraffers.lxp.announcement.application.port.out.LoadAnnouncementPort;
@@ -16,9 +18,11 @@ import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
-public class AnnouncementService implements CreateAnnouncementUseCase, UpdateAnnouncementUseCase, DeleteAnnouncementUseCase {
+public class AnnouncementService implements CreateAnnouncementUseCase, UpdateAnnouncementUseCase, DeleteAnnouncementUseCase, GetAnnouncementListUseCase, GetAnnouncementUseCase {
 
     private final SaveAnnouncementPort saveAnnouncementPort;
     private final LoadAnnouncementPort loadAnnouncementPort;
@@ -63,5 +67,22 @@ public class AnnouncementService implements CreateAnnouncementUseCase, UpdateAnn
                 .orElseThrow(() -> new BusinessException(ErrorCode.ANNOUNCEMENT_NOT_FOUND));
         deleteAnnouncementPort.delete(id);
         return id;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AnnouncementResult> getAnnouncements() {
+        return loadAnnouncementPort.findAll().stream()
+                .map(AnnouncementResult::from)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AnnouncementResult getAnnouncement(Long id) {
+        return AnnouncementResult.from(
+                loadAnnouncementPort.findById(id)
+                        .orElseThrow(() -> new BusinessException(ErrorCode.ANNOUNCEMENT_NOT_FOUND))
+        );
     }
 }

@@ -1,5 +1,5 @@
-import { MOCK_ANNOUNCEMENTS, getAnnouncementById } from '@/app/announcements/mockData';
 import { MOCK_COURSES } from '@/app/courses/mockData';
+import { fetcher } from '@/lib/fetcher';
 import { MOCK_INSTRUCTORS, getInstructorById } from '@/app/instructors/mockData';
 import { MOCK_ROADMAPS } from '@/app/roadmaps/mockData';
 import type {
@@ -136,8 +136,6 @@ const cloneInstructor = (instructor: AdminInstructorDetail['instructor']): Admin
   expertise: [...instructor.expertise],
 });
 
-const cloneAnnouncement = (announcement: AdminAnnouncement): AdminAnnouncement => ({ ...announcement });
-
 export const adminDashboardApi = {
   getStats: async (): Promise<AdminDashboardStat[]> => [
     {
@@ -210,10 +208,12 @@ export const adminInstructorApplicationMockApi = {
   getApplications: async () => ADMIN_INSTRUCTOR_APPLICATIONS.map((application) => ({ ...application })),
 };
 
-export const adminAnnouncementMockApi = {
-  getAnnouncements: async (): Promise<AdminAnnouncement[]> => MOCK_ANNOUNCEMENTS.map(cloneAnnouncement),
-  getAnnouncement: async (id: string): Promise<AdminAnnouncement | null> => {
-    const announcement = getAnnouncementById(id);
-    return announcement ? cloneAnnouncement(announcement) : null;
-  },
+export const adminAnnouncementApi = {
+  getAll: () => fetcher.get<AdminAnnouncement[]>('/api/announcements'),
+  getById: (id: string) => fetcher.get<AdminAnnouncement>(`/api/announcements/${id}`),
+  create: (data: { adminId: number; title: string; content: string; status: 'PUBLISH' | 'HIDDEN' }) =>
+    fetcher.post<AdminAnnouncement>('/api/announcements', data),
+  update: (id: string, data: { title: string; content: string; status: 'PUBLISH' | 'HIDDEN' }) =>
+    fetcher.put<AdminAnnouncement>(`/api/announcements/${id}`, data),
+  remove: (id: string) => fetcher.delete(`/api/announcements/${id}`),
 };

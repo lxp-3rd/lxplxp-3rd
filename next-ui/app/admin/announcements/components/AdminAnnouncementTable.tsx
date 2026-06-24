@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import type { AdminAnnouncement } from '../../types';
 
+function formatDate(iso: string) {
+  return iso.slice(0, 10).replace(/-/g, '.');
+}
+
 export function AdminAnnouncementTable({ announcements }: { announcements: AdminAnnouncement[] }) {
   return (
     <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
@@ -10,7 +14,7 @@ export function AdminAnnouncementTable({ announcements }: { announcements: Admin
             <tr className="bg-surface-container-low border-b border-outline-variant">
               <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-16">No.</th>
               <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant">제목</th>
-              <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-32">작성자</th>
+              <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-28">상태</th>
               <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-36">작성일</th>
               <th className="px-lg py-md font-label-md text-label-md text-on-surface-variant w-28 text-right">관리</th>
             </tr>
@@ -29,8 +33,12 @@ export function AdminAnnouncementTable({ announcements }: { announcements: Admin
                     {announcement.title}
                   </Link>
                 </td>
-                <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{announcement.authorName}</td>
-                <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{announcement.createdAt}</td>
+                <td className="px-lg py-md">
+                  <span className={`inline-flex items-center px-sm py-xs rounded-full font-label-sm text-label-sm ${announcement.status === 'PUBLISH' ? 'bg-secondary-container text-on-secondary-container' : 'bg-surface-container text-on-surface-variant'}`}>
+                    {announcement.status === 'PUBLISH' ? '공개' : '비공개'}
+                  </span>
+                </td>
+                <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{formatDate(announcement.createdAt)}</td>
                 <td className="px-lg py-md text-right">
                   <div className="flex items-center justify-end gap-xs">
                     <Link
