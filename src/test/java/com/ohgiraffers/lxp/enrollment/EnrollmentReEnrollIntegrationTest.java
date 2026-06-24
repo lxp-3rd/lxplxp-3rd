@@ -7,10 +7,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ohgiraffers.lxp.course.domain.model.entity.Course;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaEntity;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaRepository;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaEntity;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
+import com.ohgiraffers.lxp.member.domain.model.entity.Member;
+import com.ohgiraffers.lxp.member.domain.model.vo.Email;
+import com.ohgiraffers.lxp.member.domain.model.vo.EncodedPassword;
+import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
+import com.ohgiraffers.lxp.member.infrastructure.persistence.jpa.MemberJpaEntity;
+import com.ohgiraffers.lxp.member.infrastructure.persistence.jpa.MemberJpaRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,9 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 @DisplayName("수강 재신청 통합 테스트")
 class EnrollmentReEnrollIntegrationTest {
 
-    private static final long MEMBER_ID = 1L;
-    private static final long COURSE_ID = 2L;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -44,26 +50,45 @@ class EnrollmentReEnrollIntegrationTest {
     @Autowired
     private EnrollmentJpaRepository repository;
 
+    @Autowired
+    private MemberJpaRepository memberRepository;
+
+    @Autowired
+    private CourseJpaRepository courseRepository;
+
+    private long memberId;
+    private long courseId;
+
     @BeforeEach
-    void clearEnrollments() {
+    void setUp() {
         repository.deleteAll();
+
+        MemberJpaEntity savedMember = memberRepository.save(MemberJpaEntity.from(
+                Member.signUp(new Email("learner@test.com"), new Nickname("learner"), new EncodedPassword("pwd"))
+        ));
+        memberId = savedMember.getId();
+
+        CourseJpaEntity hiddenCourse = courseRepository.save(CourseJpaEntity.from(
+                Course.create(999L, "테스트 강좌", "테스트 강좌 설명", null)
+        ));
+        Course courseDomain = hiddenCourse.toDomain();
+        courseDomain.changeStatus(com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus.PUBLIC, null);
+        CourseJpaEntity savedCourse = courseRepository.save(CourseJpaEntity.from(courseDomain));
+        courseId = savedCourse.getId();
     }
 
     @Test
     @DisplayName("이전 수강이 CANCELED면 재신청 시 새 ACTIVE row가 생성된다")
     void reEnrollAfterCanceledCreatesNewRow() throws Exception {
-        // given: 동일 회원·강좌의 CANCELED 수강이 이미 존재(취소된 상태를 직접 시드)
-        repository.save(new EnrollmentJpaEntity(MEMBER_ID, COURSE_ID, EnrollmentStatus.CANCELED));
+        repository.save(new EnrollmentJpaEntity(memberId, courseId, EnrollmentStatus.CANCELED));
 
-        // when: 재신청
         mockMvc.perform(post("/enrollments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new EnrollmentRequest(MEMBER_ID, COURSE_ID))))
+                                new EnrollmentRequest(memberId, courseId))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status").value("ACTIVE"));
 
-        // then: 기존 CANCELED + 신규 ACTIVE = 2건 (reactivate 아님, 새 row)
         List<EnrollmentJpaEntity> all = repository.findAll();
         assertThat(all)
                 .hasSize(2)
@@ -71,25 +96,22 @@ class EnrollmentReEnrollIntegrationTest {
                         EnrollmentJpaEntity::getCourseId,
                         EnrollmentJpaEntity::getStatus)
                 .containsExactlyInAnyOrder(
-                        tuple(MEMBER_ID, COURSE_ID, EnrollmentStatus.CANCELED),
-                        tuple(MEMBER_ID, COURSE_ID, EnrollmentStatus.ACTIVE));
+                        tuple(memberId, courseId, EnrollmentStatus.CANCELED),
+                        tuple(memberId, courseId, EnrollmentStatus.ACTIVE));
     }
 
     @Test
     @DisplayName("ACTIVE 수강이 있으면 재신청은 409로 차단되고 row가 늘지 않는다")
     void reEnrollWhileActiveIsBlocked() throws Exception {
-        // given: 동일 회원·강좌의 ACTIVE 수강이 이미 존재
-        repository.save(new EnrollmentJpaEntity(MEMBER_ID, COURSE_ID, EnrollmentStatus.ACTIVE));
+        repository.save(new EnrollmentJpaEntity(memberId, courseId, EnrollmentStatus.ACTIVE));
 
-        // when: 재신청 → 중복(ENROLLMENT_ALREADY_EXISTS) 차단
         mockMvc.perform(post("/enrollments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
-                                new EnrollmentRequest(MEMBER_ID, COURSE_ID))))
+                                new EnrollmentRequest(memberId, courseId))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("ENROLLMENT_ALREADY_EXISTS"));
 
-        // then: row 그대로 1건
         assertThat(repository.findAll()).hasSize(1);
     }
 }

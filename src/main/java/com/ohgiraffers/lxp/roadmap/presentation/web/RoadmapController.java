@@ -61,8 +61,11 @@ public class RoadmapController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoadmapResponse> get(@PathVariable Long id) {
-        return ResponseEntity.ok(RoadmapResponse.from(roadmapUseCase.getRoadmap(id)));
+    public ResponseEntity<RoadmapResponse> get(
+            @LoginMember AuthenticatedMember authenticatedMember,
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(RoadmapResponse.from(roadmapUseCase.getRoadmap(id, authenticatedMember.memberId())));
     }
 
     @GetMapping("/available")

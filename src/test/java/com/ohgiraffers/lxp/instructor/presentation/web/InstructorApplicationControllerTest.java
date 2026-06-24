@@ -9,6 +9,7 @@ import com.ohgiraffers.lxp.instructor.application.port.command.ApplyInstructorCo
 import com.ohgiraffers.lxp.instructor.application.port.command.ReviewAction;
 import com.ohgiraffers.lxp.instructor.application.port.command.ReviewInstructorApplicationCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.ApplyInstructorUseCase;
+import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorApplicationListUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.ReviewInstructorApplicationUseCase;
 import com.ohgiraffers.lxp.instructor.presentation.dto.ApplyInstructorRequest;
 import com.ohgiraffers.lxp.instructor.presentation.dto.ReviewInstructorApplicationRequest;
@@ -48,6 +49,9 @@ class InstructorApplicationControllerTest {
 
     @MockitoBean
     private ReviewInstructorApplicationUseCase reviewInstructorApplicationUseCase;
+
+    @MockitoBean
+    private GetInstructorApplicationListUseCase getInstructorApplicationListUseCase;
 
     @MockitoBean
     private TokenValidatePort tokenValidatePort;

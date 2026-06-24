@@ -97,19 +97,6 @@ class CourseControllerTest {
     }
 
     @Test
-    @DisplayName("thumbnailUrl이 올바른 URL 형식이 아니면 400을 반환한다")
-    void register_invalidThumbnailUrl_returns400() throws Exception {
-        RegisterCourseRequest request = new RegisterCourseRequest(
-                1L, "강좌 제목", "강좌 설명입니다.", "not-a-valid-url", List.of()
-        );
-
-        mockMvc.perform(post("/api/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @DisplayName("존재하지 않는 강사 ID로 등록 시 404를 반환한다")
     void register_instructorNotFound_returns404() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(

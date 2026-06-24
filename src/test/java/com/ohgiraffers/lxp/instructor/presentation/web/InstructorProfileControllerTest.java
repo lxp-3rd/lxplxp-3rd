@@ -8,6 +8,7 @@ import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.instructor.application.port.command.RegisterInstructorProfileCommand;
 import com.ohgiraffers.lxp.instructor.application.port.command.UpdateInstructorProfileCommand;
 import com.ohgiraffers.lxp.instructor.application.port.in.GetInstructorProfileUseCase;
+import com.ohgiraffers.lxp.instructor.application.port.in.GetMyInstructorUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.RegisterInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.application.port.in.UpdateInstructorProfileUseCase;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
@@ -61,7 +62,9 @@ class InstructorProfileControllerTest {
     @MockitoBean
     private GetInstructorProfileUseCase getInstructorProfileUseCase;
 
-  
+    @MockitoBean
+    private GetMyInstructorUseCase getMyInstructorUseCase;
+
     @BeforeEach
     void setUp() {
         given(tokenValidatePort.validateAccessToken(INSTRUCTOR_TOKEN))

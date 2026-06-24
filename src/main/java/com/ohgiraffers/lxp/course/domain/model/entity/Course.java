@@ -28,7 +28,7 @@ public class Course {
         course.title = title;
         course.description = description;
         course.thumbnailUrl = thumbnailUrl;
-        course.status = CourseStatus.PUBLIC;
+        course.status = CourseStatus.HIDDEN;
         course.hiddenBy = null;
         return course;
     }

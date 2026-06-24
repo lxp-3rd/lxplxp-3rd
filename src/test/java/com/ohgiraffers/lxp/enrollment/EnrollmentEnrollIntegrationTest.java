@@ -7,10 +7,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ohgiraffers.lxp.course.domain.model.entity.Course;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaEntity;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaRepository;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaEntity;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
+import com.ohgiraffers.lxp.member.domain.model.entity.Member;
+import com.ohgiraffers.lxp.member.domain.model.vo.Email;
+import com.ohgiraffers.lxp.member.domain.model.vo.EncodedPassword;
+import com.ohgiraffers.lxp.member.domain.model.vo.Nickname;
+import com.ohgiraffers.lxp.member.infrastructure.persistence.jpa.MemberJpaEntity;
+import com.ohgiraffers.lxp.member.infrastructure.persistence.jpa.MemberJpaRepository;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,15 +50,37 @@ class EnrollmentEnrollIntegrationTest {
     @Autowired
     private EnrollmentJpaRepository repository;
 
+    @Autowired
+    private MemberJpaRepository memberRepository;
+
+    @Autowired
+    private CourseJpaRepository courseRepository;
+
+    private long memberId;
+    private long courseId;
+
     @BeforeEach
-    void clearEnrollments() {
+    void setUp() {
         repository.deleteAll();
+
+        MemberJpaEntity savedMember = memberRepository.save(MemberJpaEntity.from(
+                Member.signUp(new Email("learner@test.com"), new Nickname("learner"), new EncodedPassword("pwd"))
+        ));
+        memberId = savedMember.getId();
+
+        CourseJpaEntity hiddenCourse = courseRepository.save(CourseJpaEntity.from(
+                Course.create(999L, "테스트 강좌", "테스트 강좌 설명", null)
+        ));
+        Course courseDomain = hiddenCourse.toDomain();
+        courseDomain.changeStatus(com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus.PUBLIC, null);
+        CourseJpaEntity savedCourse = courseRepository.save(CourseJpaEntity.from(courseDomain));
+        courseId = savedCourse.getId();
     }
 
     @Test
     @DisplayName("POST /enrollments → 201 + Location + 응답 본문, ACTIVE row 저장")
     void enrollHappyPath() throws Exception {
-        EnrollmentRequest request = new EnrollmentRequest(1L, 2L);
+        EnrollmentRequest request = new EnrollmentRequest(memberId, courseId);
 
         mockMvc.perform(post("/enrollments")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -57,16 +88,16 @@ class EnrollmentEnrollIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.memberId").value(1))
-                .andExpect(jsonPath("$.courseId").value(2))
+                .andExpect(jsonPath("$.memberId").value(memberId))
+                .andExpect(jsonPath("$.courseId").value(courseId))
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
                 .andExpect(jsonPath("$.createdAt").exists());
 
         List<EnrollmentJpaEntity> all = repository.findAll();
         assertThat(all).hasSize(1);
         EnrollmentJpaEntity saved = all.get(0);
-        assertThat(saved.getMemberId()).isEqualTo(1L);
-        assertThat(saved.getCourseId()).isEqualTo(2L);
+        assertThat(saved.getMemberId()).isEqualTo(memberId);
+        assertThat(saved.getCourseId()).isEqualTo(courseId);
         assertThat(saved.getStatus()).isEqualTo(EnrollmentStatus.ACTIVE);
         assertThat(saved.getCreatedAt()).isNotNull();
         assertThat(saved.getDeletedAt()).isNull();
