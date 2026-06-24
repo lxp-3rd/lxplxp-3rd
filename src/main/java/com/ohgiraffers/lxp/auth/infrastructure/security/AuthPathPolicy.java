@@ -19,6 +19,15 @@ final class AuthPathPolicy {
     private AuthPathPolicy() {
     }
 
+    static boolean requiresAuth(String requestUri) {
+        for (String pattern : PROTECTED_PATH_PATTERNS) {
+            if (PATH_MATCHER.match(pattern, requestUri)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static boolean isAdminPath(String requestUri) {
         for (String pattern : ADMIN_PATH_PATTERNS) {
             if (PATH_MATCHER.match(pattern, requestUri)) {

@@ -4,6 +4,8 @@ import com.ohgiraffers.lxp.announcement.application.port.command.CreateAnnouncem
 import com.ohgiraffers.lxp.announcement.application.port.in.CreateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.presentation.dto.CreateAnnouncementRequest;
 import com.ohgiraffers.lxp.announcement.presentation.dto.CreateAnnouncementResponse;
+import com.ohgiraffers.lxp.auth.presentation.support.RequireRole;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class AnnouncementController {
         this.createAnnouncementUseCase = createAnnouncementUseCase;
     }
 
+    @RequireRole(MemberRole.ADMIN)
     @PostMapping
     public ResponseEntity<CreateAnnouncementResponse> create(@RequestBody @Valid CreateAnnouncementRequest request) {
         CreateAnnouncementCommand command = new CreateAnnouncementCommand(

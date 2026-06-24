@@ -28,7 +28,7 @@ public class AuthWebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         tokenValidatePortProvider.ifAvailable(tokenValidatePort -> registry
                 .addInterceptor(new JwtAuthenticationInterceptor(tokenValidatePort))
-                .addPathPatterns(AuthPathPolicy.PROTECTED_PATH_PATTERNS));
+                .addPathPatterns("/**"));
     }
 
     @Override

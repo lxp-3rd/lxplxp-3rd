@@ -1,10 +1,12 @@
 package com.ohgiraffers.lxp.global.upload.presentation.web;
 
+import com.ohgiraffers.lxp.auth.presentation.support.RequireRole;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.global.upload.application.port.command.UploadImageCommand;
 import com.ohgiraffers.lxp.global.upload.application.port.in.UploadImageUseCase;
 import com.ohgiraffers.lxp.global.upload.presentation.dto.ImageUploadResponse;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ public class ImageUploadController {
 
     private final UploadImageUseCase uploadImageUseCase;
 
+    @RequireRole(MemberRole.INSTRUCTOR)
     @PostMapping
     public ResponseEntity<ImageUploadResponse> upload(@RequestParam("image") MultipartFile file) {
         try {
