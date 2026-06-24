@@ -7,7 +7,6 @@ import com.ohgiraffers.lxp.course.application.port.command.UpdateCourseCommand;
 import com.ohgiraffers.lxp.course.application.dto.CourseResult;
 import com.ohgiraffers.lxp.course.application.port.in.ChangeCourseStatusUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.DeleteCourseUseCase;
-import com.ohgiraffers.lxp.course.application.port.in.GetCourseListUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.GetCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.RegisterCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.UpdateCourseUseCase;
@@ -17,7 +16,6 @@ import com.ohgiraffers.lxp.course.presentation.dto.ChangeCourseStatusRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.RegisterCourseRequest;
 import com.ohgiraffers.lxp.course.presentation.dto.UpdateCourseRequest;
 
-import java.util.List;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
@@ -60,9 +58,6 @@ class CourseControllerTest {
 
     @MockitoBean
     private GetCourseUseCase getCourseUseCase;
-
-    @MockitoBean
-    private GetCourseListUseCase getCourseListUseCase;
 
     @Test
     @DisplayName("강좌 등록 성공 시 201과 courseId를 반환한다")
@@ -246,21 +241,5 @@ class CourseControllerTest {
 
         mockMvc.perform(get("/api/courses/999"))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("강좌 목록 조회 성공 시 200과 CourseResponse 목록을 반환한다")
-    void getCourseList_success_returns200() throws Exception {
-        List<CourseResult> results = List.of(
-                new CourseResult(1L, 10L, "Java 기초", "자바 강좌", null, CourseStatus.PUBLIC, null, 3L),
-                new CourseResult(2L, 10L, "Spring 기초", "스프링 강좌", null, CourseStatus.HIDDEN, null, 0L)
-        );
-        given(getCourseListUseCase.getCourseList()).willReturn(results);
-
-        mockMvc.perform(get("/api/courses"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].id").value(2L));
     }
 }
