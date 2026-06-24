@@ -1,4 +1,15 @@
-// Roadmap 도메인 타입 정의 (API 응답 기준)
+// 백엔드 API 응답 형태
+export type RoadmapSummary = {
+  id: number;
+  memberId: number;
+  name: string;
+  introduction: string;
+  courseIds: number[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+// 프론트엔드 카드 컴포넌트용 뷰 모델
 export type Roadmap = {
   id: string;
   title: string;

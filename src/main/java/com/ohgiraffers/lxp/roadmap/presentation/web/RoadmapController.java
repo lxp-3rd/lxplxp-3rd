@@ -36,6 +36,14 @@ public class RoadmapController {
         this.participatingRoadmapUseCase = participatingRoadmapUseCase;
     }
 
+    @GetMapping
+    public ResponseEntity<List<RoadmapResponse>> getAll() {
+        return ResponseEntity.ok(roadmapUseCase.getAllRoadmaps()
+                .stream()
+                .map(RoadmapResponse::from)
+                .toList());
+    }
+
     @PostMapping
     public ResponseEntity<RoadmapResponse> create(
             @LoginMember AuthenticatedMember authenticatedMember,
@@ -53,11 +61,8 @@ public class RoadmapController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoadmapResponse> get(
-            @LoginMember AuthenticatedMember authenticatedMember,
-            @PathVariable Long id
-    ) {
-        return ResponseEntity.ok(RoadmapResponse.from(roadmapUseCase.getRoadmap(id, authenticatedMember.memberId())));
+    public ResponseEntity<RoadmapResponse> get(@PathVariable Long id) {
+        return ResponseEntity.ok(RoadmapResponse.from(roadmapUseCase.getRoadmap(id)));
     }
 
     @GetMapping("/available")
@@ -84,6 +89,15 @@ public class RoadmapController {
                 .stream()
                 .map(RoadmapResponse::from)
                 .toList());
+    }
+
+    @PostMapping("/{id}/participate")
+    public ResponseEntity<Void> participate(
+            @LoginMember AuthenticatedMember authenticatedMember,
+            @PathVariable Long id
+    ) {
+        participatingRoadmapUseCase.participate(id, authenticatedMember.memberId());
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.ohgiraffers.lxp.course.application.port.out.AdminCourseListView;
 import com.ohgiraffers.lxp.course.application.port.out.CourseListView;
 import com.ohgiraffers.lxp.course.application.port.out.LoadCourseListPort;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
@@ -25,6 +26,20 @@ public class LoadCourseListPersistenceAdapter implements LoadCourseListPort {
                         entity.getTitle(),
                         entity.getThumbnailUrl(),
                         entity.getInstructorId()
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<AdminCourseListView> loadAllCourses() {
+        return courseJpaRepository.findByDeletedAtIsNullOrderByCreatedAtDesc().stream()
+                .map(entity -> new AdminCourseListView(
+                        entity.getId(),
+                        entity.getTitle(),
+                        entity.getThumbnailUrl(),
+                        entity.getInstructorId(),
+                        entity.getStatus(),
+                        entity.getHiddenBy()
                 ))
                 .toList();
     }

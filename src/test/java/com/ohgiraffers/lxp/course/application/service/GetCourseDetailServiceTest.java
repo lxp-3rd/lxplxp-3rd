@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.course.application.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import com.ohgiraffers.lxp.course.application.port.out.CourseDetailView;
 import com.ohgiraffers.lxp.course.application.port.out.EnrollmentStatusView;
 import com.ohgiraffers.lxp.course.application.port.out.LoadCourseDetailPort;
 import com.ohgiraffers.lxp.course.application.port.out.LoadEnrollmentStatusPort;
+import com.ohgiraffers.lxp.course.application.port.out.LoadInstructorNamePort;
 import com.ohgiraffers.lxp.course.domain.model.read.CourseDetail;
 import com.ohgiraffers.lxp.course.domain.model.read.CurriculumItem;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
@@ -36,17 +38,23 @@ class GetCourseDetailServiceTest {
     @Mock
     private LoadEnrollmentStatusPort loadEnrollmentStatusPort;
 
+    @Mock
+    private LoadInstructorNamePort loadInstructorNamePort;
+
     @Test
     @DisplayName("PUBLIC 강좌 상세에 수강 인원·수강 여부·커리큘럼을 조합해 반환한다")
     void getCourseDetail_loggedIn_enrolled() {
-        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "자바 입문 강좌", "자바 상세 설명", "thumb.png",
+        CourseDetailView view = new CourseDetailView(1L, 10L, "Java 기초", "자바 입문 강좌", "자바 상세 설명", "thumb.png",
                 List.of(new CurriculumItem(11L, 1, "1장"), new CurriculumItem(12L, 2, "2장")));
         given(loadCourseDetailPort.loadPublicCourseDetail(1L)).willReturn(Optional.of(view));
         given(loadEnrollmentStatusPort.load(1L, 7L)).willReturn(new EnrollmentStatusView(1240L, true));
+        given(loadInstructorNamePort.findNamesByInstructorIds(List.of(10L))).willReturn(Map.of(10L, "김강사"));
 
         CourseDetail detail = getCourseDetailService.getCourseDetail(1L, 7L);
 
         assertThat(detail.id()).isEqualTo(1L);
+        assertThat(detail.instructorId()).isEqualTo(10L);
+        assertThat(detail.instructorName()).isEqualTo("김강사");
         assertThat(detail.summary()).isEqualTo("자바 입문 강좌");
         assertThat(detail.description()).isEqualTo("자바 상세 설명");
         assertThat(detail.enrollmentCount()).isEqualTo(1240L);
@@ -59,9 +67,10 @@ class GetCourseDetailServiceTest {
     @Test
     @DisplayName("비로그인(memberId=null)이면 enrolled=false로 조합한다")
     void getCourseDetail_anonymous_notEnrolled() {
-        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "요약", null, null, List.of());
+        CourseDetailView view = new CourseDetailView(1L, 10L, "Java 기초", "요약", null, null, List.of());
         given(loadCourseDetailPort.loadPublicCourseDetail(1L)).willReturn(Optional.of(view));
         given(loadEnrollmentStatusPort.load(1L, null)).willReturn(new EnrollmentStatusView(0L, false));
+        given(loadInstructorNamePort.findNamesByInstructorIds(List.of(10L))).willReturn(Map.of());
 
         CourseDetail detail = getCourseDetailService.getCourseDetail(1L, null);
 

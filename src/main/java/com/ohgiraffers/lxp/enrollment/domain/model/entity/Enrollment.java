@@ -48,7 +48,10 @@ public class Enrollment {
     }
 
     public void complete() {
-        // TODO: 수강 완료 상태 전이
+        if (this.status == EnrollmentStatus.CANCELED) {
+            throw new BusinessException(ErrorCode.ENROLLMENT_ALREADY_CANCELED);
+        }
+        this.status = EnrollmentStatus.COMPLETED;
     }
 
     public Long getId() {

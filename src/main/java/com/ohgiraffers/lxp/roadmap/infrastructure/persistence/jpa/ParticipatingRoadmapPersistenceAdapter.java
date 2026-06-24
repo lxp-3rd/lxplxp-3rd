@@ -28,4 +28,15 @@ public class ParticipatingRoadmapPersistenceAdapter implements RoadmapParticipat
                 .map(ParticipatingRoadmapJpaEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public boolean existsByMemberIdAndRoadmapId(Long memberId, Long roadmapId) {
+        return participatingRoadmapJpaRepository.existsByMemberIdAndRoadmapIdAndDeletedAtIsNull(memberId, roadmapId);
+    }
+
+    @Override
+    public ParticipatingRoadmap participate(Long memberId, Long roadmapId) {
+        ParticipatingRoadmap domain = ParticipatingRoadmap.participate(memberId, roadmapId);
+        return participatingRoadmapJpaRepository.save(ParticipatingRoadmapJpaEntity.from(domain)).toDomain();
+    }
 }

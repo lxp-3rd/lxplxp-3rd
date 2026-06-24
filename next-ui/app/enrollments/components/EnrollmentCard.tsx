@@ -2,26 +2,28 @@ import Link from 'next/link';
 import { ProgressBar } from '@/components/ui';
 
 interface EnrollmentCardProps {
+  enrollmentId: number;
   courseId: string;
   courseTitle: string;
   instructor: string;
   thumbnail: string;
   progress: number;
   lastAccessedAt: string;
-  status: 'IN_PROGRESS' | 'COMPLETED';
+  status: 'ACTIVE' | 'COMPLETED';
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  IN_PROGRESS: '진행 중',
+  ACTIVE: '진행 중',
   COMPLETED: '수강 완료',
 };
 
 const STATUS_CLASS: Record<string, string> = {
-  IN_PROGRESS: 'bg-primary-container text-on-primary-container',
+  ACTIVE: 'bg-primary-container text-on-primary-container',
   COMPLETED: 'bg-secondary-container text-on-secondary-container',
 };
 
 export function EnrollmentCard({
+  enrollmentId,
   courseId,
   courseTitle,
   instructor,
@@ -32,7 +34,7 @@ export function EnrollmentCard({
 }: EnrollmentCardProps) {
   return (
     <Link
-      href={`/courses/${courseId}`}
+      href={`/enrollments/${enrollmentId}`}
       className="group block bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden transition-all duration-300 hover:shadow-md hover:-translate-y-1"
     >
       <div className="aspect-video relative overflow-hidden bg-surface-container">

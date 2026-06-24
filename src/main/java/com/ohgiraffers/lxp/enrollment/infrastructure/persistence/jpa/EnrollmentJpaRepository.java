@@ -1,6 +1,7 @@
 package com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,12 @@ import org.springframework.data.repository.query.Param;
 public interface EnrollmentJpaRepository extends JpaRepository<EnrollmentJpaEntity, Long> {
 
     boolean existsByMemberIdAndCourseIdAndStatus(Long memberId, Long courseId, EnrollmentStatus status);
+
+    Optional<EnrollmentJpaEntity> findByIdAndDeletedAtIsNull(Long id);
+
+    List<EnrollmentJpaEntity> findAllByMemberIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long memberId);
+
+    List<EnrollmentJpaEntity> findAllByCourseIdAndDeletedAtIsNullOrderByCreatedAtDesc(Long courseId);
 
     /**
      * 강좌별 현재 수강 중(ACTIVE) 인원 수를 한 번에 집계한다.

@@ -1,5 +1,7 @@
 package com.ohgiraffers.lxp.roadmap.application.service;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.roadmap.application.dto.RoadmapResult;
 import com.ohgiraffers.lxp.roadmap.application.port.in.ParticipatingRoadmapUseCase;
 import com.ohgiraffers.lxp.roadmap.application.port.out.RoadmapParticipationPort;
@@ -32,5 +34,17 @@ public class ParticipatingRoadmapService implements ParticipatingRoadmapUseCase 
                 .stream()
                 .map(RoadmapResult::from)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void participate(Long roadmapId, Long memberId) {
+        if (!roadmapRepositoryPort.findById(roadmapId).isPresent()) {
+            throw new BusinessException(ErrorCode.ROADMAP_NOT_FOUND);
+        }
+        if (roadmapParticipationPort.existsByMemberIdAndRoadmapId(memberId, roadmapId)) {
+            throw new BusinessException(ErrorCode.ROADMAP_ALREADY_PARTICIPATING);
+        }
+        roadmapParticipationPort.participate(memberId, roadmapId);
     }
 }

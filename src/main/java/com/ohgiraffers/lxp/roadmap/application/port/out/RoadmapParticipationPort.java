@@ -7,4 +7,8 @@ import java.util.List;
 public interface RoadmapParticipationPort {
 
     List<ParticipatingRoadmap> findAllByMemberId(Long memberId);
+
+    boolean existsByMemberIdAndRoadmapId(Long memberId, Long roadmapId);
+
+    ParticipatingRoadmap participate(Long memberId, Long roadmapId);
 }

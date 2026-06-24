@@ -3,6 +3,7 @@ package com.ohgiraffers.lxp.content.presentation.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.content.application.port.command.RegisterContentCommand;
 import com.ohgiraffers.lxp.content.application.port.in.RegisterContentUseCase;
+import com.ohgiraffers.lxp.content.infrastructure.persistence.jpa.ContentJpaRepository;
 import com.ohgiraffers.lxp.content.presentation.dto.RegisterContentRequest;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
@@ -32,6 +33,9 @@ class ContentControllerTest {
 
     @MockitoBean
     private RegisterContentUseCase registerContentUseCase;
+
+    @MockitoBean
+    private ContentJpaRepository contentJpaRepository;
 
     @Test
     @DisplayName("콘텐츠 등록 성공 시 201과 contentId를 반환한다")

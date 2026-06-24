@@ -7,4 +7,6 @@ import java.util.List;
 public interface ParticipatingRoadmapUseCase {
 
     List<RoadmapResult> getParticipatingRoadmaps(Long memberId);
+
+    void participate(Long roadmapId, Long memberId);
 }

@@ -6,14 +6,14 @@ import { AdminCourseTable } from './components/AdminCourseTable';
 import { useAdminCourses } from './useAdminCourses';
 
 export default function AdminCoursesPage() {
-  const { courses, isLoading, error, toggleHidden, removeCourse } = useAdminCourses();
+  const { courses, isLoading, errorMessage, toggleVisibility, removeCourse } = useAdminCourses();
 
   if (isLoading) {
     return <AdminPageContainer>Loading...</AdminPageContainer>;
   }
 
-  if (error) {
-    return <AdminPageContainer>Failed to load courses.</AdminPageContainer>;
+  if (errorMessage) {
+    return <AdminPageContainer>{errorMessage}</AdminPageContainer>;
   }
 
   return (
@@ -24,7 +24,7 @@ export default function AdminCoursesPage() {
       />
       <AdminCourseTable
         courses={courses}
-        onToggleHidden={toggleHidden}
+        onToggleVisibility={toggleVisibility}
         onRemove={removeCourse}
       />
     </AdminPageContainer>

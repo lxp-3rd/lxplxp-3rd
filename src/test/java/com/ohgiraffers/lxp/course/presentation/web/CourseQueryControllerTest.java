@@ -74,13 +74,15 @@ class CourseQueryControllerTest {
     void getCourseDetail_anonymous_returns200() throws Exception {
         given(optionalMemberResolver.resolveMemberId(any())).willReturn(null);
         given(getCourseDetailUseCase.getCourseDetail(1L, null)).willReturn(
-                new CourseDetail(1L, "Java 기초", "자바 입문 강좌", "자바 상세 설명", "thumb.png", 1240L, false,
+                new CourseDetail(1L, 10L, "김강사", "Java 기초", "자바 입문 강좌", "자바 상세 설명", "thumb.png", 1240L, false,
                         List.of(new CurriculumItem(11L, 1, "1장"), new CurriculumItem(12L, 2, "2장")))
         );
 
         mockMvc.perform(get("/api/courses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.instructorId").value(10L))
+                .andExpect(jsonPath("$.instructorName").value("김강사"))
                 .andExpect(jsonPath("$.summary").value("자바 입문 강좌"))
                 .andExpect(jsonPath("$.description").value("자바 상세 설명"))
                 .andExpect(jsonPath("$.enrollmentCount").value(1240L))
@@ -95,7 +97,7 @@ class CourseQueryControllerTest {
     void getCourseDetail_loggedIn_enrolled_returns200() throws Exception {
         given(optionalMemberResolver.resolveMemberId(any())).willReturn(7L);
         given(getCourseDetailUseCase.getCourseDetail(1L, 7L)).willReturn(
-                new CourseDetail(1L, "Java 기초", "요약", "설명", null, 1240L, true, List.of())
+                new CourseDetail(1L, 10L, "김강사", "Java 기초", "요약", "설명", null, 1240L, true, List.of())
         );
 
         mockMvc.perform(get("/api/courses/1")

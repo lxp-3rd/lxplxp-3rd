@@ -37,6 +37,10 @@ public class ContentJpaEntity extends BaseEntity {
     }
 
     public Long getId() { return id; }
+    public Long getCourseId() { return courseId; }
+    public int getSequence() { return sequence; }
+    public String getTitle() { return title; }
+    public String getContentUrl() { return contentUrl; }
 
     public Content toDomain() {
         return Content.restore(id, courseId, sequence, title, contentUrl);

@@ -1,12 +1,16 @@
-// 담당: B
 import { fetcher } from '@/lib/fetcher';
-import type { Roadmap } from './types';
+import type { RoadmapSummary } from './types';
 
-// TODO: 실제 엔드포인트로 교체
 export const roadmapApi = {
-  getAll: () => fetcher.get<Roadmap[]>('/roadmaps'),
-  getById: (id: string) => fetcher.get<Roadmap>(`/roadmaps/${id}`),
-  create: (data: Partial<Roadmap>) => fetcher.post<Roadmap>('/roadmaps', data),
-  update: (id: string, data: Partial<Roadmap>) => fetcher.put<Roadmap>(`/roadmaps/${id}`, data),
-  remove: (id: string) => fetcher.delete(`/roadmaps/${id}`),
+  getAll: () => fetcher.get<RoadmapSummary[]>('/api/roadmaps'),           // 공개
+  getAvailable: () => fetcher.get<RoadmapSummary[]>('/api/roadmaps/available'),
+  getParticipating: () => fetcher.get<RoadmapSummary[]>('/api/roadmaps/participating'),
+  getCreated: () => fetcher.get<RoadmapSummary[]>('/api/roadmaps/created'),
+  getById: (id: string) => fetcher.get<RoadmapSummary>(`/api/roadmaps/${id}`), // 공개
+  participate: (id: string) => fetcher.post<void>(`/api/roadmaps/${id}/participate`, {}),
+  create: (data: { name: string; introduction: string; courseIds: number[] }) =>
+    fetcher.post<RoadmapSummary>('/api/roadmaps', data),
+  update: (id: string, data: { name: string; introduction: string; courseIds: number[] }) =>
+    fetcher.put<RoadmapSummary>(`/api/roadmaps/${id}`, data),
+  remove: (id: string) => fetcher.delete(`/api/roadmaps/${id}`),
 };

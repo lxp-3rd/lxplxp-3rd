@@ -1,28 +1,55 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { MOCK_COURSES } from '@/app/courses/mockData';
-
-type Course = typeof MOCK_COURSES[number];
+import { courseApi } from '@/app/courses/api';
+import type { CourseSummary } from '@/app/courses/types';
+import { roadmapApi } from '../api';
 
 export default function RoadmapNewPage() {
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [introduction, setIntroduction] = useState('');
   const [search, setSearch] = useState('');
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [courses, setCourses] = useState<CourseSummary[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const filtered = MOCK_COURSES.filter((c) =>
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingCourses(true);
+    courseApi.getAll()
+      .then((loadedCourses) => {
+        if (!cancelled) setCourses(loadedCourses);
+      })
+      .catch(() => {
+        if (!cancelled) setError('강좌 목록을 불러올 수 없습니다.');
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingCourses(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filtered = courses.filter((c) =>
     !search ||
     c.title.includes(search) ||
-    c.instructor.includes(search),
+    c.instructorName.includes(search),
   );
 
   const selectedCourses = selectedIds
-    .map((id) => MOCK_COURSES.find((c) => c.id === id))
-    .filter(Boolean) as Course[];
+    .map((id) => courses.find((c) => c.id === id))
+    .filter(Boolean) as CourseSummary[];
 
-  const toggleCourse = (id: string) => {
+  const toggleCourse = (id: number) => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
@@ -46,6 +73,45 @@ export default function RoadmapNewPage() {
     });
   };
 
+  const validate = () => {
+    const trimmedName = name.trim();
+    const trimmedIntroduction = introduction.trim();
+    if (trimmedName.length < 2 || trimmedName.length > 20) {
+      return '로드맵 명칭은 2자 이상 20자 이하로 입력해주세요.';
+    }
+    if (trimmedIntroduction.length < 20 || trimmedIntroduction.length > 200) {
+      return '로드맵 소개는 20자 이상 200자 이하로 입력해주세요.';
+    }
+    if (selectedIds.length < 2) {
+      return '로드맵에는 최소 2개의 강좌가 필요합니다.';
+    }
+    return null;
+  };
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      const created = await roadmapApi.create({
+        name: name.trim(),
+        introduction: introduction.trim(),
+        courseIds: selectedIds,
+      });
+      router.push(`/roadmaps/${created.id}`);
+    } catch {
+      setError('로드맵 생성에 실패했습니다. 입력값을 확인한 뒤 다시 시도해주세요.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <TopNavBar />
@@ -63,12 +129,20 @@ export default function RoadmapNewPage() {
             </div>
             <button
               type="button"
+              onClick={handleSubmit}
+              disabled={submitting}
               className="flex items-center gap-xs px-xl py-md bg-primary text-on-primary font-label-md text-label-md rounded-xl shadow-sm hover:brightness-105 active:scale-95 transition-all"
             >
               <span className="material-symbols-outlined text-[20px]">add</span>
-              생성하기
+              {submitting ? '생성 중...' : '생성하기'}
             </button>
           </section>
+
+          {error && (
+            <div className="mb-lg rounded-lg border border-error/30 bg-error/10 px-md py-sm text-error font-label-md text-label-md">
+              {error}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
 
@@ -89,11 +163,25 @@ export default function RoadmapNewPage() {
                   <div className="flex-grow flex flex-col gap-md">
                     <div>
                       <label className="block font-label-md text-label-md text-on-surface-variant mb-sm">로드맵 명칭</label>
-                      <input className="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md" placeholder="예: 시니어 프론트엔드 개발자 마스터 코스" type="text" />
+                      <input
+                        className="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md"
+                        placeholder="예: 프론트엔드 마스터"
+                        type="text"
+                        value={name}
+                        maxLength={20}
+                        onChange={(e) => setName(e.target.value)}
+                      />
                     </div>
                     <div>
                       <label className="block font-label-md text-label-md text-on-surface-variant mb-sm">로드맵 소개</label>
-                      <textarea className="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md resize-none" placeholder="로드맵의 목표와 대상 독자를 간략하게 설명해주세요." rows={4} />
+                      <textarea
+                        className="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md resize-none"
+                        placeholder="로드맵의 목표와 대상 독자를 20자 이상으로 설명해주세요."
+                        rows={4}
+                        value={introduction}
+                        maxLength={200}
+                        onChange={(e) => setIntroduction(e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -115,7 +203,15 @@ export default function RoadmapNewPage() {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-md overflow-y-auto max-h-[500px] pr-sm custom-scrollbar">
-                  {filtered.map((course) => {
+                  {loadingCourses ? (
+                    Array.from({ length: 4 }).map((_, index) => (
+                      <div key={index} className="h-[74px] rounded-lg bg-surface-container-high animate-pulse" />
+                    ))
+                  ) : filtered.length === 0 ? (
+                    <div className="md:col-span-2 py-xl text-center font-label-md text-label-md text-on-surface-variant">
+                      선택할 수 있는 강좌가 없습니다.
+                    </div>
+                  ) : filtered.map((course) => {
                     const selected = selectedIds.includes(course.id);
                     return (
                       <div
@@ -128,11 +224,11 @@ export default function RoadmapNewPage() {
                         }`}
                       >
                         <div className="w-20 h-14 rounded overflow-hidden flex-shrink-0">
-                          <img className="w-full h-full object-cover" src={course.thumbnail} alt={course.title} />
+                          <img className="w-full h-full object-cover" src={course.thumbnailUrl} alt={course.title} />
                         </div>
                         <div className="flex-grow min-w-0">
                           <h4 className="font-label-md text-label-md text-on-surface truncate">{course.title}</h4>
-                          <p className="font-label-sm text-label-sm text-on-surface-variant">{course.instructor} 강사</p>
+                          <p className="font-label-sm text-label-sm text-on-surface-variant">{course.instructorName} 강사</p>
                         </div>
                         <span
                           className="material-symbols-outlined transition-colors"
@@ -201,7 +297,7 @@ export default function RoadmapNewPage() {
                         </div>
                         <div className="flex-grow bg-surface p-sm rounded-lg border border-surface-container-high flex items-center gap-md">
                           <div className="w-12 h-10 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
-                            <img className="w-full h-full object-cover" src={course.thumbnail} alt={course.title} />
+                            <img className="w-full h-full object-cover" src={course.thumbnailUrl} alt={course.title} />
                           </div>
                           <Link
                             href={`/courses/${course.id}`}

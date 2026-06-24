@@ -7,15 +7,22 @@ import com.ohgiraffers.lxp.content.domain.model.entity.Content;
 import com.ohgiraffers.lxp.content.infrastructure.persistence.jpa.ContentJpaEntity;
 import com.ohgiraffers.lxp.content.infrastructure.persistence.jpa.ContentJpaRepository;
 import com.ohgiraffers.lxp.course.domain.model.entity.Course;
+import com.ohgiraffers.lxp.course.domain.model.entity.CourseLike;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
 import com.ohgiraffers.lxp.course.domain.model.entity.HiddenBy;
 import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaEntity;
 import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseJpaRepository;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseLikeJpaEntity;
+import com.ohgiraffers.lxp.course.infrastructure.persistence.jpa.CourseLikeJpaRepository;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaEntity;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.ApplicationStatus;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.Instructor;
+import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorApplication;
 import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorProfile;
+import com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa.InstructorApplicationJpaEntity;
+import com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa.InstructorApplicationJpaRepository;
 import com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa.InstructorJpaEntity;
 import com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa.InstructorJpaRepository;
 import com.ohgiraffers.lxp.instructor.infrastructure.persistence.jpa.InstructorProfileJpaEntity;
@@ -31,6 +38,12 @@ import com.ohgiraffers.lxp.member.infrastructure.persistence.jpa.MemberJpaReposi
 import com.ohgiraffers.lxp.qna.domain.model.entity.Question;
 import com.ohgiraffers.lxp.qna.infrastructure.persistence.jpa.QuestionJpaEntity;
 import com.ohgiraffers.lxp.qna.infrastructure.persistence.jpa.QuestionJpaRepository;
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.ParticipatingRoadmap;
+import com.ohgiraffers.lxp.roadmap.domain.model.entity.Roadmap;
+import com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa.ParticipatingRoadmapJpaEntity;
+import com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa.ParticipatingRoadmapJpaRepository;
+import com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa.RoadmapJpaEntity;
+import com.ohgiraffers.lxp.roadmap.infrastructure.persistence.jpa.RoadmapJpaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -40,6 +53,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -50,11 +64,15 @@ public class MockDataInitializer implements CommandLineRunner {
     private final MemberJpaRepository memberRepository;
     private final InstructorJpaRepository instructorRepository;
     private final InstructorProfileJpaRepository instructorProfileRepository;
+    private final InstructorApplicationJpaRepository instructorApplicationRepository;
     private final CourseJpaRepository courseRepository;
+    private final CourseLikeJpaRepository courseLikeRepository;
     private final ContentJpaRepository contentRepository;
     private final EnrollmentJpaRepository enrollmentRepository;
     private final AnnouncementRepository announcementRepository;
     private final QuestionJpaRepository questionRepository;
+    private final RoadmapJpaRepository roadmapRepository;
+    private final ParticipatingRoadmapJpaRepository participatingRoadmapRepository;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -188,11 +206,38 @@ public class MockDataInitializer implements CommandLineRunner {
                 "useEffect 의존성 배열에 함수를 넣으면 무한 루프가 생기는 이유가 궁금합니다.",
                 "props로 받은 콜백 함수를 의존성 배열에 넣었더니 무한 렌더링이 발생했습니다.");
 
-        log.info("[MockData] 초기화 완료 — 회원 {}명, 강사 {}명, 강좌 {}개, 질문 {}개",
+        // ── 8. 강좌 좋아요 ───────────────────────────────────────
+        saveCourseLike(course1.getId(), student1.getId());
+        saveCourseLike(course1.getId(), student4.getId());
+        saveCourseLike(course2.getId(), student3.getId());
+        saveCourseLike(course3.getId(), student1.getId());
+        saveCourseLike(course3.getId(), student2.getId());
+        saveCourseLike(course3.getId(), student5.getId());
+
+        // ── 9. 강사 신청 ─────────────────────────────────────────
+        saveInstructorApplication(student4.getId(), "오태양", "실무 데이터 분석 경험을 바탕으로 입문자를 위한 강의를 만들고 싶습니다.", "Python, pandas, 데이터 시각화", ApplicationStatus.PENDING);
+        saveInstructorApplication(student5.getId(), "윤지아", "프론트엔드 개발자로 일하며 쌓은 React 실무 경험을 공유하고 싶습니다.", "React, TypeScript, Next.js", ApplicationStatus.APPROVED);
+
+        // ── 10. 로드맵 ───────────────────────────────────────────
+        RoadmapJpaEntity frontendRoadmap = saveRoadmap(admin.getId(),
+                "프론트엔드 성장 로드맵",
+                "React와 TypeScript를 중심으로 실무형 프론트엔드 역량을 쌓는 추천 학습 경로입니다.",
+                List.of(course1.getId(), course3.getId()));
+        RoadmapJpaEntity aiRoadmap = saveRoadmap(admin.getId(),
+                "AI 입문 로드맵",
+                "Python 기초부터 데이터 분석과 AI 프로그래밍까지 단계적으로 익히는 학습 경로입니다.",
+                List.of(course2.getId(), course5.getId()));
+
+        // ── 11. 로드맵 참여 ──────────────────────────────────────
+        saveParticipatingRoadmap(student1.getId(), frontendRoadmap.getId());
+        saveParticipatingRoadmap(student3.getId(), aiRoadmap.getId());
+
+        log.info("[MockData] 초기화 완료 — 회원 {}명, 강사 {}명, 강좌 {}개, 질문 {}개, 로드맵 {}개",
                 memberRepository.count(),
                 instructorRepository.count(),
                 courseRepository.count(),
-                questionRepository.count());
+                questionRepository.count(),
+                roadmapRepository.count());
     }
 
     // ── 헬퍼 메서드 ───────────────────────────────────────────────
@@ -238,5 +283,30 @@ public class MockDataInitializer implements CommandLineRunner {
     private QuestionJpaEntity saveQuestion(Long courseId, Long memberId, String title, String content) {
         Question question = Question.create(courseId, memberId, title, content);
         return questionRepository.save(QuestionJpaEntity.from(question));
+    }
+
+    private void saveCourseLike(Long courseId, Long learnerId) {
+        CourseLike courseLike = CourseLike.create(courseId, learnerId);
+        courseLikeRepository.save(CourseLikeJpaEntity.from(courseLike));
+    }
+
+    private void saveInstructorApplication(Long memberId, String instructorName, String introduction, String expertise, ApplicationStatus status) {
+        InstructorApplication application = InstructorApplication.apply(memberId, instructorName, introduction, expertise);
+        if (status == ApplicationStatus.APPROVED) {
+            application.approve(LocalDateTime.now().minusDays(3));
+        } else if (status == ApplicationStatus.REJECTED) {
+            application.reject("신청 정보가 부족합니다.", LocalDateTime.now().minusDays(3));
+        }
+        instructorApplicationRepository.save(InstructorApplicationJpaEntity.from(application));
+    }
+
+    private RoadmapJpaEntity saveRoadmap(Long memberId, String name, String introduction, List<Long> courseIds) {
+        Roadmap roadmap = Roadmap.create(memberId, name, introduction, courseIds);
+        return roadmapRepository.save(RoadmapJpaEntity.from(roadmap));
+    }
+
+    private void saveParticipatingRoadmap(Long memberId, Long roadmapId) {
+        ParticipatingRoadmap participatingRoadmap = ParticipatingRoadmap.participate(memberId, roadmapId);
+        participatingRoadmapRepository.save(ParticipatingRoadmapJpaEntity.from(participatingRoadmap));
     }
 }

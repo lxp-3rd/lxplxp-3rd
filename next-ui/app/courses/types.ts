@@ -15,6 +15,11 @@ export type CurriculumItem = {
   title: string;
 };
 
+export type CourseContent = CurriculumItem & {
+  courseId: number;
+  contentUrl: string;
+};
+
 export type CourseDetail = {
   id: number;
   instructorId: number;

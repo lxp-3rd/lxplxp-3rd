@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { BackLink } from '@/components/ui';
-import { useAuth } from '@/lib/AuthContext';
 import { courseApi } from '@/app/courses/api';
+import { enrollmentApi } from '@/app/enrollments/api';
 import { instructorApi } from '@/app/instructors/api';
+import { myPageApi } from '@/app/my-page/api';
 import { questionApi } from '@/app/questions/api';
 import type { CourseDetail } from '@/app/courses/types';
 import type { InstructorProfile } from '@/app/instructors/types';
@@ -19,7 +20,6 @@ import { CourseQnAPreview } from './components/CourseQnAPreview';
 
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const { user } = useAuth();
 
   const [course, setCourse] = useState<CourseDetail | null>(null);
   const [instructorProfile, setInstructorProfile] = useState<InstructorProfile | null>(null);
@@ -47,13 +47,12 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
   }, [id]);
 
   const handleEnroll = async () => {
-    if (!user) return;
     if (!course) return;
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? ''}/api/enrollments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ memberId: Number(user.id), courseId: course.id }),
+      const profile = await myPageApi.getProfile();
+      await enrollmentApi.create({
+        memberId: profile.memberId,
+        courseId: course.id,
       });
       setCourse((prev) => prev ? { ...prev, enrolled: true, enrollmentCount: prev.enrollmentCount + 1 } : prev);
     } catch {

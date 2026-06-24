@@ -43,6 +43,19 @@ public class RoadmapService implements RoadmapUseCase {
     }
 
     @Override
+    public List<RoadmapResult> getAllRoadmaps() {
+        return roadmapRepositoryPort.findAll()
+                .stream()
+                .map(RoadmapResult::from)
+                .toList();
+    }
+
+    @Override
+    public RoadmapResult getRoadmap(Long roadmapId) {
+        return RoadmapResult.from(getRoadmapOrThrow(roadmapId));
+    }
+
+    @Override
     public RoadmapResult getRoadmap(Long roadmapId, Long memberId) {
         Roadmap roadmap = getRoadmapOrThrow(roadmapId);
         validateOwner(roadmap, memberId);

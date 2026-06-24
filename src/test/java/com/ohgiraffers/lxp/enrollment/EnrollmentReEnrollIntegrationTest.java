@@ -12,6 +12,7 @@ import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJ
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ class EnrollmentReEnrollIntegrationTest {
 
     @Autowired
     private EnrollmentJpaRepository repository;
+
+    @BeforeEach
+    void clearEnrollments() {
+        repository.deleteAll();
+    }
 
     @Test
     @DisplayName("이전 수강이 CANCELED면 재신청 시 새 ACTIVE row가 생성된다")

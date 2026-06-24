@@ -78,6 +78,14 @@ public class CourseJpaEntity extends BaseEntity {
         return description;
     }
 
+    public CourseStatus getStatus() {
+        return status;
+    }
+
+    public HiddenBy getHiddenBy() {
+        return hiddenBy;
+    }
+
     public Course toDomain() {
         return Course.restore(id, instructorId, title, summary, thumbnailUrl, status, hiddenBy);
     }

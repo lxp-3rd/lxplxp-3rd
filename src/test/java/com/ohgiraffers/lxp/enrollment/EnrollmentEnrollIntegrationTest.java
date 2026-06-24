@@ -12,6 +12,7 @@ import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJ
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ class EnrollmentEnrollIntegrationTest {
 
     @Autowired
     private EnrollmentJpaRepository repository;
+
+    @BeforeEach
+    void clearEnrollments() {
+        repository.deleteAll();
+    }
 
     @Test
     @DisplayName("POST /enrollments → 201 + Location + 응답 본문, ACTIVE row 저장")

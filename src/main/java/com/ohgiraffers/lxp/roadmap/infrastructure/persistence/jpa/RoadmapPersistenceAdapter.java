@@ -34,6 +34,14 @@ public class RoadmapPersistenceAdapter implements RoadmapRepositoryPort {
     }
 
     @Override
+    public List<Roadmap> findAll() {
+        return roadmapJpaRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc()
+                .stream()
+                .map(RoadmapJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public Optional<Roadmap> findById(Long roadmapId) {
         return roadmapJpaRepository.findByIdAndDeletedAtIsNull(roadmapId)
                 .map(RoadmapJpaEntity::toDomain);

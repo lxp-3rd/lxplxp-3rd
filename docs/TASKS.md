@@ -45,7 +45,7 @@
 - [ ] 🔑강사 `GET /api/enrollments?courseId={id}` — 수강생 통계
 
 **`courses/[id]/contents/[contentId]/page.tsx`** — 콘텐츠 플레이어
-- [ ] 🔐 `GET /api/courses/{id}/contents/{contentId}` — 콘텐츠 정보
+- [x] 🔐 `GET /api/courses/{id}/contents/{contentId}` — 콘텐츠 정보
 - [ ] 🔐 `POST /api/courses/{id}/contents/{contentId}/complete` — 수강 완료 처리
 
 ---
@@ -79,12 +79,12 @@
 ## 수강 (Enrollment)
 
 **`enrollments/page.tsx`** — 내 수강 목록
-- [ ] 🔐 `GET /api/enrollments` — 내 수강 목록 (MOCK_ENROLLMENTS 교체)
+- [x] 🔐 `GET /api/enrollments` — 내 수강 목록 (MOCK_ENROLLMENTS 교체)
 
 **`enrollments/[id]/page.tsx`** — 수강 상세 / 커리큘럼
-- [ ] 🔐 `GET /api/enrollments/{id}` — 수강 정보
-- [ ] 🔐 `GET /api/courses/{courseId}/contents` — 커리큘럼 목록
-- [ ] 🔐 `POST /api/enrollments/{id}/progress` — 학습 진도 업데이트
+- [x] 🔐 `GET /api/enrollments/{id}` — 수강 정보
+- [x] 🔐 `GET /api/courses/{courseId}/contents` — 커리큘럼 목록
+- [x] 🔐 `POST /api/enrollments/{id}/progress` — 학습 진도 업데이트
 
 ---
 
@@ -134,19 +134,22 @@
 ## 로드맵 (Roadmap)
 
 **`roadmaps/page.tsx`** — 로드맵 목록
-- [ ] 🔓 `GET /api/roadmaps` — 로드맵 목록 (MOCK_ROADMAPS 교체)
+- [x] 🔐 `GET /api/roadmaps/available` — 참여 가능한 로드맵
+- [x] 🔐 `GET /api/roadmaps/participating` — 참여 중인 로드맵
 
 **`roadmaps/[id]/page.tsx`** — 로드맵 상세
-- [ ] 🔓 `GET /api/roadmaps/{id}` — 로드맵 상세
-- [ ] 🔐 `POST /api/roadmaps/{id}/enroll` — 로드맵 수강 신청
+- [x] 🔐 `GET /api/roadmaps/{id}` — 로드맵 상세
+- [x] 🔐 `GET /api/roadmaps/participating` — 참여 여부 확인
+- [x] 🔐 `GET /api/courses/{id}` — courseIds 기반 강좌 목록 조회 (병렬)
+- [x] 🔐 `POST /api/roadmaps/{id}/participate` — 로드맵 참여하기
 
 **`roadmaps/new/page.tsx`** — 로드맵 생성
-- [ ] 🔑관리자 `POST /api/roadmaps` — 로드맵 생성
-- [ ] 🔑관리자 `GET /api/courses` — 강좌 선택 목록
+- [x] 🔐 `POST /api/roadmaps` — 로드맵 생성
+- [ ] 🔐 `GET /api/courses` — 강좌 선택 목록
 
 **`roadmaps/[id]/edit/page.tsx`** — 로드맵 수정
-- [ ] 🔑관리자 `GET /api/roadmaps/{id}` — 현재 정보 로드
-- [ ] 🔑관리자 `PUT /api/roadmaps/{id}` — 수정 저장
+- [ ] 🔐 `GET /api/roadmaps/{id}` — 현재 정보 로드
+- [ ] 🔐 `PUT /api/roadmaps/{id}` — 수정 저장
 
 ---
 
@@ -157,9 +160,9 @@
 - [ ] 🔑관리자 `GET /api/instructor-applications?status=PENDING` — 대기 중 신청 수
 
 **`admin/courses/page.tsx`** — 강좌 관리
-- [ ] 🔑관리자 `GET /api/courses` — 전체 강좌 목록 (mock 교체)
-- [ ] 🔑관리자 `PATCH /api/courses/{id}` — 공개/비공개 전환
-- [ ] 🔑관리자 `DELETE /api/courses/{id}` — 강좌 삭제
+- [x] 🔑관리자 `GET /api/admin/courses` — 전체 강좌 목록 (상태 무관, mock 교체)
+- [x] 🔑관리자 `PATCH /api/courses/{id}/status` — 공개/비공개 전환 (changedBy=ADMIN)
+- [x] 🔑관리자 `DELETE /api/courses/{id}` — 강좌 삭제
 
 **`admin/announcements/page.tsx`** — 공지사항 관리
 - [ ] 🔑관리자 `GET /api/announcements` — 목록 (mock 교체)

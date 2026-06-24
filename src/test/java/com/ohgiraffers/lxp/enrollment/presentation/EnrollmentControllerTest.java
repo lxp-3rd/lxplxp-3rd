@@ -3,10 +3,13 @@ package com.ohgiraffers.lxp.enrollment.presentation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
 import com.ohgiraffers.lxp.enrollment.application.port.command.CancelEnrollmentCommand;
+import com.ohgiraffers.lxp.enrollment.application.port.command.CompleteEnrollmentCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.in.CancelEnrollmentUseCase;
+import com.ohgiraffers.lxp.enrollment.application.port.in.CompleteEnrollmentUseCase;
 import com.ohgiraffers.lxp.enrollment.application.port.in.EnrollUseCase;
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
+import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.enrollment.presentation.dto.EnrollmentRequest;
@@ -46,6 +49,12 @@ class EnrollmentControllerTest {
 
     @MockBean
     private CancelEnrollmentUseCase cancelEnrollmentUseCase;
+
+    @MockBean
+    private CompleteEnrollmentUseCase completeEnrollmentUseCase;
+
+    @MockBean
+    private EnrollmentJpaRepository enrollmentJpaRepository;
 
     private String body(Long memberId, Long courseId) throws Exception {
         return objectMapper.writeValueAsString(new EnrollmentRequest(memberId, courseId));
@@ -136,5 +145,17 @@ class EnrollmentControllerTest {
         mockMvc.perform(delete("/enrollments/10"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("ENROLLMENT_ALREADY_CANCELED"));
+    }
+
+    @Test
+    @DisplayName("진행률 업데이트 요청 → 200 OK + COMPLETED 응답 본문")
+    void progressCompleteOk() throws Exception {
+        given(completeEnrollmentUseCase.complete(any(CompleteEnrollmentCommand.class)))
+                .willReturn(new EnrollmentResult(10L, 1L, 2L, EnrollmentStatus.COMPLETED, LocalDateTime.now()));
+
+        mockMvc.perform(post("/api/enrollments/10/progress"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(10))
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
     }
 }

@@ -4,8 +4,10 @@ import com.ohgiraffers.lxp.enrollment.application.dto.CourseInfo;
 import com.ohgiraffers.lxp.enrollment.application.dto.EnrollmentResult;
 import com.ohgiraffers.lxp.enrollment.application.dto.MemberInfo;
 import com.ohgiraffers.lxp.enrollment.application.port.command.CancelEnrollmentCommand;
+import com.ohgiraffers.lxp.enrollment.application.port.command.CompleteEnrollmentCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.command.EnrollCommand;
 import com.ohgiraffers.lxp.enrollment.application.port.in.CancelEnrollmentUseCase;
+import com.ohgiraffers.lxp.enrollment.application.port.in.CompleteEnrollmentUseCase;
 import com.ohgiraffers.lxp.enrollment.application.port.in.EnrollUseCase;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadCourseInfoPort;
 import com.ohgiraffers.lxp.enrollment.application.port.out.LoadEnrollmentPort;
@@ -20,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class EnrollmentService implements EnrollUseCase, CancelEnrollmentUseCase {
+public class EnrollmentService implements EnrollUseCase, CancelEnrollmentUseCase, CompleteEnrollmentUseCase {
 
     private final LoadMemberInfoPort loadMemberInfoPort;
     private final LoadCourseInfoPort loadCourseInfoPort;
@@ -73,6 +75,16 @@ public class EnrollmentService implements EnrollUseCase, CancelEnrollmentUseCase
                 .orElseThrow(() -> new BusinessException(ErrorCode.ENROLLMENT_NOT_FOUND));
 
         enrollment.cancel();
+
+        return updateEnrollmentPort.update(enrollment);
+    }
+
+    @Override
+    public EnrollmentResult complete(CompleteEnrollmentCommand command) {
+        Enrollment enrollment = loadEnrollmentPort.findById(command.enrollmentId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.ENROLLMENT_NOT_FOUND));
+
+        enrollment.complete();
 
         return updateEnrollmentPort.update(enrollment);
     }

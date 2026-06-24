@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaEntity;
 import com.ohgiraffers.lxp.enrollment.infrastructure.persistence.jpa.EnrollmentJpaRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,11 @@ class EnrollmentCancelIntegrationTest {
 
     @Autowired
     private EnrollmentJpaRepository repository;
+
+    @BeforeEach
+    void clearEnrollments() {
+        repository.deleteAll();
+    }
 
     @Test
     @DisplayName("ACTIVE 수강을 DELETE → 200 + CANCELED, row는 CANCELED·deletedAt 기록(soft delete)")

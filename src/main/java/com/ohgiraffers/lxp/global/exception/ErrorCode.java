@@ -37,6 +37,7 @@ public enum ErrorCode {
 
     // roadmap
     ROADMAP_NOT_FOUND(HttpStatus.NOT_FOUND, "로드맵을 찾을 수 없습니다."),
+    ROADMAP_ALREADY_PARTICIPATING(HttpStatus.CONFLICT, "이미 참여 중인 로드맵입니다."),
 
     // enrollment
     ENROLLMENT_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 수강 중인 강좌입니다."),

@@ -10,6 +10,8 @@ public interface RoadmapRepositoryPort {
 
     Roadmap save(Roadmap roadmap);
 
+    List<Roadmap> findAll();
+
     Optional<Roadmap> findById(Long roadmapId);
 
     List<Roadmap> findAllAvailable(Long memberId, List<ParticipatingRoadmap> participatingRoadmaps);

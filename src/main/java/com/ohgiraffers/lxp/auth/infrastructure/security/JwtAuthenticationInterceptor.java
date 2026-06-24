@@ -29,7 +29,7 @@ public class JwtAuthenticationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         List<RequireRole> requireRoles = extractRequireRoles(handler);
         String requestPath = requestPathWithoutContextPath(request);
-        boolean pathRequiresAuth = AuthPathPolicy.requiresAuth(requestPath);
+        boolean pathRequiresAuth = AuthPathPolicy.requiresAuth(request.getMethod(), requestPath);
 
         if (!pathRequiresAuth && requireRoles.isEmpty()) {
             return true;

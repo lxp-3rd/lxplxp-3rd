@@ -11,4 +11,6 @@ public interface ParticipatingRoadmapJpaRepository extends JpaRepository<Partici
             Long memberId,
             ParticipatingRoadmapStatus status
     );
+
+    boolean existsByMemberIdAndRoadmapIdAndDeletedAtIsNull(Long memberId, Long roadmapId);
 }

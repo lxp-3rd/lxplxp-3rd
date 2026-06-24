@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui';
+import { roadmapApi } from './api';
+import type { Roadmap, RoadmapSummary } from './types';
 import { RoadmapCard } from './components/RoadmapCard';
-import { MOCK_ROADMAPS } from './mockData';
 
 type Tab = 'available' | 'enrolled' | 'mine';
 
@@ -23,15 +24,56 @@ const TAB_TITLE: Record<Tab, string> = {
   mine:      '내가 만든 로드맵',
 };
 
+const PLACEHOLDER_THUMBNAIL = 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg';
+
+function toRoadmap(r: RoadmapSummary, isEnrolled: boolean): Roadmap {
+  return {
+    id: String(r.id),
+    title: r.name,
+    description: r.introduction,
+    category: '',
+    courseCount: r.courseIds.length,
+    enrollmentCount: 0,
+    createdBy: String(r.memberId),
+    creatorName: '',
+    progress: 0,
+    isEnrolled,
+    thumbnail: PLACEHOLDER_THUMBNAIL,
+    createdAt: r.createdAt,
+    updatedAt: r.updatedAt,
+  };
+}
+
 export default function RoadmapsPage() {
   const [activeTab, setActiveTab] = useState<Tab>('available');
+  const [available, setAvailable] = useState<Roadmap[]>([]);
+  const [enrolled, setEnrolled] = useState<Roadmap[]>([]);
+  const [mine, setMine] = useState<Roadmap[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const visibleRoadmaps = MOCK_ROADMAPS.filter((r) => {
-    if (activeTab === 'available') return !r.isEnrolled;
-    if (activeTab === 'enrolled')  return r.isEnrolled;
-    if (activeTab === 'mine')      return r.createdBy === 'u2'; // 현재 사용자
-    return false;
-  });
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.allSettled([
+      roadmapApi.getAll(),          // 공개 — 비로그인도 조회 가능
+      roadmapApi.getParticipating(), // 인증 필요 — 실패 시 빈 배열로 처리
+      roadmapApi.getCreated(),       // 인증 필요 — 실패 시 빈 배열로 처리
+    ]).then(([allResult, participResult, createdResult]) => {
+      if (allResult.status === 'fulfilled') {
+        setAvailable(allResult.value.map((r) => toRoadmap(r, false)));
+      }
+      if (participResult.status === 'fulfilled') {
+        setEnrolled(participResult.value.map((r) => toRoadmap(r, true)));
+      }
+      if (createdResult.status === 'fulfilled') {
+        setMine(createdResult.value.map((r) => toRoadmap(r, false)));
+      }
+    }).finally(() => setIsLoading(false));
+  }, []);
+
+  const visibleRoadmaps =
+    activeTab === 'available' ? available
+    : activeTab === 'enrolled' ? enrolled
+    : mine;
 
   return (
     <>
@@ -73,15 +115,34 @@ export default function RoadmapsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            {visibleRoadmaps.map((roadmap) => (
-              <RoadmapCard
-                key={roadmap.id}
-                data={roadmap}
-                showActions={activeTab === 'mine'}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="animate-pulse bg-surface-container rounded-xl overflow-hidden">
+                  <div className="h-48 bg-surface-container-high" />
+                  <div className="p-md space-y-sm">
+                    <div className="h-5 w-3/4 bg-surface-container-high rounded" />
+                    <div className="h-4 w-1/2 bg-surface-container-high rounded" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : visibleRoadmaps.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-md py-[120px] text-on-surface-variant">
+              <span className="material-symbols-outlined text-5xl">route</span>
+              <p className="font-body-lg text-body-lg">로드맵이 없습니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+              {visibleRoadmaps.map((roadmap) => (
+                <RoadmapCard
+                  key={roadmap.id}
+                  data={roadmap}
+                  showActions={activeTab === 'mine'}
+                />
+              ))}
+            </div>
+          )}
 
         </div>
       </main>

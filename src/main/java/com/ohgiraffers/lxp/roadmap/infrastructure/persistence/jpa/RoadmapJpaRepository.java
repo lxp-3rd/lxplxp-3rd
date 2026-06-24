@@ -10,6 +10,9 @@ import java.util.Optional;
 public interface RoadmapJpaRepository extends JpaRepository<RoadmapJpaEntity, Long> {
 
     @EntityGraph(attributePaths = "courses")
+    List<RoadmapJpaEntity> findAllByDeletedAtIsNullOrderByCreatedAtDesc();
+
+    @EntityGraph(attributePaths = "courses")
     Optional<RoadmapJpaEntity> findByIdAndDeletedAtIsNull(Long id);
 
     @EntityGraph(attributePaths = "courses")

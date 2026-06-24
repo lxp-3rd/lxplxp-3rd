@@ -10,6 +10,10 @@ public interface RoadmapUseCase {
 
     RoadmapResult createRoadmap(CreateRoadmapCommand command);
 
+    List<RoadmapResult> getAllRoadmaps();
+
+    RoadmapResult getRoadmap(Long roadmapId);
+
     RoadmapResult getRoadmap(Long roadmapId, Long memberId);
 
     List<RoadmapResult> getAvailableRoadmaps(Long memberId);

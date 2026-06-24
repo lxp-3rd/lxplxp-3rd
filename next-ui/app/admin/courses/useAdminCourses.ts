@@ -1,53 +1,68 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminCourseMockApi } from '../api';
-import type { AdminCourse } from '../types';
-import { toError } from '../utils';
+import { adminCourseApi } from './api';
+import type { AdminCourseResponse, AdminCourseStatus } from './types';
 
 export function useAdminCourses() {
-  const [courses, setCourses] = useState<AdminCourse[]>([]);
+  const [courses, setCourses] = useState<AdminCourseResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     let isMounted = true;
 
-    adminCourseMockApi.getCourses()
-      .then((nextCourses) => {
-        if (!isMounted) return;
-        setCourses(nextCourses);
-        setError(null);
-      })
-      .catch((loadError) => {
-        if (!isMounted) return;
-        setError(toError(loadError));
-      })
-      .finally(() => {
+    async function loadCourses() {
+      try {
+        const data = await adminCourseApi.getCourses();
+        if (isMounted) setCourses(data);
+      } catch {
+        if (isMounted) setErrorMessage('강좌 목록을 불러오지 못했습니다.');
+      } finally {
         if (isMounted) setIsLoading(false);
-      });
+      }
+    }
 
+    void loadCourses();
     return () => {
       isMounted = false;
     };
   }, []);
 
-  const toggleHidden = (id: string) => {
-    setCourses((prev) =>
-      prev.map((course) => (course.id === id ? { ...course, hidden: !course.hidden } : course)),
-    );
+  const toggleVisibility = async (id: number) => {
+    const target = courses.find((course) => course.id === id);
+    if (!target) return;
+
+    const nextStatus: AdminCourseStatus = target.status === 'PUBLIC' ? 'HIDDEN' : 'PUBLIC';
+    try {
+      await adminCourseApi.changeStatus(id, { status: nextStatus, changedBy: 'ADMIN' });
+      setCourses((prev) =>
+        prev.map((course) =>
+          course.id === id
+            ? { ...course, status: nextStatus, hiddenBy: nextStatus === 'HIDDEN' ? 'ADMIN' : null }
+            : course,
+        ),
+      );
+    } catch {
+      setErrorMessage('강좌 공개 상태를 변경하지 못했습니다.');
+    }
   };
 
-  const removeCourse = (id: string) => {
-    setCourses((prev) => prev.filter((course) => course.id !== id));
+  const removeCourse = async (id: number) => {
+    try {
+      await adminCourseApi.remove(id);
+      setCourses((prev) => prev.filter((course) => course.id !== id));
+    } catch {
+      setErrorMessage('강좌를 삭제하지 못했습니다.');
+    }
   };
 
   return {
     courses,
     totalCount: courses.length,
     isLoading,
-    error,
-    toggleHidden,
+    errorMessage,
+    toggleVisibility,
     removeCourse,
   };
 }

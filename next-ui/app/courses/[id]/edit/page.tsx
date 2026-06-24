@@ -158,7 +158,7 @@ export default function CourseEditPage({ params }: { params: { id: string } }) {
 <span className="text-label-md font-label-md">저장 안내</span>
 </div>
 <p className="text-label-sm font-label-sm text-on-surface-variant">
-                            변경사항은 즉시 반영되지 않으며, 하단의 '변경사항 저장' 버튼을 눌러야 최종 저장됩니다.
+                            변경사항은 즉시 반영되지 않으며, 하단의 &apos;변경사항 저장&apos; 버튼을 눌러야 최종 저장됩니다.
                         </p>
 </div>
 <button className="w-full py-md bg-primary-container text-white font-headline-md text-[18px] rounded-lg hover:shadow-lg hover:scale-[1.02] active:scale-100 transition-all duration-300">
