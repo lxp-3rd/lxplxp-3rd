@@ -45,6 +45,7 @@ public class RoadmapService implements RoadmapUseCase {
     @Override
     public RoadmapResult getRoadmap(Long roadmapId, Long memberId) {
         Roadmap roadmap = getRoadmapOrThrow(roadmapId);
+        validateOwner(roadmap, memberId);
         return RoadmapResult.from(roadmap);
     }
 
@@ -68,9 +69,9 @@ public class RoadmapService implements RoadmapUseCase {
     @Override
     @Transactional
     public RoadmapResult updateRoadmap(UpdateRoadmapCommand command) {
-        validateCourses(command.courseIds());
         Roadmap existing = getRoadmapOrThrow(command.roadmapId());
         validateOwner(existing, command.memberId());
+        validateCourses(command.courseIds());
         Roadmap roadmap = existing.update(command.name(), command.introduction(), command.courseIds());
         return RoadmapResult.from(roadmapRepositoryPort.save(roadmap));
     }

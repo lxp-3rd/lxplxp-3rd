@@ -1,5 +1,8 @@
 package com.ohgiraffers.lxp.roadmap.domain.model.entity;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -58,32 +61,32 @@ public class Roadmap {
 
     private void requireLength(String value, int min, int max, String field) {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(field + " must not be blank");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
         int length = value.trim().length();
         if (length < min || length > max) {
-            throw new IllegalArgumentException(field + " length must be between " + min + " and " + max);
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
     }
 
     private void requireCourseIds(List<Long> courseIds) {
         if (courseIds == null) {
-            throw new IllegalArgumentException("courseIds must not be null");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
         if (courseIds.stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("courseIds must not contain null");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
         if (courseIds.stream().distinct().count() != courseIds.size()) {
-            throw new IllegalArgumentException("courseIds must not contain duplicates");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
         if (courseIds.size() < MIN_COURSE_COUNT) {
-            throw new IllegalArgumentException("courseIds size must be at least " + MIN_COURSE_COUNT);
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
     }
 
     private void requireNonNull(Object value, String field) {
         if (value == null) {
-            throw new IllegalArgumentException(field + " must not be null");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
     }
 

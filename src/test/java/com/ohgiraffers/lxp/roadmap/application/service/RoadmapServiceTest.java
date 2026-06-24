@@ -97,17 +97,31 @@ class RoadmapServiceTest {
     }
 
     @Test
-    @DisplayName("로드맵 단건 조회 시 소유자가 아니어도 조회할 수 있다")
+    @DisplayName("로드맵 단건 조회 시 소유자는 조회할 수 있다")
     void getRoadmap_success() {
         Roadmap roadmap = Roadmap.restore(
-                1L, 2L, "기존 로드맵", "기존 강좌 로드맵 소개 문장을 충분히 작성합니다.", List.of(1L, 2L), null, null
+                1L, 1L, "기존 로드맵", "기존 강좌 로드맵 소개 문장을 충분히 작성합니다.", List.of(1L, 2L), null, null
         );
         given(roadmapRepositoryPort.findById(1L)).willReturn(Optional.of(roadmap));
 
         RoadmapResult result = roadmapService.getRoadmap(1L, 1L);
 
         assertThat(result.id()).isEqualTo(1L);
-        assertThat(result.memberId()).isEqualTo(2L);
+        assertThat(result.memberId()).isEqualTo(1L);
+    }
+
+    @Test
+    @DisplayName("다른 회원의 로드맵 조회 시 예외가 발생한다")
+    void getRoadmap_forbidden() {
+        Roadmap roadmap = Roadmap.restore(
+                1L, 1L, "기존 로드맵", "기존 강좌 로드맵 소개 문장을 충분히 작성합니다.", List.of(1L, 2L), null, null
+        );
+        given(roadmapRepositoryPort.findById(1L)).willReturn(Optional.of(roadmap));
+
+        assertThatThrownBy(() -> roadmapService.getRoadmap(1L, 2L))
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.FORBIDDEN);
     }
 
     @Test
@@ -160,7 +174,6 @@ class RoadmapServiceTest {
         Roadmap existing = Roadmap.restore(
                 1L, 1L, "기존 로드맵", "기존 강좌 로드맵 소개 문장을 충분히 작성합니다.", List.of(1L, 2L), null, null
         );
-        given(coursePort.existsAllByIds(command.courseIds())).willReturn(true);
         given(roadmapRepositoryPort.findById(1L)).willReturn(Optional.of(existing));
 
         assertThatThrownBy(() -> roadmapService.updateRoadmap(command))

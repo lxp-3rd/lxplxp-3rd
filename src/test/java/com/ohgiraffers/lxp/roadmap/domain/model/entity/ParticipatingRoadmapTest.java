@@ -1,5 +1,7 @@
 package com.ohgiraffers.lxp.roadmap.domain.model.entity;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.roadmap.domain.model.vo.ParticipatingRoadmapStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,23 +44,23 @@ class ParticipatingRoadmapTest {
     @DisplayName("회원 ID는 필수다")
     void participate_memberIdRequired() {
         assertThatThrownBy(() -> ParticipatingRoadmap.participate(null, 2L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("memberId must not be null");
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
     @DisplayName("로드맵 ID는 필수다")
     void participate_roadmapIdRequired() {
         assertThatThrownBy(() -> ParticipatingRoadmap.participate(1L, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("roadmapId must not be null");
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
     @DisplayName("상태는 필수다")
     void restore_statusRequired() {
         assertThatThrownBy(() -> ParticipatingRoadmap.restore(1L, 1L, 2L, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("status must not be null");
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 }

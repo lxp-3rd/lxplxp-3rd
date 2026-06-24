@@ -39,6 +39,14 @@ public class ParticipatingRoadmapJpaEntity extends BaseEntity {
         this.status = status;
     }
 
+    public static ParticipatingRoadmapJpaEntity from(ParticipatingRoadmap participatingRoadmap) {
+        return new ParticipatingRoadmapJpaEntity(
+                participatingRoadmap.getMemberId(),
+                participatingRoadmap.getRoadmapId(),
+                participatingRoadmap.getStatus()
+        );
+    }
+
     public ParticipatingRoadmap toDomain() {
         return ParticipatingRoadmap.restore(id, memberId, roadmapId, status);
     }

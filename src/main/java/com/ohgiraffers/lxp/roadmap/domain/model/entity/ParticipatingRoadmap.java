@@ -1,5 +1,7 @@
 package com.ohgiraffers.lxp.roadmap.domain.model.entity;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import com.ohgiraffers.lxp.roadmap.domain.model.vo.ParticipatingRoadmapStatus;
 
 public class ParticipatingRoadmap {
@@ -38,7 +40,7 @@ public class ParticipatingRoadmap {
 
     private void requireNonNull(Object value, String field) {
         if (value == null) {
-            throw new IllegalArgumentException(field + " must not be null");
+            throw new BusinessException(ErrorCode.INVALID_INPUT);
         }
     }
 

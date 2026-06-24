@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -42,8 +42,13 @@ public class RoadmapController {
             @RequestBody @Valid RoadmapRequest request
     ) {
         RoadmapResult result = roadmapUseCase.createRoadmap(request.toCreateCommand(authenticatedMember.memberId()));
+        var location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(result.id())
+                .toUri();
         return ResponseEntity
-                .created(URI.create("/api/roadmaps/" + result.id()))
+                .created(location)
                 .body(RoadmapResponse.from(result));
     }
 

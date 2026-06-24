@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -65,12 +66,12 @@ class RoadmapControllerTest {
     void create_success() throws Exception {
         given(roadmapUseCase.createRoadmap(any())).willReturn(result(1L));
 
-        mockMvc.perform(post("/api/roadmaps")
+                mockMvc.perform(post("/api/roadmaps")
                         .requestAttr(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME, loginMember())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request())))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/roadmaps/1"))
+                .andExpect(header().string("Location", containsString("/api/roadmaps/1")))
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.memberId").value(MEMBER_ID))
                 .andExpect(jsonPath("$.courseIds.length()").value(2));
@@ -160,6 +161,18 @@ class RoadmapControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.memberId").value(MEMBER_ID));
+    }
+
+    @Test
+    @DisplayName("다른 회원의 로드맵 조회 시 403을 반환한다")
+    void get_forbidden() throws Exception {
+        given(roadmapUseCase.getRoadmap(1L, MEMBER_ID))
+                .willThrow(new BusinessException(ErrorCode.FORBIDDEN));
+
+        mockMvc.perform(get("/api/roadmaps/{id}", 1L)
+                        .requestAttr(AuthenticatedMember.REQUEST_ATTRIBUTE_NAME, loginMember()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("FORBIDDEN"));
     }
 
     @Test

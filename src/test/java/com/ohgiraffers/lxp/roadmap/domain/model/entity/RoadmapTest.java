@@ -1,5 +1,7 @@
 package com.ohgiraffers.lxp.roadmap.domain.model.entity;
 
+import com.ohgiraffers.lxp.global.exception.BusinessException;
+import com.ohgiraffers.lxp.global.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +37,9 @@ class RoadmapTest {
                 "백",
                 "백엔드 개발 입문자를 위한 단계별 강좌 로드맵입니다.",
                 List.of(1L, 2L)
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
@@ -46,7 +50,9 @@ class RoadmapTest {
                 "백엔드 로드맵",
                 "짧은 소개",
                 List.of(1L, 2L)
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
@@ -57,7 +63,9 @@ class RoadmapTest {
                 "백엔드 로드맵",
                 "백엔드 개발 입문자를 위한 단계별 강좌 로드맵입니다.",
                 List.of(1L)
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 
     @Test
@@ -68,6 +76,8 @@ class RoadmapTest {
                 "백엔드 로드맵",
                 "백엔드 개발 입문자를 위한 단계별 강좌 로드맵입니다.",
                 List.of(1L, 1L)
-        )).isInstanceOf(IllegalArgumentException.class);
+        ))
+                .isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.INVALID_INPUT.getMessage());
     }
 }
