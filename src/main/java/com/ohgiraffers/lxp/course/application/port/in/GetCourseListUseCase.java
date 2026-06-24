@@ -1,10 +1,10 @@
 package com.ohgiraffers.lxp.course.application.port.in;
 
-import com.ohgiraffers.lxp.course.application.dto.CourseResult;
-
 import java.util.List;
+
+import com.ohgiraffers.lxp.course.domain.model.read.CourseSummary;
 
 public interface GetCourseListUseCase {
 
-    List<CourseResult> getCourseList();
+    List<CourseSummary> getCourseList();
 }
