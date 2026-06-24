@@ -20,7 +20,7 @@ export function useLoginForm() {
 
     try {
       const tokenPair = await authApi.login({ email, password });
-      login({ ...tokenPair, email });
+      await login({ ...tokenPair, email });
     } catch {
       setErrorMessage('이메일 또는 비밀번호를 확인해 주세요.');
     } finally {
