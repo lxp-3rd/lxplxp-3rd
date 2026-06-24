@@ -16,16 +16,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
+import com.ohgiraffers.lxp.auth.application.port.out.TokenValidatePort;
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import com.ohgiraffers.lxp.qna.application.dto.QuestionResult;
 import com.ohgiraffers.lxp.qna.application.port.in.AnswerQuestionUseCase;
 import com.ohgiraffers.lxp.qna.application.port.in.QuestionUseCase;
@@ -38,6 +43,7 @@ class QuestionControllerTest {
     private static final long COURSE_ID = 1L;
     private static final long MEMBER_ID = 2L;
     private static final long QUESTION_ID = 3L;
+    private static final String INSTRUCTOR_TOKEN = "instructor-token";
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,6 +56,15 @@ class QuestionControllerTest {
 
     @MockitoBean
     private AnswerQuestionUseCase answerQuestionUseCase;
+
+    @MockitoBean
+    private TokenValidatePort tokenValidatePort;
+
+    @BeforeEach
+    void setUp() {
+        given(tokenValidatePort.validateAccessToken(INSTRUCTOR_TOKEN))
+                .willReturn(new AuthenticatedMember(99L, MemberRole.INSTRUCTOR));
+    }
 
     // ─── POST /api/questions ─────────────────────────────────────────────
 
@@ -250,6 +265,7 @@ class QuestionControllerTest {
         given(answerQuestionUseCase.answerQuestion(any())).willReturn(answered);
 
         mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new AnswerBody(99L, "답변 내용입니다."))))
@@ -262,6 +278,7 @@ class QuestionControllerTest {
     @DisplayName("답변 내용이 blank이면 400을 반환한다")
     void answerQuestion_blankContent_returns400() throws Exception {
         mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new AnswerBody(99L, "  "))))
@@ -275,6 +292,7 @@ class QuestionControllerTest {
                 .willThrow(new BusinessException(ErrorCode.ANSWER_ALREADY_EXISTS));
 
         mockMvc.perform(post("/api/questions/{id}/answers", QUESTION_ID)
+                        .header(HttpHeaders.AUTHORIZATION, bearerInstructorToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(
                                 new AnswerBody(99L, "답변 내용입니다."))))
@@ -286,6 +304,10 @@ class QuestionControllerTest {
     private QuestionResult questionResult(Long id) {
         return new QuestionResult(id, COURSE_ID, MEMBER_ID, "제목입니다", "내용입니다",
                 QuestionStatus.PUBLISHED, LocalDateTime.now(), LocalDateTime.now(), null, null, null);
+    }
+
+    private String bearerInstructorToken() {
+        return "Bearer " + INSTRUCTOR_TOKEN;
     }
 
     record CreateBody(Long courseId, Long memberId, String title, String content) {}

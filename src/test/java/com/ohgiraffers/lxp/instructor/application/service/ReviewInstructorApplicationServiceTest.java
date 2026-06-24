@@ -98,8 +98,7 @@ class ReviewInstructorApplicationServiceTest {
 
         assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND);
+                .hasMessage(ErrorCode.INSTRUCTOR_APPLICATION_NOT_FOUND.getMessage());
     }
 
     @Test
@@ -116,8 +115,7 @@ class ReviewInstructorApplicationServiceTest {
 
         assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED);
+                .hasMessage(ErrorCode.INSTRUCTOR_APPLICATION_ALREADY_REVIEWED.getMessage());
     }
 
     @Test
@@ -133,8 +131,7 @@ class ReviewInstructorApplicationServiceTest {
 
         assertThatThrownBy(() -> reviewInstructorApplicationService.review(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED);
+                .hasMessage(ErrorCode.INSTRUCTOR_APPLICATION_REJECTION_REASON_REQUIRED.getMessage());
     }
 
     @Test

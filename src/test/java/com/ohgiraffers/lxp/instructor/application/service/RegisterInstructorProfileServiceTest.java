@@ -65,8 +65,7 @@ class RegisterInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> registerInstructorProfileService.register(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_NOT_FOUND);
+                .hasMessage(ErrorCode.INSTRUCTOR_NOT_FOUND.getMessage());
 
         then(instructorProfileRepository).should(never()).save(any());
     }
@@ -85,8 +84,7 @@ class RegisterInstructorProfileServiceTest {
 
         assertThatThrownBy(() -> registerInstructorProfileService.register(command))
                 .isInstanceOf(BusinessException.class)
-                .extracting(e -> ((BusinessException) e).getErrorCode())
-                .isEqualTo(ErrorCode.INSTRUCTOR_PROFILE_ALREADY_EXISTS);
+                .hasMessage(ErrorCode.INSTRUCTOR_PROFILE_ALREADY_EXISTS.getMessage());
 
         then(instructorProfileRepository).should(never()).save(any());
     }

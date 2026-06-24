@@ -4,10 +4,15 @@ import com.ohgiraffers.lxp.announcement.application.port.in.CreateAnnouncementUs
 import com.ohgiraffers.lxp.announcement.application.port.in.DeleteAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.application.port.in.UpdateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.domain.model.vo.AnnouncementStatus;
+import com.ohgiraffers.lxp.auth.application.dto.AuthenticatedMember;
+import com.ohgiraffers.lxp.auth.application.port.out.TokenValidatePort;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -23,11 +28,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(AnnouncementController.class)
 class AnnouncementControllerTest {
 
+    private static final String ADMIN_TOKEN = "admin-token";
+
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
     private CreateAnnouncementUseCase createAnnouncementUseCase;
+
+    @MockitoBean
+    private TokenValidatePort tokenValidatePort;
+
+    @BeforeEach
+    void setUp() {
+        given(tokenValidatePort.validateAccessToken(ADMIN_TOKEN))
+                .willReturn(new AuthenticatedMember(1L, MemberRole.ADMIN));
+    }
 
     @MockitoBean
     private UpdateAnnouncementUseCase updateAnnouncementUseCase;
@@ -45,6 +61,7 @@ class AnnouncementControllerTest {
         given(createAnnouncementUseCase.createAnnouncement(any())).willReturn(result);
 
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -64,6 +81,7 @@ class AnnouncementControllerTest {
     @Test
     void create_adminIdIsNull() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -79,6 +97,7 @@ class AnnouncementControllerTest {
     @Test
     void create_titleIsBlank() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -94,6 +113,7 @@ class AnnouncementControllerTest {
     @Test
     void create_titleTooShort() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -112,6 +132,7 @@ class AnnouncementControllerTest {
         String longTitle = "공".repeat(101);
 
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -128,6 +149,7 @@ class AnnouncementControllerTest {
     @Test
     void create_contentIsBlank() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -143,6 +165,7 @@ class AnnouncementControllerTest {
     @Test
     void create_statusIsNull() throws Exception {
         mockMvc.perform(post("/api/announcements")
+                        .header(HttpHeaders.AUTHORIZATION, bearerAdminToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -152,6 +175,10 @@ class AnnouncementControllerTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    private String bearerAdminToken() {
+        return "Bearer " + ADMIN_TOKEN;
     }
 
     @DisplayName("정상 요청 시 공지사항이 수정되고 200을 반환한다.")

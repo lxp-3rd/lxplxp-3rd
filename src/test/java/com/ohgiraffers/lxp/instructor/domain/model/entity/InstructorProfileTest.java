@@ -12,35 +12,40 @@ class InstructorProfileTest {
     @DisplayName("강사 ID가 null이면 예외가 발생한다")
     void create_nullInstructorId_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.create(null, "https://example.com/image.jpg", "자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("강사 ID는 필수입니다.");
     }
 
     @Test
     @DisplayName("restore 시 id가 null이면 예외가 발생한다")
     void restore_nullId_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.restore(null, 1L, "https://example.com/image.jpg", "자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("프로필 ID는 필수입니다.");
     }
 
     @Test
     @DisplayName("restore 시 instructorId가 null이면 예외가 발생한다")
     void restore_nullInstructorId_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.restore(1L, null, "https://example.com/image.jpg", "자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("강사 ID는 필수입니다.");
     }
 
     @Test
     @DisplayName("restore 시 profileImageUrl이 blank이면 예외가 발생한다")
     void restore_blankProfileImageUrl_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.restore(1L, 1L, "", "자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("프로필 이미지 URL은 필수입니다.");
     }
 
     @Test
     @DisplayName("restore 시 bio가 blank이면 예외가 발생한다")
     void restore_blankBio_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.restore(1L, 1L, "https://example.com/image.jpg", ""))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("자기소개는 필수입니다.");
     }
 
     @Test
@@ -59,14 +64,16 @@ class InstructorProfileTest {
     @DisplayName("프로필 이미지 URL이 빈 값이면 예외가 발생한다")
     void create_blankProfileImageUrl_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.create(1L, "", "자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("프로필 이미지 URL은 필수입니다.");
     }
 
     @Test
     @DisplayName("자기소개가 빈 값이면 예외가 발생한다")
     void create_blankBio_throwsException() {
         assertThatThrownBy(() -> InstructorProfile.create(1L, "https://example.com/image.jpg", ""))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("자기소개는 필수입니다.");
     }
 
     @Test
@@ -90,7 +97,8 @@ class InstructorProfileTest {
         );
 
         assertThatThrownBy(() -> profile.update("", "새로운 자기소개"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("프로필 이미지 URL은 필수입니다.");
     }
 
     @Test
@@ -101,6 +109,7 @@ class InstructorProfileTest {
         );
 
         assertThatThrownBy(() -> profile.update("https://example.com/new.jpg", ""))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("자기소개는 필수입니다.");
     }
 }

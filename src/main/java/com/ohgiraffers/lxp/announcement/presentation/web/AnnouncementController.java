@@ -8,6 +8,8 @@ import com.ohgiraffers.lxp.announcement.application.port.in.DeleteAnnouncementUs
 import com.ohgiraffers.lxp.announcement.application.port.in.UpdateAnnouncementUseCase;
 import com.ohgiraffers.lxp.announcement.presentation.dto.AnnouncementResponse;
 import com.ohgiraffers.lxp.announcement.presentation.dto.CreateAnnouncementRequest;
+import com.ohgiraffers.lxp.auth.presentation.support.RequireRole;
+import com.ohgiraffers.lxp.member.domain.model.entity.MemberRole;
 import com.ohgiraffers.lxp.announcement.presentation.dto.DeleteAnnouncementResponse;
 import com.ohgiraffers.lxp.announcement.presentation.dto.UpdateAnnouncementRequest;
 import jakarta.validation.Valid;
@@ -31,6 +33,7 @@ public class AnnouncementController {
         this.deleteAnnouncementUseCase = deleteAnnouncementUseCase;
     }
 
+    @RequireRole(MemberRole.ADMIN)
     @PostMapping
     public ResponseEntity<AnnouncementResponse> create(@RequestBody @Valid CreateAnnouncementRequest request) {
         CreateAnnouncementCommand command = new CreateAnnouncementCommand(
