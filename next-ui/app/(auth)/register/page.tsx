@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Button, Input } from '@/components/ui';
 import { useRegisterForm } from './useRegisterForm';
 
 export default function RegisterPage() {
@@ -32,85 +33,49 @@ export default function RegisterPage() {
           </div>
 
           <form className="space-y-lg" id="signupForm" onSubmit={handleSubmit}>
-            <div className="space-y-xs">
-              <label className="text-label-md text-on-surface-variant" htmlFor="email">
-                이메일 주소
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">
-                  mail
-                </span>
-                <input
-                  className="w-full h-12 pl-[48px] pr-md bg-white border border-outline-variant rounded-lg text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none"
-                  id="email"
-                  placeholder="example@lxp.com"
-                  required
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              label="이메일 주소"
+              id="email"
+              icon="mail"
+              type="email"
+              placeholder="example@lxp.com"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
 
-            <div className="space-y-xs">
-              <label className="text-label-md text-on-surface-variant" htmlFor="nickname">
-                닉네임
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">
-                  person
-                </span>
-                <input
-                  className="w-full h-12 pl-[48px] pr-md bg-white border border-outline-variant rounded-lg text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none"
-                  id="nickname"
-                  placeholder="학습 공간에서 사용할 이름"
-                  required
-                  type="text"
-                  value={nickname}
-                  onChange={(event) => setNickname(event.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              label="닉네임"
+              id="nickname"
+              icon="person"
+              type="text"
+              placeholder="학습 공간에서 사용할 이름"
+              required
+              value={nickname}
+              onChange={(event) => setNickname(event.target.value)}
+            />
 
-            <div className="space-y-xs">
-              <label className="text-label-md text-on-surface-variant" htmlFor="password">
-                비밀번호
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">
-                  lock
-                </span>
-                <input
-                  className="w-full h-12 pl-[48px] pr-md bg-white border border-outline-variant rounded-lg text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none"
-                  id="password"
-                  placeholder="8자 이상 입력하세요"
-                  required
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              label="비밀번호"
+              id="password"
+              icon="lock"
+              type="password"
+              placeholder="8자 이상 입력하세요"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
 
-            <div className="space-y-xs">
-              <label className="text-label-md text-on-surface-variant" htmlFor="passwordConfirm">
-                비밀번호 확인
-              </label>
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">
-                  key
-                </span>
-                <input
-                  className="w-full h-12 pl-[48px] pr-md bg-white border border-outline-variant rounded-lg text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none"
-                  id="passwordConfirm"
-                  placeholder="비밀번호를 다시 입력하세요"
-                  required
-                  type="password"
-                  value={passwordConfirm}
-                  onChange={(event) => setPasswordConfirm(event.target.value)}
-                />
-              </div>
-            </div>
+            <Input
+              label="비밀번호 확인"
+              id="passwordConfirm"
+              icon="key"
+              type="password"
+              placeholder="비밀번호를 다시 입력하세요"
+              required
+              value={passwordConfirm}
+              onChange={(event) => setPasswordConfirm(event.target.value)}
+            />
 
             {errorMessage && (
               <p className="text-label-sm font-label-sm text-error">
@@ -118,14 +83,10 @@ export default function RegisterPage() {
               </p>
             )}
 
-            <button
-              className="btn-hover-effect w-full h-12 bg-primary-container text-on-primary font-label-md rounded-lg shadow-sm hover:brightness-105 disabled:opacity-60 transition-all flex items-center justify-center gap-xs"
-              type="submit"
-              disabled={isSubmitting}
-            >
+            <Button type="submit" disabled={isSubmitting} fullWidth size="lg">
               {isSubmitting ? '회원가입 중...' : '회원가입 완료'}
               <span className="material-symbols-outlined">arrow_forward</span>
-            </button>
+            </Button>
           </form>
 
           <div className="mt-xl text-center">

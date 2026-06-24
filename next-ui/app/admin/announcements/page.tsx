@@ -53,7 +53,7 @@ export default function AdminAnnouncementsPage() {
                       </Link>
                     </div>
                   </td>
-                  <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{ann.author}</td>
+                  <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{ann.authorName}</td>
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{ann.createdAt}</td>
                   <td className="px-lg py-md text-right">
                     <div className="flex items-center justify-end gap-xs">

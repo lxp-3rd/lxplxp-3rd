@@ -1,19 +1,26 @@
-// Question 도메인 타입 정의
-export type Question = {
+// QnA 도메인 타입 정의 (API 응답 기준)
+export type Answer = {
   id: string;
-  courseId: string;
-  memberId: string;
-  title: string;
+  questionId: string;
+  authorId: string;
+  authorName: string;   // member join
+  avatarSrc?: string;   // instructor profile image
   content: string;
   createdAt: string;
   updatedAt: string;
 };
 
-export type Answer = {
+export type Question = {
   id: string;
-  questionId: string;
-  authorId: string;
+  courseId: string;
+  courseTitle: string;  // course join
+  memberId: string;
+  authorName: string;   // member join
+  title: string;
   content: string;
+  isAnswered: boolean;  // answer 존재 여부 computed
+  tags: string[];
+  answer: Answer | null;
   createdAt: string;
   updatedAt: string;
 };

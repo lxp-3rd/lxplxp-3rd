@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Button } from '@/components/ui';
 import { useLoginForm } from './useLoginForm';
 
 export default function LoginPage() {
@@ -89,13 +90,9 @@ export default function LoginPage() {
                 </p>
               )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-primary hover:opacity-90 disabled:opacity-60 text-on-primary font-label-md text-label-md py-md rounded-lg shadow-sm transition-all active:scale-[0.98] mt-lg"
-              >
+              <Button type="submit" disabled={isSubmitting} fullWidth size="lg" className="mt-lg">
                 {isSubmitting ? '로그인 중...' : '로그인하기'}
-              </button>
+              </Button>
             </form>
 
             <div className="mt-lg pt-lg border-t border-outline-variant text-center">

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
+import { PageHeader } from '@/components/ui';
 import { getMyCourses } from '@/app/courses/mockData';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -24,21 +25,19 @@ export default function CourseManagePage() {
       <main className="pt-16 min-h-screen bg-background">
         <div className="pt-xl pb-xl px-gutter max-w-[1280px] mx-auto mt-16">
 
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-xl gap-md">
-            <div>
-              <h1 className="font-headline-lg text-headline-lg text-on-surface mb-xs">본인 강좌 관리</h1>
-              <p className="text-body-md font-body-md text-on-surface-variant">
-                강사님이 생성한 총 {courses.length}개의 강좌를 관리하고 있습니다.
-              </p>
-            </div>
-            <Link
-              href="/courses/new"
-              className="bg-primary-container text-on-primary-container px-lg py-sm rounded-lg font-label-md text-label-md flex items-center gap-xs hover:opacity-90 transition-opacity"
-            >
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
-              새 강좌 개설하기
-            </Link>
-          </div>
+          <PageHeader
+            title="본인 강좌 관리"
+            subtitle={`강사님이 생성한 총 ${courses.length}개의 강좌를 관리하고 있습니다.`}
+            actions={
+              <Link
+                href="/courses/new"
+                className="bg-primary-container text-on-primary-container px-lg py-sm rounded-lg font-label-md text-label-md flex items-center gap-xs hover:opacity-90 transition-opacity"
+              >
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_circle</span>
+                새 강좌 개설하기
+              </Link>
+            }
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
             {courses.map((course) => {

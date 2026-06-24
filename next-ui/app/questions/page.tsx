@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import { Button } from '@/components/ui';
+import { QuestionCard } from './components/QuestionCard';
+import { MOCK_QUESTIONS } from './mockData';
 
 export default function QuestionsPage() {
   const [selectedId, setSelectedId] = useState(MOCK_QUESTIONS[0]?.id ?? '');
@@ -20,44 +22,19 @@ export default function QuestionsPage() {
             <aside className="w-[320px] flex-shrink-0 flex flex-col gap-md">
               <div className="flex justify-between items-center mb-xs">
                 <h2 className="text-headline-md font-headline-md text-on-surface">질문 목록</h2>
-                <button
-                  type="button"
-                  className="bg-primary text-on-primary px-md py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-all flex items-center gap-xs"
-                >
+                <Button size="sm">
                   <span className="material-symbols-outlined text-[18px]">edit</span>
                   질문하기
-                </button>
+                </Button>
               </div>
               <div className="overflow-y-auto flex flex-col gap-sm pr-1">
                 {MOCK_QUESTIONS.map((q) => (
-                  <button
+                  <QuestionCard
                     key={q.id}
-                    type="button"
+                    data={q}
+                    isSelected={q.id === selectedId}
                     onClick={() => setSelectedId(q.id)}
-                    className={`text-left p-md rounded-xl border transition-all ${
-                      q.id === selectedId
-                        ? 'border-primary bg-surface-container-lowest shadow-md'
-                        : 'border-outline-variant bg-surface-container-lowest hover:border-primary/50 hover:shadow-sm'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-xs">
-                      <span className={`text-label-sm font-label-sm px-sm py-0.5 rounded-full ${
-                        q.isAnswered
-                          ? 'bg-surface-container-high text-on-surface-variant'
-                          : 'bg-primary-fixed text-on-primary-container'
-                      }`}>
-                        {q.isAnswered ? 'Completed' : 'Waiting'}
-                      </span>
-                      <span className="text-label-sm font-label-sm text-on-surface-variant">{q.createdAt}</span>
-                    </div>
-                    <h3 className={`text-body-md text-on-surface line-clamp-2 mb-xs ${q.id === selectedId ? 'font-bold' : ''}`}>
-                      {q.title}
-                    </h3>
-                    <div className="flex items-center gap-xs text-on-surface-variant text-label-sm font-label-sm">
-                      <span className="material-symbols-outlined text-[16px]">person</span>
-                      {q.authorName}
-                    </div>
-                  </button>
+                  />
                 ))}
               </div>
             </aside>
@@ -65,14 +42,14 @@ export default function QuestionsPage() {
             {/* 오른쪽: 선택된 질문 상세 */}
             {selected && (
               <section className="flex-1 bg-surface-container-lowest rounded-xl border border-outline-variant flex flex-col overflow-hidden shadow-sm">
-                {/* 질문 헤더 */}
                 <div className="p-xl border-b border-outline-variant flex-shrink-0">
                   <div className="flex items-center gap-sm mb-md flex-wrap">
-                    <span className={`text-label-sm font-label-sm px-md py-1 rounded-full ${
+                    <span className={[
+                      'text-label-sm font-label-sm px-md py-1 rounded-full',
                       selected.isAnswered
                         ? 'bg-secondary-container text-on-secondary-container'
-                        : 'bg-primary-container text-on-primary-container'
-                    }`}>
+                        : 'bg-primary-container text-on-primary-container',
+                    ].join(' ')}>
                       {selected.isAnswered ? '답변 완료' : '답변 대기 중'}
                     </span>
                     {selected.tags.map((tag) => (
@@ -94,14 +71,11 @@ export default function QuestionsPage() {
                   </div>
                 </div>
 
-                {/* 질문 본문 + 답변 */}
                 <div className="flex-1 overflow-y-auto p-xl flex flex-col gap-xl">
-                  {/* 질문 내용 */}
                   <p className="text-body-lg font-body-lg text-on-surface leading-relaxed whitespace-pre-wrap">
                     {selected.content}
                   </p>
 
-                  {/* 답변 섹션 */}
                   {selected.answer && (
                     <div className="flex flex-col gap-lg">
                       <h2 className="text-headline-sm font-headline-sm text-on-surface border-t border-outline-variant pt-lg">
@@ -122,9 +96,7 @@ export default function QuestionsPage() {
                           )}
                           <div className="flex items-center gap-sm">
                             <span className="text-label-md font-label-md text-on-surface font-bold">{selected.answer.authorName}</span>
-                            <span className="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">
-                              강사
-                            </span>
+                            <span className="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">강사</span>
                             <span className="text-label-sm font-label-sm text-on-surface-variant">{selected.answer.createdAt}</span>
                           </div>
                         </div>
@@ -136,7 +108,6 @@ export default function QuestionsPage() {
                   )}
                 </div>
 
-                {/* 하단 안내 */}
                 <div className="p-lg bg-surface-container border-t border-outline-variant flex justify-center items-center flex-shrink-0">
                   <p className="text-on-surface-variant text-label-sm font-label-sm flex items-center gap-xs">
                     <span className="material-symbols-outlined text-tertiary text-[20px]">info</span>

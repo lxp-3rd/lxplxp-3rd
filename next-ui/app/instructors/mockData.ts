@@ -1,4 +1,6 @@
-export const MOCK_INSTRUCTORS = [
+import type { Instructor } from './types';
+
+export const MOCK_INSTRUCTORS: Instructor[] = [
   {
     id: 'u2',
     memberId: 'u2',
@@ -11,6 +13,8 @@ export const MOCK_INSTRUCTORS = [
     rating: 4.7,
     isActive: true,
     avatarUrl: '',
+    createdAt: '2025-09-01',
+    updatedAt: '2026-06-01',
   },
   {
     id: 'u4',
@@ -24,6 +28,8 @@ export const MOCK_INSTRUCTORS = [
     rating: 4.9,
     isActive: true,
     avatarUrl: '',
+    createdAt: '2025-10-15',
+    updatedAt: '2026-05-20',
   },
   {
     id: 'u5',
@@ -37,6 +43,8 @@ export const MOCK_INSTRUCTORS = [
     rating: 4.6,
     isActive: true,
     avatarUrl: '',
+    createdAt: '2025-11-01',
+    updatedAt: '2026-06-10',
   },
 ];
 

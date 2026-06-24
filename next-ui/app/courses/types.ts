@@ -1,20 +1,30 @@
-// Course 도메인 타입 정의
-export type Course = {
-  id: string;
-  instructorId: string;
-  title: string;
-  description: string;
-  likeCount: number;
-  createdAt: string;
-  updatedAt: string;
-};
-
 export type Content = {
   id: string;
-  courseId: string;
   title: string;
-  contentUrl: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
+  type: string;
+  durationSeconds: number;
+  courseId?: string;
+  contentUrl?: string;
+  order?: number;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type Course = {
+  id: string;
+  title: string;
+  instructor: string;
+  instructorId: string;
+  category: string;
+  level: string;
+  thumbnail: string;
+  enrollmentCount: number;
+  badge?: string;
+  likeCount: number;
+  rating: number;
+  status: string;
+  description: string;
+  contents: Content[];
+  createdAt?: string;
+  updatedAt?: string;
 };
