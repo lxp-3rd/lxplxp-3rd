@@ -19,7 +19,6 @@ import { fetcher } from './fetcher';
 import {
   clearStoredAuth,
   getStoredAccessToken,
-  getStoredAuthUser,
   getStoredRefreshToken,
   setStoredAccessToken,
   setStoredAuthUser,
@@ -35,9 +34,11 @@ export interface LoginSession {
   email: string;
 }
 
-interface JwtPayload {
-  memberId?: number;
-  role?: BackendRole;
+interface MemberProfile {
+  memberId: number;
+  email: string;
+  nickname: string;
+  role: BackendRole;
 }
 
 interface AuthContextValue {
@@ -47,7 +48,7 @@ interface AuthContextValue {
   isInitializing: boolean;
   accessToken: string | null;
   refreshToken: string | null;
-  login: (session: LoginSession) => void;
+  login: (session: LoginSession) => Promise<void>;
   logout: (redirectTo?: string) => Promise<void>;
   updateProfileUser: (profile: { memberId: number; email: string; nickname: string; role: string }) => void;
 }
@@ -59,32 +60,28 @@ const AuthContext = createContext<AuthContextValue>({
   isInitializing: true,
   accessToken: null,
   refreshToken: null,
-  login: () => {},
+  login: async () => {},
   logout: async () => {},
   updateProfileUser: () => {},
 });
-
-function decodeJwtPayload(token: string): JwtPayload | null {
-  try {
-    const [, payload] = token.split('.');
-    if (!payload) return null;
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const json = decodeURIComponent(
-      atob(normalizedPayload)
-        .split('')
-        .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
-        .join('')
-    );
-    return JSON.parse(json) as JwtPayload;
-  } catch {
-    return null;
-  }
-}
 
 function toFrontRole(role?: BackendRole): Role {
   if (role === 'ADMIN') return 'admin';
   if (role === 'INSTRUCTOR') return 'instructor';
   return 'member';
+}
+
+function toStoredAuthUser(profile: MemberProfile): StoredAuthUser {
+  return {
+    id: String(profile.memberId),
+    email: profile.email,
+    nickname: profile.nickname,
+    role: toFrontRole(profile.role),
+  };
+}
+
+async function getCurrentMemberProfile() {
+  return fetcher.get<MemberProfile>('/api/members/me');
 }
 
 function toMockUser(storedUser: StoredAuthUser | null): MockUser | null {
@@ -109,43 +106,77 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const savedAccessToken = getStoredAccessToken();
-    const savedRefreshToken = getStoredRefreshToken();
-    const savedUser = getStoredAuthUser();
+    let isMounted = true;
 
-    if (savedAccessToken && savedRefreshToken && savedUser) {
-      setAccessToken(savedAccessToken);
-      setRefreshToken(savedRefreshToken);
-      setStoredUser(savedUser);
-    } else {
+    const initializeAuth = async () => {
+      const savedAccessToken = getStoredAccessToken();
+      const savedRefreshToken = getStoredRefreshToken();
+
+      if (!savedAccessToken || !savedRefreshToken) {
+        clearStoredAuth();
+        if (isMounted) {
+          setAccessToken(null);
+          setRefreshToken(null);
+          setStoredUser(null);
+          setIsInitializing(false);
+        }
+        return;
+      }
+
+      try {
+        const profile = await getCurrentMemberProfile();
+        const user = toStoredAuthUser(profile);
+        setStoredAuthUser(user);
+
+        if (isMounted) {
+          setAccessToken(getStoredAccessToken());
+          setRefreshToken(savedRefreshToken);
+          setStoredUser(user);
+        }
+      } catch {
+        clearStoredAuth();
+        if (isMounted) {
+          setAccessToken(null);
+          setRefreshToken(null);
+          setStoredUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsInitializing(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const login = useCallback(async (session: LoginSession) => {
+    setIsInitializing(true);
+    setStoredAccessToken(session.accessToken);
+    setStoredRefreshToken(session.refreshToken);
+
+    try {
+      const profile = await getCurrentMemberProfile();
+      const user = toStoredAuthUser(profile);
+
+      setStoredAuthUser(user);
+      setAccessToken(getStoredAccessToken());
+      setRefreshToken(session.refreshToken);
+      setStoredUser(user);
+      setIsInitializing(false);
+      router.push(ROLE_HOME[user.role]);
+    } catch (error) {
       clearStoredAuth();
       setAccessToken(null);
       setRefreshToken(null);
       setStoredUser(null);
+      setIsInitializing(false);
+      throw error;
     }
-
-    setIsInitializing(false);
-  }, []);
-
-  const login = useCallback((session: LoginSession) => {
-    const payload = decodeJwtPayload(session.accessToken);
-    const role = toFrontRole(payload?.role);
-    const user: StoredAuthUser = {
-      id: payload?.memberId ? String(payload.memberId) : session.email,
-      email: session.email,
-      nickname: session.email,
-      role,
-    };
-
-    setStoredAccessToken(session.accessToken);
-    setStoredRefreshToken(session.refreshToken);
-    setStoredAuthUser(user);
-
-    setAccessToken(session.accessToken);
-    setRefreshToken(session.refreshToken);
-    setStoredUser(user);
-    setIsInitializing(false);
-    router.push(ROLE_HOME[role]);
   }, [router]);
 
   const logout = useCallback(async (redirectTo = '/login') => {
