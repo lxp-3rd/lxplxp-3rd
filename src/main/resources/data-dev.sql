@@ -8,12 +8,12 @@ INSERT INTO members (id, email, nickname, password, role, status, created_at, up
 
 -- 강좌(course)
 -- 1·2·3: PUBLIC(노출), 4: HIDDEN(제외), 5: PUBLIC이지만 soft-delete(제외)
-INSERT INTO course (id, instructor_id, title, description, thumbnail_url, status, hidden_by, created_at, updated_at, deleted_at) VALUES
- (1, 1, 'Java 기초',        '자바 입문 강좌',   'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg', 'PUBLIC', NULL, '2026-06-01 10:00:00', '2026-06-01 10:00:00', NULL),
- (2, 2, 'Spring 부트 입문', '스프링 부트 강좌', NULL,                                                                      'PUBLIC', NULL, '2026-06-10 10:00:00', '2026-06-10 10:00:00', NULL),
- (3, 1, 'JPA 심화',         'JPA 심화 강좌',    'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg', 'PUBLIC', NULL, '2026-06-20 10:00:00', '2026-06-20 10:00:00', NULL),
- (4, 2, '숨김 강좌',        '숨김 처리된 강좌', NULL,                                                                      'HIDDEN', 'INSTRUCTOR', '2026-06-15 10:00:00', '2026-06-15 10:00:00', NULL),
- (5, 1, '삭제된 강좌',      '삭제된 강좌',      NULL,                                                                      'PUBLIC', NULL, '2026-06-22 10:00:00', '2026-06-22 10:00:00', '2026-06-23 10:00:00');
+INSERT INTO course (id, instructor_id, title, summary, description, thumbnail_url, status, hidden_by, created_at, updated_at, deleted_at) VALUES
+ (1, 1, 'Java 기초',        '자바 입문 강좌',   '변수·제어문·객체지향까지 자바의 핵심 문법을 예제 중심으로 학습합니다.', 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg', 'PUBLIC', NULL, '2026-06-01 10:00:00', '2026-06-01 10:00:00', NULL),
+ (2, 2, 'Spring 부트 입문', '스프링 부트 강좌', NULL,                                                                  NULL,                                                                      'PUBLIC', NULL, '2026-06-10 10:00:00', '2026-06-10 10:00:00', NULL),
+ (3, 1, 'JPA 심화',         'JPA 심화 강좌',    '영속성 컨텍스트, 연관관계 매핑, N+1 최적화 등 실무 JPA 주제를 다룹니다.', 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg', 'PUBLIC', NULL, '2026-06-20 10:00:00', '2026-06-20 10:00:00', NULL),
+ (4, 2, '숨김 강좌',        '숨김 처리된 강좌', NULL,                                                                  NULL,                                                                      'HIDDEN', 'INSTRUCTOR', '2026-06-15 10:00:00', '2026-06-15 10:00:00', NULL),
+ (5, 1, '삭제된 강좌',      '삭제된 강좌',      NULL,                                                                  NULL,                                                                      'PUBLIC', NULL, '2026-06-22 10:00:00', '2026-06-22 10:00:00', '2026-06-23 10:00:00');
 
 -- 수강(enrollment) — course 1: ACTIVE 3 + COMPLETED 1 + CANCELED 1(soft-delete) => 현재 수강 중 3명
 INSERT INTO enrollment (id, member_id, course_id, status, created_at, updated_at, deleted_at) VALUES

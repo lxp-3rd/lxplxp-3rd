@@ -9,4 +9,5 @@ public interface ContentJpaRepository extends JpaRepository<ContentJpaEntity, Lo
     Optional<ContentJpaEntity> findByIdAndDeletedAtIsNull(Long id);
     List<ContentJpaEntity> findAllByDeletedAtIsNull();
     long countByDeletedAtIsNull();
+    List<ContentJpaEntity> findByCourseIdAndDeletedAtIsNullOrderBySequenceAsc(Long courseId);
 }

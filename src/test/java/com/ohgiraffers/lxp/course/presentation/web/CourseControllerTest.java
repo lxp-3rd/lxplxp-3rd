@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ohgiraffers.lxp.course.application.port.command.ChangeCourseStatusCommand;
 import com.ohgiraffers.lxp.course.application.port.command.RegisterCourseCommand;
 import com.ohgiraffers.lxp.course.application.port.command.UpdateCourseCommand;
-import com.ohgiraffers.lxp.course.application.dto.CourseResult;
 import com.ohgiraffers.lxp.course.application.port.in.ChangeCourseStatusUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.DeleteCourseUseCase;
-import com.ohgiraffers.lxp.course.application.port.in.GetCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.RegisterCourseUseCase;
 import com.ohgiraffers.lxp.course.application.port.in.UpdateCourseUseCase;
 import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
@@ -55,9 +53,6 @@ class CourseControllerTest {
 
     @MockitoBean
     private ChangeCourseStatusUseCase changeCourseStatusUseCase;
-
-    @MockitoBean
-    private GetCourseUseCase getCourseUseCase;
 
     @Test
     @DisplayName("강좌 등록 성공 시 201과 courseId를 반환한다")
@@ -217,29 +212,5 @@ class CourseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @DisplayName("강좌 단건 조회 성공 시 200과 CourseResponse를 반환한다")
-    void getCourse_success_returns200() throws Exception {
-        CourseResult result = new CourseResult(1L, 10L, "Java 기초", "자바 강좌", null, CourseStatus.PUBLIC, null, 5L);
-        given(getCourseUseCase.getCourse(1L)).willReturn(result);
-
-        mockMvc.perform(get("/api/courses/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.title").value("Java 기초"))
-                .andExpect(jsonPath("$.status").value("PUBLIC"))
-                .andExpect(jsonPath("$.likeCount").value(5L));
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 강좌 단건 조회 시 404를 반환한다")
-    void getCourse_notFound_returns404() throws Exception {
-        willThrow(new BusinessException(ErrorCode.COURSE_NOT_FOUND))
-                .given(getCourseUseCase).getCourse(999L);
-
-        mockMvc.perform(get("/api/courses/999"))
-                .andExpect(status().isNotFound());
     }
 }

@@ -20,7 +20,12 @@ public class CourseJpaEntity extends BaseEntity {
     @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    // 도메인 Course.description(짧은 소개)은 summary 컬럼에 매핑된다.
+    @Column(name = "summary", nullable = false, columnDefinition = "TEXT")
+    private String summary;
+
+    // 상세 설명. 생성/수정 도메인이 아직 다루지 않는 읽기 전용 필드라 nullable.
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "thumbnail_url", length = 255)
@@ -42,7 +47,7 @@ public class CourseJpaEntity extends BaseEntity {
         entity.id = domain.getId();
         entity.instructorId = domain.getInstructorId();
         entity.title = domain.getTitle();
-        entity.description = domain.getDescription();
+        entity.summary = domain.getDescription();
         entity.thumbnailUrl = domain.getThumbnailUrl();
         entity.status = domain.getStatus();
         entity.hiddenBy = domain.getHiddenBy();
@@ -65,7 +70,15 @@ public class CourseJpaEntity extends BaseEntity {
         return thumbnailUrl;
     }
 
+    public String getSummary() {
+        return summary;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
     public Course toDomain() {
-        return Course.restore(id, instructorId, title, description, thumbnailUrl, status, hiddenBy);
+        return Course.restore(id, instructorId, title, summary, thumbnailUrl, status, hiddenBy);
     }
 }
