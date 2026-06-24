@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { BackLink } from '@/components/ui';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
 import { getInstructorById } from '@/app/instructors/mockData';
-import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import { getQuestions } from '@/app/questions/api';
 import { CourseHero } from './components/CourseHero';
 import { EnrollCard } from './components/EnrollCard';
 import { InstructorInfoCard } from './components/InstructorInfoCard';
@@ -15,7 +15,7 @@ import { CourseQnAPreview } from './components/CourseQnAPreview';
 export default function CourseDetailPage({ params }: { params: { id: string } }) {
   const course = getCourseById(params.id) ?? MOCK_COURSES[0];
   const instructor = getInstructorById(course.instructorId);
-  const courseQuestions = MOCK_QUESTIONS.filter((q) => q.courseId === course.id);
+  const courseQuestions = getQuestions(course.id);
 
   return (
     <>
@@ -31,7 +31,6 @@ export default function CourseDetailPage({ params }: { params: { id: string } })
                 thumbnail={course.thumbnail}
                 title={course.title}
                 description={course.description}
-                badge={course.badge}
               />
             </div>
             <div className="lg:col-span-4">

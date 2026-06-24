@@ -1,8 +1,9 @@
 // 담당: A
 import { fetcher } from '@/lib/fetcher';
 import type { Question, Answer } from './types';
+import { MOCK_QUESTIONS, getQuestionById as findById } from './mockData';
 
-// TODO: 실제 엔드포인트로 교체
+// Real API (백엔드 연동 후 mock 헬퍼 대체)
 export const questionApi = {
   getAll: () => fetcher.get<Question[]>('/api/questions'),
   getById: (id: string) => fetcher.get<Question>(`/api/questions/${id}`),
@@ -20,3 +21,9 @@ export const answerApi = {
   remove: (questionId: string, id: string) =>
     fetcher.delete(`/api/questions/${questionId}/answers/${id}`),
 };
+
+// Mock 헬퍼 (백엔드 연동 전 개발용)
+export const getQuestions = (courseId?: string): Question[] =>
+  courseId ? MOCK_QUESTIONS.filter((q) => q.courseId === courseId) : [...MOCK_QUESTIONS];
+
+export const getQuestionById = (id: string): Question | null => findById(id);

@@ -24,7 +24,6 @@ export default function CoursesPage() {
                 instructor={course.instructor}
                 thumbnail={course.thumbnail}
                 enrollmentCount={course.enrollmentCount}
-                badge={course.badge}
               />
             ))}
           </div>

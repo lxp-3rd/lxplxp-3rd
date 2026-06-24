@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getMyCourses } from '@/app/courses/mockData';
-import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import { getQuestions } from '@/app/questions/api';
 import { useAuth } from '@/lib/AuthContext';
 
 export default function InstructorStatsPage() {
@@ -15,13 +15,14 @@ export default function InstructorStatsPage() {
   const totalCourses = courses.length;
   const publishedCount = courses.filter((c) => c.status === 'PUBLISHED').length;
 
-  const totalQuestions = MOCK_QUESTIONS.length;
-  const totalUnanswered = MOCK_QUESTIONS.filter((q) => !q.isAnswered).length;
+  const questions = getQuestions();
+  const totalQuestions = questions.length;
+  const totalUnanswered = questions.filter((q) => !q.isAnswered).length;
 
   const questionCountByCourse = (courseId: string) =>
-    MOCK_QUESTIONS.filter((q) => q.courseId === courseId).length;
+    getQuestions(courseId).length;
   const unansweredCountByCourse = (courseId: string) =>
-    MOCK_QUESTIONS.filter((q) => q.courseId === courseId && !q.isAnswered).length;
+    getQuestions(courseId).filter((q) => !q.isAnswered).length;
 
   return (
     <>

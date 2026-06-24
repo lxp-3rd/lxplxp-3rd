@@ -5,11 +5,12 @@ import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui';
 import { QuestionCard } from './components/QuestionCard';
-import { MOCK_QUESTIONS } from './mockData';
+import { getQuestions } from './api';
 
 export default function QuestionsPage() {
-  const [selectedId, setSelectedId] = useState(MOCK_QUESTIONS[0]?.id ?? '');
-  const selected = MOCK_QUESTIONS.find((q) => q.id === selectedId) ?? MOCK_QUESTIONS[0];
+  const questions = getQuestions();
+  const [selectedId, setSelectedId] = useState(questions[0]?.id ?? '');
+  const selected = questions.find((q) => q.id === selectedId) ?? questions[0];
 
   return (
     <>
@@ -28,7 +29,7 @@ export default function QuestionsPage() {
                 </Button>
               </div>
               <div className="overflow-y-auto flex flex-col gap-sm pr-1">
-                {MOCK_QUESTIONS.map((q) => (
+                {questions.map((q) => (
                   <QuestionCard
                     key={q.id}
                     data={q}

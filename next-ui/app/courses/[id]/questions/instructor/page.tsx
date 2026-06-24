@@ -5,14 +5,14 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import { getQuestions } from '@/app/questions/api';
 import type { Answer } from '@/app/questions/types';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
 
 export default function InstructorQuestionsPage() {
   const { id } = useParams<{ id: string }>();
   const course = getCourseById(id) ?? MOCK_COURSES[0];
-  const initialQuestions = MOCK_QUESTIONS.filter((q) => q.courseId === id);
+  const initialQuestions = getQuestions(id);
 
   const [questions, setQuestions] = useState(initialQuestions);
   const [selectedId, setSelectedId] = useState(questions[0]?.id ?? '');

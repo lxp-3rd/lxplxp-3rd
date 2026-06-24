@@ -6,31 +6,18 @@ interface CourseCardProps {
   instructor: string;
   thumbnail: string;
   enrollmentCount: number;
-  badge?: string;
 }
 
-export function CourseCard({ id, title, instructor, thumbnail, enrollmentCount, badge }: CourseCardProps) {
+export function CourseCard({ id, title, instructor, thumbnail, enrollmentCount }: CourseCardProps) {
   return (
     <Link href={`/courses/${id}`} className="block">
       <div className="course-card group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden cursor-pointer">
-        <div className="relative aspect-video overflow-hidden">
+        <div className="aspect-video overflow-hidden">
           <img
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             alt={`${title} 썸네일`}
             src={thumbnail}
           />
-          {badge && (
-            <div className="absolute top-sm left-sm">
-              <span className={[
-                'px-xs py-[2px] rounded text-label-sm font-label-sm',
-                badge === 'NEW'
-                  ? 'bg-secondary-container text-on-secondary-container'
-                  : 'bg-primary text-on-primary',
-              ].join(' ')}>
-                {badge}
-              </span>
-            </div>
-          )}
         </div>
         <div className="p-md">
           <h3 className="text-headline-sm font-headline-sm text-on-surface mb-xs line-clamp-2">{title}</h3>

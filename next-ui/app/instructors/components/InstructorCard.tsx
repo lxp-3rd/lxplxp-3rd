@@ -40,10 +40,6 @@ export function InstructorCard({ data }: InstructorCardProps) {
           <span className="material-symbols-outlined text-[16px]">group</span>
           <span className="text-label-sm font-label-sm">{data.studentCount.toLocaleString()}명</span>
         </div>
-        <div className="flex items-center gap-xs text-tertiary ml-auto">
-          <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-          <span className="text-label-sm font-label-sm font-bold">{data.rating}</span>
-        </div>
       </div>
     </Link>
   );

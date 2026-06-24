@@ -19,7 +19,6 @@ export type Course = {
   level: string;
   thumbnail: string;
   enrollmentCount: number;
-  badge?: string;
   likeCount: number;
   rating: number;
   status: string;

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import { getQuestions } from '@/app/questions/api';
 
 const MOCK_ANSWERS = [
   { id: 'a1', questionId: 'q1', author: '이하연 강사', role: '강사', content: '정량 조사는 설문, A/B 테스트처럼 수치로 측정 가능한 방법이고, 정성 조사는 인터뷰나 사용성 테스트처럼 이유와 맥락을 파악하는 방법입니다. 실무에서는 정성으로 문제를 발견하고, 정량으로 규모를 확인하는 순서로 함께 사용하는 경우가 많습니다.', createdAt: '2026-06-21', isAccepted: true },
@@ -11,7 +11,7 @@ const MOCK_ANSWERS = [
 ];
 
 export default function QuestionDetailPage() {
-  const question = MOCK_QUESTIONS[0];
+  const question = getQuestions()[0];
 
   if (!question) return (
     <>
