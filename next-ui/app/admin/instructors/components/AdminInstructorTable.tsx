@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AdminStatusDot } from '../../components/AdminStatusDot';
 import { AdminTableFooter } from '../../components/AdminTableFooter';
 import type { AdminInstructor } from '../../types';
+import { formatAdminHandle } from '../../utils';
 
 export function AdminInstructorTable({ instructors }: { instructors: AdminInstructor[] }) {
   return (
@@ -22,7 +23,7 @@ export function AdminInstructorTable({ instructors }: { instructors: AdminInstru
             {instructors.map((instructor) => (
               <tr key={instructor.id} className="hover:bg-surface-container/50 transition-colors group">
                 <td className="px-xl py-lg">
-                  <span className="text-body-md font-body-md text-on-surface-variant">@{instructor.nickname.split('@')[0]}</span>
+                  <span className="text-body-md font-body-md text-on-surface-variant">@{formatAdminHandle(instructor.nickname)}</span>
                 </td>
                 <td className="px-xl py-lg">
                   <span className="text-body-md font-body-md text-on-surface">{instructor.name}</span>

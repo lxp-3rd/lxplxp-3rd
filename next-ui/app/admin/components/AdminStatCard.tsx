@@ -1,4 +1,5 @@
 import type { AdminDashboardStat } from '../types';
+import { clampPercent } from '../utils';
 
 const toneClasses: Record<AdminDashboardStat['tone'], { icon: string; bar: string; card: string }> = {
   primary: {
@@ -26,6 +27,7 @@ const toneClasses: Record<AdminDashboardStat['tone'], { icon: string; bar: strin
 export function AdminStatCard({ stat }: { stat: AdminDashboardStat }) {
   const tone = toneClasses[stat.tone];
   const isDanger = stat.tone === 'danger';
+  const progress = clampPercent(stat.progress);
 
   return (
     <div className={`${tone.card} p-lg rounded-xl stat-card-glow transition-all duration-300`}>
@@ -48,7 +50,7 @@ export function AdminStatCard({ stat }: { stat: AdminDashboardStat }) {
       </p>
       <h2 className="text-headline-md font-headline-md">{stat.value}</h2>
       <div className="mt-md h-1 w-full bg-surface-container rounded-full overflow-hidden">
-        <div className={`h-full ${tone.bar}`} style={{ width: `${stat.progress}%` }} />
+        <div className={`h-full ${tone.bar}`} style={{ width: `${progress}%` }} />
       </div>
     </div>
   );

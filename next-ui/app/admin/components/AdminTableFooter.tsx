@@ -13,13 +13,21 @@ export function AdminTableFooter({ total, visible, unit = '개' }: AdminTableFoo
         {unit} 표시
       </span>
       <div className="flex items-center gap-xs">
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors" disabled>
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors"
+          aria-label="Previous page"
+          disabled
+        >
           <span className="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_left</span>
         </button>
         <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-on-primary font-label-md text-label-md">
           1
         </span>
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors" disabled>
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition-colors"
+          aria-label="Next page"
+          disabled
+        >
           <span className="material-symbols-outlined text-on-surface-variant text-[18px]">chevron_right</span>
         </button>
       </div>

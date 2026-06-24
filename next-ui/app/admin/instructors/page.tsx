@@ -6,7 +6,15 @@ import { AdminInstructorTable } from './components/AdminInstructorTable';
 import { useAdminInstructors } from './useAdminInstructors';
 
 export default function AdminInstructorsPage() {
-  const { instructors } = useAdminInstructors();
+  const { instructors, isLoading, error } = useAdminInstructors();
+
+  if (isLoading) {
+    return <AdminPageContainer className="mt-20">Loading...</AdminPageContainer>;
+  }
+
+  if (error) {
+    return <AdminPageContainer className="mt-20">Failed to load instructors.</AdminPageContainer>;
+  }
 
   return (
     <AdminPageContainer className="mt-20">

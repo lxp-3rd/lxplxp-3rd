@@ -14,6 +14,8 @@ export default function AdminInstructorApplicationsPage() {
     rejectTarget,
     rejectInput,
     pendingCount,
+    isLoading,
+    error,
     setSelected,
     setRejectInput,
     setRejectTarget,
@@ -21,6 +23,14 @@ export default function AdminInstructorApplicationsPage() {
     reject,
     openRejectModal,
   } = useAdminInstructorApplications();
+
+  if (isLoading) {
+    return <AdminPageContainer>Loading...</AdminPageContainer>;
+  }
+
+  if (error) {
+    return <AdminPageContainer>Failed to load instructor applications.</AdminPageContainer>;
+  }
 
   return (
     <AdminPageContainer>

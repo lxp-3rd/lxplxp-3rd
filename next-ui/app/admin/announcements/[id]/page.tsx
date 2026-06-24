@@ -8,7 +8,15 @@ import { useAdminAnnouncementDetail } from './useAdminAnnouncementDetail';
 export default function AdminAnnouncementDetailPage() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
-  const { announcement } = useAdminAnnouncementDetail(id);
+  const { announcement, isLoading, error } = useAdminAnnouncementDetail(id);
+
+  if (isLoading) {
+    return <div className="max-w-[1280px] mx-auto px-margin-desktop py-xl">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="max-w-[1280px] mx-auto px-margin-desktop py-xl">Failed to load announcement.</div>;
+  }
 
   if (!announcement) {
     return (

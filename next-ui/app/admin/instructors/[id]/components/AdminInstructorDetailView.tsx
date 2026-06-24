@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BackLink } from '@/components/ui';
 import type { AdminInstructorDetail } from '../../../types';
+import { formatAdminHandle } from '../../../utils';
 
 export function AdminInstructorDetailView({ detail }: { detail: AdminInstructorDetail }) {
   const { instructor, courses } = detail;
@@ -18,7 +19,7 @@ export function AdminInstructorDetailView({ detail }: { detail: AdminInstructorD
               <span className="material-symbols-outlined text-[40px]">school</span>
             </div>
             <h1 className="font-headline-md text-headline-md text-on-surface">{instructor.name}</h1>
-            <p className="text-body-md text-on-surface-variant">@{instructor.nickname.split('@')[0]}</p>
+            <p className="text-body-md text-on-surface-variant">@{formatAdminHandle(instructor.nickname)}</p>
             <p className="mt-md text-body-md text-on-surface-variant">{instructor.bio}</p>
           </div>
 

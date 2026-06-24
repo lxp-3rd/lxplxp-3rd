@@ -6,7 +6,15 @@ import { AdminCourseTable } from './components/AdminCourseTable';
 import { useAdminCourses } from './useAdminCourses';
 
 export default function AdminCoursesPage() {
-  const { courses, toggleHidden, removeCourse } = useAdminCourses();
+  const { courses, isLoading, error, toggleHidden, removeCourse } = useAdminCourses();
+
+  if (isLoading) {
+    return <AdminPageContainer>Loading...</AdminPageContainer>;
+  }
+
+  if (error) {
+    return <AdminPageContainer>Failed to load courses.</AdminPageContainer>;
+  }
 
   return (
     <AdminPageContainer>

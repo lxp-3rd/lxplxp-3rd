@@ -7,7 +7,15 @@ import { AdminAnnouncementTable } from './components/AdminAnnouncementTable';
 import { useAdminAnnouncements } from './useAdminAnnouncements';
 
 export default function AdminAnnouncementsPage() {
-  const { announcements } = useAdminAnnouncements();
+  const { announcements, isLoading, error } = useAdminAnnouncements();
+
+  if (isLoading) {
+    return <AdminPageContainer className="pb-xl">Loading...</AdminPageContainer>;
+  }
+
+  if (error) {
+    return <AdminPageContainer className="pb-xl">Failed to load announcements.</AdminPageContainer>;
+  }
 
   return (
     <AdminPageContainer className="pb-xl">

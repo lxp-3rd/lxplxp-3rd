@@ -5,7 +5,15 @@ import { AdminCourseEnrollmentView } from './components/AdminCourseEnrollmentVie
 import { useAdminCourseEnrollments } from './useAdminCourseEnrollments';
 
 export default function AdminCourseEnrollmentsPage({ params }: { params: { id: string } }) {
-  const { detail } = useAdminCourseEnrollments(params.id);
+  const { detail, isLoading, error } = useAdminCourseEnrollments(params.id);
+
+  if (isLoading) {
+    return <div className="flex-grow w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="flex-grow w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-xl">Failed to load course enrollments.</div>;
+  }
 
   if (!detail) {
     return (

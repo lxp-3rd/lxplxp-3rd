@@ -11,6 +11,14 @@ export default function AdminAnnouncementEditPage() {
   const id = Array.isArray(params.id) ? params.id[0] : (params.id as string);
   const form = useAdminAnnouncementEdit(id);
 
+  if (form.isLoading) {
+    return <div className="max-w-[1280px] mx-auto px-gutter py-xl">Loading...</div>;
+  }
+
+  if (form.error) {
+    return <div className="max-w-[1280px] mx-auto px-gutter py-xl">Failed to load announcement.</div>;
+  }
+
   if (!form.isFound) {
     return (
       <div className="max-w-[1280px] mx-auto px-gutter py-xl flex items-center justify-center">

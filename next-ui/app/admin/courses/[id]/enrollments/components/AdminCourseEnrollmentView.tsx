@@ -1,5 +1,6 @@
 import { BackLink } from '@/components/ui';
 import type { AdminCourseEnrollmentDetail } from '../../../../types';
+import { clampPercent, maskEmail } from '../../../../utils';
 
 export function AdminCourseEnrollmentView({ detail }: { detail: AdminCourseEnrollmentDetail }) {
   const { course, enrollments } = detail;
@@ -55,12 +56,12 @@ export function AdminCourseEnrollmentView({ detail }: { detail: AdminCourseEnrol
               {enrollments.map((enrollment) => (
                 <tr key={enrollment.id} className="hover:bg-surface-bright transition-colors group">
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface font-medium">{enrollment.nickname}</td>
-                  <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{enrollment.email}</td>
+                  <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{maskEmail(enrollment.email)}</td>
                   <td className="px-lg py-md font-body-md text-body-md text-on-surface-variant">{enrollment.enrolledAt}</td>
                   <td className="px-lg py-md">
                     <div className="flex items-center gap-sm">
                       <div className="w-24 h-2 bg-surface-container rounded-full overflow-hidden">
-                        <div className="h-full bg-primary-container" style={{ width: `${enrollment.progress}%` }} />
+                        <div className="h-full bg-primary-container" style={{ width: `${clampPercent(enrollment.progress)}%` }} />
                       </div>
                       <span className="font-label-sm text-label-sm text-on-surface font-bold">{enrollment.progress}%</span>
                     </div>

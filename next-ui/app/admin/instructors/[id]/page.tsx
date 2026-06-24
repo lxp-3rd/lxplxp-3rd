@@ -5,7 +5,15 @@ import { useAdminInstructorDetail } from './useAdminInstructorDetail';
 import { AdminInstructorDetailView } from './components/AdminInstructorDetailView';
 
 export default function InstructorDetailPage({ params }: { params: { id: string } }) {
-  const { detail } = useAdminInstructorDetail(params.id);
+  const { detail, isLoading, error } = useAdminInstructorDetail(params.id);
+
+  if (isLoading) {
+    return <div className="max-w-[1000px] mx-auto px-gutter py-xl">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="max-w-[1000px] mx-auto px-gutter py-xl">Failed to load instructor.</div>;
+  }
 
   if (!detail) {
     return (

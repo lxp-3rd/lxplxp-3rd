@@ -124,6 +124,20 @@ const ADMIN_COURSE_ENROLLMENTS = [
   { id: 'e6', nickname: '윤도현', email: 'dh.yoon@example.com', enrolledAt: '2024.02.28', progress: 0 },
 ];
 
+const cloneCourse = (course: AdminCourse): AdminCourse => ({
+  ...course,
+  contents: course.contents.map((content) => ({ ...content })),
+});
+
+const cloneRoadmap = (roadmap: AdminRoadmap): AdminRoadmap => ({ ...roadmap });
+
+const cloneInstructor = (instructor: AdminInstructorDetail['instructor']): AdminInstructorDetail['instructor'] => ({
+  ...instructor,
+  expertise: [...instructor.expertise],
+});
+
+const cloneAnnouncement = (announcement: AdminAnnouncement): AdminAnnouncement => ({ ...announcement });
+
 export const adminDashboardApi = {
   getStats: async (): Promise<AdminDashboardStat[]> => [
     {
@@ -159,35 +173,35 @@ export const adminDashboardApi = {
       progress: 100,
     },
   ],
-  getMenuItems: async (): Promise<AdminMenuItem[]> => [...ADMIN_MENU_ITEMS],
+  getMenuItems: async (): Promise<AdminMenuItem[]> => ADMIN_MENU_ITEMS.map((item) => ({ ...item })),
 };
 
 export const adminCourseMockApi = {
-  getCourses: async (): Promise<AdminCourse[]> => MOCK_COURSES.map((course) => ({ ...course, hidden: false })),
+  getCourses: async (): Promise<AdminCourse[]> => MOCK_COURSES.map((course) => ({ ...cloneCourse(course), hidden: false })),
   getCourseEnrollments: async (courseId: string): Promise<AdminCourseEnrollmentDetail | null> => {
     const course = MOCK_COURSES.find((item) => item.id === courseId);
     if (!course) return null;
 
     return {
-      course,
+      course: cloneCourse(course),
       enrollments: ADMIN_COURSE_ENROLLMENTS.map((enrollment) => ({ ...enrollment })),
     };
   },
 };
 
 export const adminRoadmapMockApi = {
-  getRoadmaps: async (): Promise<AdminRoadmap[]> => MOCK_ROADMAPS.map((roadmap) => ({ ...roadmap, hidden: false })),
+  getRoadmaps: async (): Promise<AdminRoadmap[]> => MOCK_ROADMAPS.map((roadmap) => ({ ...cloneRoadmap(roadmap), hidden: false })),
 };
 
 export const adminInstructorMockApi = {
-  getInstructors: async () => [...MOCK_INSTRUCTORS],
+  getInstructors: async () => MOCK_INSTRUCTORS.map(cloneInstructor),
   getInstructorDetail: async (id: string): Promise<AdminInstructorDetail | null> => {
     const instructor = getInstructorById(id);
     if (!instructor) return null;
 
     return {
-      instructor,
-      courses: MOCK_COURSES.filter((course) => course.instructorId === instructor.id),
+      instructor: cloneInstructor(instructor),
+      courses: MOCK_COURSES.filter((course) => course.instructorId === instructor.id).map(cloneCourse),
     };
   },
 };
@@ -197,6 +211,9 @@ export const adminInstructorApplicationMockApi = {
 };
 
 export const adminAnnouncementMockApi = {
-  getAnnouncements: async (): Promise<AdminAnnouncement[]> => [...MOCK_ANNOUNCEMENTS],
-  getAnnouncement: async (id: string): Promise<AdminAnnouncement | null> => getAnnouncementById(id),
+  getAnnouncements: async (): Promise<AdminAnnouncement[]> => MOCK_ANNOUNCEMENTS.map(cloneAnnouncement),
+  getAnnouncement: async (id: string): Promise<AdminAnnouncement | null> => {
+    const announcement = getAnnouncementById(id);
+    return announcement ? cloneAnnouncement(announcement) : null;
+  },
 };

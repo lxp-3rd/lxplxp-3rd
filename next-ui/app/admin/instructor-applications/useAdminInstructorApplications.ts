@@ -3,19 +3,32 @@
 import { useEffect, useMemo, useState } from 'react';
 import { adminInstructorApplicationMockApi } from '../api';
 import type { AdminInstructorApplication } from '../types';
+import { toError } from '../utils';
 
 export function useAdminInstructorApplications() {
   const [applications, setApplications] = useState<AdminInstructorApplication[]>([]);
   const [selected, setSelected] = useState<AdminInstructorApplication | null>(null);
   const [rejectTarget, setRejectTarget] = useState<AdminInstructorApplication | null>(null);
   const [rejectInput, setRejectInput] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    adminInstructorApplicationMockApi.getApplications().then((nextApplications) => {
-      if (isMounted) setApplications(nextApplications);
-    });
+    adminInstructorApplicationMockApi.getApplications()
+      .then((nextApplications) => {
+        if (!isMounted) return;
+        setApplications(nextApplications);
+        setError(null);
+      })
+      .catch((loadError) => {
+        if (!isMounted) return;
+        setError(toError(loadError));
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
 
     return () => {
       isMounted = false;
@@ -58,6 +71,8 @@ export function useAdminInstructorApplications() {
     rejectTarget,
     rejectInput,
     pendingCount,
+    isLoading,
+    error,
     setSelected,
     setRejectInput,
     setRejectTarget,

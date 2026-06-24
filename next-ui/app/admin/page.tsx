@@ -7,7 +7,15 @@ import { AdminStatCard } from './components/AdminStatCard';
 import { useAdminDashboard } from './useAdminDashboard';
 
 export default function AdminDashboardPage() {
-  const { stats, menuItems } = useAdminDashboard();
+  const { stats, menuItems, isLoading, error } = useAdminDashboard();
+
+  if (isLoading) {
+    return <AdminPageContainer className="mt-16">Loading...</AdminPageContainer>;
+  }
+
+  if (error) {
+    return <AdminPageContainer className="mt-16">Failed to load admin dashboard.</AdminPageContainer>;
+  }
 
   return (
     <AdminPageContainer className="mt-16">
