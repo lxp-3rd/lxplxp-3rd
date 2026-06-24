@@ -36,4 +36,25 @@ class AnnouncementTest {
 
         assertThat(announcement.isPublished()).isFalse();
     }
+
+    @DisplayName("제목과 내용을 수정하면 변경된 값이 반영된다.")
+    @Test
+    void updateContent_success() {
+        Announcement announcement = Announcement.create(1L, "6월 22일 공지사항", "6월 22일 공지사항입니다.", AnnouncementStatus.PUBLISH);
+
+        announcement.updateContent("수정된 제목", "수정된 내용");
+
+        assertThat(announcement.getTitle()).isEqualTo("수정된 제목");
+        assertThat(announcement.getContent()).isEqualTo("수정된 내용");
+    }
+
+    @DisplayName("상태를 변경하면 변경된 값이 반영된다.")
+    @Test
+    void changeStatus_success() {
+        Announcement announcement = Announcement.create(1L, "6월 22일 공지사항", "6월 22일 공지사항입니다.", AnnouncementStatus.PUBLISH);
+
+        announcement.changeStatus(AnnouncementStatus.HIDDEN);
+
+        assertThat(announcement.getStatus()).isEqualTo(AnnouncementStatus.HIDDEN);
+    }
 }
