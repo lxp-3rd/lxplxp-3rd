@@ -10,6 +10,8 @@ public interface QuestionUseCase {
 
     QuestionResult createQuestion(CreateQuestionCommand command);
 
+    List<QuestionResult> getQuestions();
+
     List<QuestionResult> getQuestions(Long courseId);
 
     QuestionResult getQuestion(Long questionId);

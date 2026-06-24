@@ -42,8 +42,8 @@ public class QuestionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<QuestionResponse>> getQuestions(@RequestParam Long courseId) {
-        List<QuestionResponse> responses = questionUseCase.getQuestions(courseId)
+    public ResponseEntity<List<QuestionResponse>> getQuestions(@RequestParam(required = false) Long courseId) {
+        List<QuestionResponse> responses = (courseId == null ? questionUseCase.getQuestions() : questionUseCase.getQuestions(courseId))
                 .stream()
                 .map(QuestionResponse::from)
                 .toList();

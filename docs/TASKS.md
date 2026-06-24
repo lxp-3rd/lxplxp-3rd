@@ -62,17 +62,17 @@
 
 **`courses/[id]/questions/new/page.tsx`** — 질문 작성
 - [x] 🔐 `POST /api/questions` — 질문 등록
-- [ ] 🔐 memberId를 하드코딩(1) → JWT에서 추출로 교체
+- [x] 🔐 memberId를 하드코딩(1) → `/api/members/me` 조회값으로 교체
 
 **`courses/[id]/questions/instructor/page.tsx`** — 강사 답변 관리
-- [ ] 🔑강사 `GET /api/questions?courseId={id}` — 질문 목록 (mock 교체)
-- [ ] 🔑강사 `POST /api/questions/{id}/answers` — 답변 등록
+- [x] 🔑강사 `GET /api/questions?courseId={id}` — 질문 목록 (mock 교체)
+- [x] 🔑강사 `POST /api/questions/{id}/answers` — 답변 등록
 
 **`questions/page.tsx`** — 전체 Q&A 탐색
-- [ ] 🔓 `GET /api/questions` — 전체 질문 목록 (mock 교체)
+- [x] 🔓 `GET /api/questions` — 전체 질문 목록 (mock 교체)
 
 **`questions/[id]/page.tsx`** — 질문 상세 (커뮤니티 뷰)
-- [ ] 🔓 `GET /api/questions/{id}` — 질문 + 답변 조회 (mock 교체)
+- [x] 🔓 `GET /api/questions/{id}` — 질문 + 답변 조회 (mock 교체)
 
 ---
 

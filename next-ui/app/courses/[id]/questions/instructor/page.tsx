@@ -1,42 +1,70 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { getQuestions } from '@/app/questions/api';
-import type { Answer } from '@/app/questions/types';
+import { myPageApi } from '@/app/my-page/api';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
+import { formatDate } from '@/lib/formatDate';
+import { questionApi } from '../api';
+import type { QuestionResponse } from '../types';
 
 export default function InstructorQuestionsPage() {
   const { id } = useParams<{ id: string }>();
   const course = getCourseById(id) ?? MOCK_COURSES[0];
-  const initialQuestions = getQuestions(id);
 
-  const [questions, setQuestions] = useState(initialQuestions);
-  const [selectedId, setSelectedId] = useState(questions[0]?.id ?? '');
+  const [questions, setQuestions] = useState<QuestionResponse[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [answerText, setAnswerText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+    setQuestions([]);
+    setSelectedId(null);
+
+    questionApi.getAll(Number(id))
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setQuestions(data);
+        setSelectedId(data[0]?.id ?? null);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setError('질문 목록을 불러올 수 없습니다.');
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [id]);
 
   const selected = questions.find((q) => q.id === selectedId) ?? questions[0];
 
-  const handleSubmitAnswer = () => {
-    if (!answerText.trim()) return;
-    const newAnswer: Answer = {
-      id: `a-${Date.now()}`,
-      questionId: selectedId,
-      authorId: 'instructor',
-      authorName: '강사',
-      createdAt: '방금',
-      updatedAt: '방금',
-      content: answerText.trim(),
-    };
-    setQuestions((prev) =>
-      prev.map((q) =>
-        q.id === selectedId ? { ...q, answer: newAnswer, isAnswered: true } : q,
-      ),
-    );
-    setAnswerText('');
+  const handleSubmitAnswer = async () => {
+    if (!selected || !answerText.trim() || submitting) return;
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const profile = await myPageApi.getProfile();
+      const answered = await questionApi.answer(selected.id, {
+        instructorId: profile.memberId,
+        content: answerText.trim(),
+      });
+      setQuestions((prev) => prev.map((q) => (q.id === answered.id ? answered : q)));
+      setAnswerText('');
+    } catch {
+      setError('답변 등록 중 오류가 발생했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -64,11 +92,19 @@ export default function InstructorQuestionsPage() {
               <div className="flex justify-between items-center mb-xs">
                 <h2 className="text-headline-md font-headline-md text-on-surface">질문 목록</h2>
                 <span className="text-label-sm font-label-sm text-on-surface-variant bg-surface-container px-sm py-xs rounded-full">
-                  미답변 {questions.filter((q) => !q.isAnswered).length}개
+                  미답변 {questions.filter((q) => !q.answer).length}개
                 </span>
               </div>
 
-              {questions.length === 0 ? (
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <span className="text-on-surface-variant text-body-md font-body-md">불러오는 중...</span>
+                </div>
+              ) : error ? (
+                <div className="flex-1 flex items-center justify-center text-center p-lg">
+                  <span className="text-error text-body-md font-body-md">{error}</span>
+                </div>
+              ) : questions.length === 0 ? (
                 <div className="flex flex-col items-center justify-center flex-1 text-center p-xl">
                   <span className="material-symbols-outlined text-[48px] text-on-surface-variant mb-md">forum</span>
                   <p className="text-body-md font-body-md text-on-surface-variant">등록된 질문이 없습니다.</p>
@@ -81,27 +117,27 @@ export default function InstructorQuestionsPage() {
                       type="button"
                       onClick={() => { setSelectedId(q.id); setAnswerText(''); }}
                       className={`text-left p-md rounded-xl border transition-all ${
-                        q.id === selectedId
+                          q.id === selectedId
                           ? 'border-primary bg-surface-container-lowest shadow-md'
                           : 'border-outline-variant bg-surface-container-lowest hover:border-primary/50 hover:shadow-sm'
                       }`}
                     >
                       <div className="flex justify-between items-start mb-xs">
                         <span className={`text-label-sm font-label-sm px-sm py-0.5 rounded-full ${
-                          q.isAnswered
+                          q.answer
                             ? 'bg-surface-container-high text-on-surface-variant'
                             : 'bg-error-container text-on-error-container'
                         }`}>
-                          {q.isAnswered ? '답변 완료' : '미답변'}
+                          {q.answer ? '답변 완료' : '미답변'}
                         </span>
-                        <span className="text-label-sm font-label-sm text-on-surface-variant">{q.createdAt}</span>
+                        <span className="text-label-sm font-label-sm text-on-surface-variant">{formatDate(q.createdAt)}</span>
                       </div>
                       <h3 className={`text-body-md text-on-surface line-clamp-2 mb-xs ${q.id === selectedId ? 'font-bold' : ''}`}>
                         {q.title}
                       </h3>
                       <div className="flex items-center gap-xs text-on-surface-variant text-label-sm font-label-sm">
                         <span className="material-symbols-outlined text-[16px]">person</span>
-                        {q.authorName}
+                        회원 #{q.memberId}
                       </div>
                     </button>
                   ))}
@@ -116,21 +152,21 @@ export default function InstructorQuestionsPage() {
                 <div className="p-xl border-b border-outline-variant flex-shrink-0">
                   <div className="flex items-center gap-sm mb-md flex-wrap">
                     <span className={`text-label-sm font-label-sm px-md py-1 rounded-full ${
-                      selected.isAnswered
+                      selected.answer
                         ? 'bg-secondary-container text-on-secondary-container'
                         : 'bg-error-container text-on-error-container'
                     }`}>
-                      {selected.isAnswered ? '답변 완료' : '미답변'}
+                      {selected.answer ? '답변 완료' : '미답변'}
                     </span>
                   </div>
                   <h1 className="text-headline-md font-headline-md text-on-surface mb-md">{selected.title}</h1>
                   <div className="flex items-center gap-md text-on-surface-variant text-body-sm font-body-sm">
                     <span className="flex items-center gap-xs">
                       <span className="material-symbols-outlined text-[16px]">person</span>
-                      {selected.authorName}
+                      회원 #{selected.memberId}
                     </span>
                     <span>·</span>
-                    <span>{selected.createdAt}</span>
+                    <span>{formatDate(selected.createdAt)}</span>
                   </div>
                 </div>
 
@@ -148,25 +184,19 @@ export default function InstructorQuestionsPage() {
                       </h2>
                       <div className="flex flex-col gap-md">
                         <div className="flex items-center gap-md">
-                          {selected.answer.avatarSrc ? (
-                            <img
-                              src={selected.answer.avatarSrc}
-                              alt={selected.answer.authorName}
-                              className="w-10 h-10 rounded-full object-cover border border-outline-variant flex-shrink-0"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md flex-shrink-0">
-                              {selected.answer.authorName[0]}
-                            </div>
-                          )}
+                          <div className="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-label-md flex-shrink-0">
+                            강
+                          </div>
                           <div className="flex items-center gap-sm">
-                            <span className="text-label-md font-label-md text-on-surface font-bold">{selected.answer.authorName}</span>
+                            <span className="text-label-md font-label-md text-on-surface font-bold">강사 #{selected.answeredBy}</span>
                             <span className="bg-primary-container text-on-primary-container text-label-sm font-label-sm px-sm py-0.5 rounded-full">강사</span>
-                            <span className="text-label-sm font-label-sm text-on-surface-variant">{selected.answer.createdAt}</span>
+                            {selected.answeredAt && (
+                              <span className="text-label-sm font-label-sm text-on-surface-variant">{formatDate(selected.answeredAt)}</span>
+                            )}
                           </div>
                         </div>
                         <p className="text-body-md font-body-md text-on-surface leading-relaxed whitespace-pre-wrap pl-[56px]">
-                          {selected.answer.content}
+                          {selected.answer}
                         </p>
                       </div>
                     </div>
@@ -174,7 +204,7 @@ export default function InstructorQuestionsPage() {
                 </div>
 
                 {/* 답변 입력 (미답변인 경우만) */}
-                {!selected.isAnswered && (
+                {!selected.answer && (
                   <div className="p-lg border-t border-outline-variant bg-surface-container flex-shrink-0 flex flex-col gap-sm">
                     <p className="text-label-md font-label-md text-on-surface">답변 작성</p>
                     <textarea
@@ -188,10 +218,10 @@ export default function InstructorQuestionsPage() {
                       <button
                         type="button"
                         onClick={handleSubmitAnswer}
-                        disabled={!answerText.trim()}
+                        disabled={!answerText.trim() || submitting}
                         className="bg-primary text-on-primary px-xl py-sm rounded-lg text-label-md font-label-md hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        답변 등록
+                        {submitting ? '등록 중...' : '답변 등록'}
                       </button>
                     </div>
                   </div>

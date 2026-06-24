@@ -1,26 +1,39 @@
-// QnA 도메인 타입 정의 (API 응답 기준)
-export type Answer = {
+export type Question = {
+  id: number;
+  courseId: number;
+  memberId: number;
+  title: string;
+  content: string;
+  status: 'PUBLISHED';
+  createdAt: string;
+  updatedAt: string;
+  answer: string | null;
+  answeredBy: number | null;
+  answeredAt: string | null;
+};
+
+export type LegacyAnswer = {
   id: string;
   questionId: string;
   authorId: string;
-  authorName: string;   // member join
-  avatarSrc?: string;   // instructor profile image
+  authorName: string;
+  avatarSrc?: string;
   content: string;
   createdAt: string;
   updatedAt: string;
 };
 
-export type Question = {
+export type LegacyQuestion = {
   id: string;
   courseId: string;
-  courseTitle: string;  // course join
+  courseTitle: string;
   memberId: string;
-  authorName: string;   // member join
+  authorName: string;
   title: string;
   content: string;
-  isAnswered: boolean;  // answer 존재 여부 computed
+  isAnswered: boolean;
   tags: string[];
-  answer: Answer | null;
+  answer: LegacyAnswer | null;
   createdAt: string;
   updatedAt: string;
 };

@@ -1,6 +1,6 @@
-import type { Question } from './types';
+import type { LegacyQuestion } from './types';
 
-export const MOCK_QUESTIONS: Question[] = [
+export const MOCK_QUESTIONS: LegacyQuestion[] = [
   {
     id: 'q1',
     courseId: '3',

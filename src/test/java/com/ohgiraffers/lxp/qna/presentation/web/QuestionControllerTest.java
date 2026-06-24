@@ -149,10 +149,14 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("courseId 파라미터 없이 목록 조회 시 400을 반환한다")
-    void getQuestions_missingCourseId_returns400() throws Exception {
+    @DisplayName("courseId 파라미터 없이 전체 질문 목록 조회 시 200과 목록을 반환한다")
+    void getQuestions_withoutCourseId_returnsAll() throws Exception {
+        given(questionUseCase.getQuestions())
+                .willReturn(List.of(questionResult(1L), questionResult(2L)));
+
         mockMvc.perform(get("/api/questions"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
     }
 
     @Test

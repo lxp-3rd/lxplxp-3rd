@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
+import { myPageApi } from '@/app/my-page/api';
 import { questionApi } from '../api';
 
 export default function QuestionNewPage({ params }: { params: { id: string } }) {
@@ -19,13 +20,11 @@ export default function QuestionNewPage({ params }: { params: { id: string } }) 
     setSubmitting(true);
     setError(null);
 
-    // TODO: 인증 구현 후 JWT에서 memberId 추출로 교체
-    const memberId = 1;
-
     try {
+      const profile = await myPageApi.getProfile();
       await questionApi.create({
         courseId: Number(params.id),
-        memberId,
+        memberId: profile.memberId,
         title,
         content,
       });

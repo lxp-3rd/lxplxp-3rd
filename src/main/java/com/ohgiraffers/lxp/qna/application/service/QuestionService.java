@@ -46,6 +46,14 @@ public class QuestionService implements QuestionUseCase, AnswerQuestionUseCase {
 	}
 
 	@Override
+	public List<QuestionResult> getQuestions() {
+		return questionRepositoryPort.findAll()
+			.stream()
+			.map(QuestionResult::from)
+			.toList();
+	}
+
+	@Override
 	public List<QuestionResult> getQuestions(Long courseId) {
 		validateCourse(courseId);
 		return questionRepositoryPort.findAllByCourseId(courseId)

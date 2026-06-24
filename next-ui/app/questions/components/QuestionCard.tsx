@@ -21,11 +21,11 @@ export function QuestionCard({ data, isSelected, onClick }: QuestionCardProps) {
       <div className="flex justify-between items-start mb-xs">
         <span className={[
           'text-label-sm font-label-sm px-sm py-0.5 rounded-full',
-          data.isAnswered
-            ? 'bg-surface-container-high text-on-surface-variant'
-            : 'bg-primary-fixed text-on-primary-container',
+          data.answer
+          ? 'bg-surface-container-high text-on-surface-variant'
+          : 'bg-primary-fixed text-on-primary-container',
         ].join(' ')}>
-          {data.isAnswered ? 'Completed' : 'Waiting'}
+          {data.answer ? '답변 완료' : '답변 대기'}
         </span>
         <span className="text-label-sm font-label-sm text-on-surface-variant">{data.createdAt}</span>
       </div>
@@ -34,7 +34,7 @@ export function QuestionCard({ data, isSelected, onClick }: QuestionCardProps) {
       </h3>
       <div className="flex items-center gap-xs text-on-surface-variant text-label-sm font-label-sm">
         <span className="material-symbols-outlined text-[16px]">person</span>
-        {data.authorName}
+        회원 #{data.memberId}
       </div>
     </button>
   );

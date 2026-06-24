@@ -1,7 +1,7 @@
-import type { Answer } from '../types';
+import type { LegacyAnswer } from '../types';
 
 interface AnswerCardProps {
-  data: Answer;
+  data: LegacyAnswer;
 }
 
 export function AnswerCard({ data }: AnswerCardProps) {

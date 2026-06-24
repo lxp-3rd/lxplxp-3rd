@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
+import { myPageApi } from '@/app/my-page/api';
 import { questionApi } from '../api';
 import type { QuestionResponse } from '../types';
 import { formatDate } from '@/lib/formatDate';
@@ -19,9 +20,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // TODO: 인증 구현 후 JWT에서 memberId 추출로 교체
-  const memberId = 1;
+  const [memberId, setMemberId] = useState<number | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,8 +28,11 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
     setQuestion(null);
     setError(null);
 
-    questionApi.getById(Number(params.qid))
-      .then((data) => {
+    Promise.all([
+      questionApi.getById(Number(params.qid)),
+      myPageApi.getProfile().catch(() => null),
+    ])
+      .then(([data, profile]) => {
         if (controller.signal.aborted) return;
         if (data.courseId !== Number(params.id)) {
           setError('잘못된 접근입니다.');
@@ -39,6 +41,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
         setQuestion(data);
         setEditTitle(data.title);
         setEditContent(data.content);
+        setMemberId(profile?.memberId ?? null);
       })
       .catch(() => {
         if (!controller.signal.aborted) setError('질문을 불러올 수 없습니다.');
@@ -52,7 +55,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!question) return;
+    if (!question || memberId == null) return;
     setSaving(true);
     setError(null);
     try {
@@ -69,7 +72,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
   };
 
   const handleDelete = async () => {
-    if (!question || deleting || !confirm('질문을 삭제하시겠습니까?')) return;
+    if (!question || memberId == null || deleting || !confirm('질문을 삭제하시겠습니까?')) return;
     setDeleting(true);
     try {
       await questionApi.remove(question.id, memberId);
@@ -80,7 +83,7 @@ export default function CourseQuestionDetailPage({ params }: { params: { id: str
     }
   };
 
-  const isOwner = question?.memberId === memberId;
+  const isOwner = memberId != null && question?.memberId === memberId;
 
   if (loading) {
     return (
