@@ -1,4 +1,5 @@
 import { BackLink } from '@/components/ui';
+import { getImageUrl } from '@/lib/imageUrl';
 import type { AdminCourseEnrollmentDetail } from '../../../../types';
 import { clampPercent, maskEmail } from '../../../../utils';
 
@@ -13,7 +14,7 @@ export function AdminCourseEnrollmentView({ detail }: { detail: AdminCourseEnrol
 
       <section className="bg-surface-container-lowest border border-surface-variant rounded-xl p-lg md:p-xl shadow-sm mb-xl flex flex-col md:flex-row gap-lg items-start md:items-center">
         <div className="w-full md:w-48 h-32 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
-          <img className="w-full h-full object-cover" src={course.thumbnail} alt={course.title} />
+          <img className="w-full h-full object-cover" src={getImageUrl(course.thumbnail)} alt={course.title} />
         </div>
         <div className="flex-grow">
           <h1 className="font-headline-md text-headline-md text-on-surface mb-sm">{course.title}</h1>

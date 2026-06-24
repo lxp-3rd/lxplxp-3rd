@@ -8,6 +8,7 @@ import { contentApi, courseApi } from '@/app/courses/api';
 import type { CourseContent, CourseDetail } from '@/app/courses/types';
 import { enrollmentApi } from '@/app/enrollments/api';
 import type { Enrollment } from '@/app/enrollments/types';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export default function EnrollmentDetailPage({ params }: { params: { id: string } }) {
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
@@ -89,7 +90,7 @@ export default function EnrollmentDetailPage({ params }: { params: { id: string 
           <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl mb-xl">
             <div className="flex flex-col md:flex-row gap-lg items-start">
               <img
-                src={course.thumbnailUrl}
+                src={getImageUrl(course.thumbnailUrl)}
                 alt={course.title}
                 className="w-full md:w-48 h-32 object-cover rounded-lg flex-shrink-0"
               />

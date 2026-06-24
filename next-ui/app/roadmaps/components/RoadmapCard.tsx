@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ProgressBar } from '@/components/ui';
+import { getImageUrl } from '@/lib/imageUrl';
 import type { Roadmap } from '../types';
 
 interface RoadmapCardProps {
@@ -16,7 +17,7 @@ export function RoadmapCard({ data, showActions = false }: RoadmapCardProps) {
       <Link href={`/roadmaps/${data.id}`} className="absolute inset-0 z-10" aria-label={data.title} />
 
       <div className="relative h-48">
-        <img className="w-full h-full object-cover" alt={data.title} src={data.thumbnail} />
+        <img className="w-full h-full object-cover" alt={data.title} src={getImageUrl(data.thumbnail)} />
         {data.category && (
           <div className="absolute top-4 left-4 z-20">
             <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-sm text-label-sm shadow-sm">

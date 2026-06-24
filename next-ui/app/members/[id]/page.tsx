@@ -5,6 +5,7 @@ import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { MOCK_MEMBERS } from '@/app/members/mockData';
 import { MOCK_ENROLLMENTS } from '@/app/enrollments/mockData';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export default function MemberDetailPage() {
   const member = MOCK_MEMBERS[0];
@@ -77,7 +78,7 @@ export default function MemberDetailPage() {
               <div className="space-y-md">
                 {enrollments.map((e) => (
                   <div key={e.id} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex items-center gap-lg">
-                    <img src={e.thumbnail} alt={e.courseTitle} className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
+                    <img src={getImageUrl(e.thumbnail)} alt={e.courseTitle} className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-label-md font-label-md text-on-surface mb-xs truncate">{e.courseTitle}</p>
                       <p className="text-label-sm font-label-sm text-on-surface-variant mb-md">{e.instructor} 강사</p>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { AdminIconButton } from '../../components/AdminIconButton';
 import { AdminTableFooter } from '../../components/AdminTableFooter';
+import { getImageUrl } from '@/lib/imageUrl';
 import type { AdminCourseResponse } from '../types';
 import { getAdminCourseStatusBadge } from '../viewModel';
 
@@ -40,7 +41,7 @@ export function AdminCourseTable({ courses, onToggleVisibility, onRemove }: Admi
                   <td className="px-xl py-lg">
                     <div className="flex items-center gap-md">
                       {course.thumbnailUrl ? (
-                        <img src={course.thumbnailUrl} alt={course.title} className="w-16 h-11 object-cover rounded-lg flex-shrink-0" />
+                        <img src={getImageUrl(course.thumbnailUrl)} alt={course.title} className="w-16 h-11 object-cover rounded-lg flex-shrink-0" />
                       ) : (
                         <div className="w-16 h-11 rounded-lg flex-shrink-0 bg-surface-container-high flex items-center justify-center">
                           <span className="material-symbols-outlined text-[20px] text-on-surface-variant">image</span>

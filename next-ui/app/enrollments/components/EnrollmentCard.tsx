@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ProgressBar } from '@/components/ui';
+import { getImageUrl } from '@/lib/imageUrl';
 
 interface EnrollmentCardProps {
   enrollmentId: number;
@@ -41,7 +42,7 @@ export function EnrollmentCard({
         <img
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           alt={courseTitle}
-          src={thumbnail}
+          src={getImageUrl(thumbnail)}
         />
         <span className={[
           'absolute top-md left-md px-sm py-xs rounded text-label-sm font-label-sm shadow-sm',

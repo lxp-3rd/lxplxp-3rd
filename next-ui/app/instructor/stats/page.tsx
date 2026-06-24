@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { getMyCourses } from '@/app/courses/mockData';
 import { getQuestions } from '@/app/questions/api';
 import { useAuth } from '@/lib/AuthContext';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export default function InstructorStatsPage() {
   const { user } = useAuth();
@@ -78,7 +79,7 @@ export default function InstructorStatsPage() {
                     <tr key={course.id} className="hover:bg-surface-container/50 transition-colors group">
                       <td className="px-xl py-lg">
                         <div className="flex items-center gap-md">
-                          <img src={course.thumbnail} alt={course.title} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />
+                          <img src={getImageUrl(course.thumbnail)} alt={course.title} className="w-14 h-10 object-cover rounded-lg flex-shrink-0" />
                           <p className="text-body-md font-body-md text-on-surface line-clamp-1">{course.title}</p>
                         </div>
                       </td>

@@ -7,6 +7,7 @@ import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { getRoadmapById } from '@/app/roadmaps/mockData';
 import { MOCK_COURSES } from '@/app/courses/mockData';
+import { getImageUrl } from '@/lib/imageUrl';
 
 type Course = typeof MOCK_COURSES[number];
 
@@ -147,7 +148,7 @@ export default function RoadmapEditPage() {
                         }`}
                       >
                         <div className="w-20 h-14 rounded overflow-hidden flex-shrink-0">
-                          <img className="w-full h-full object-cover" src={course.thumbnail} alt={course.title} />
+                          <img className="w-full h-full object-cover" src={getImageUrl(course.thumbnail)} alt={course.title} />
                         </div>
                         <div className="flex-grow min-w-0">
                           <h4 className="font-label-md text-label-md text-on-surface truncate">{course.title}</h4>
@@ -220,7 +221,7 @@ export default function RoadmapEditPage() {
                         </div>
                         <div className="flex-grow bg-surface p-sm rounded-lg border border-surface-container-high flex items-center gap-md">
                           <div className="w-12 h-10 rounded bg-surface-container-highest flex-shrink-0 overflow-hidden">
-                            <img className="w-full h-full object-cover" src={course.thumbnail} alt={course.title} />
+                            <img className="w-full h-full object-cover" src={getImageUrl(course.thumbnail)} alt={course.title} />
                           </div>
                           <Link
                             href={`/courses/${course.id}`}

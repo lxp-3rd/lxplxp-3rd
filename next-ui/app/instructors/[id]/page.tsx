@@ -5,6 +5,7 @@ import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
 import { MOCK_INSTRUCTORS } from '@/app/instructors/mockData';
 import { MOCK_COURSES } from '@/app/courses/mockData';
+import { getImageUrl } from '@/lib/imageUrl';
 
 export default function InstructorDetailPage() {
   const instructor = MOCK_INSTRUCTORS[0];
@@ -91,7 +92,7 @@ export default function InstructorDetailPage() {
                 <div className="space-y-md">
                   {courses.map((course) => (
                     <div key={course.id} className="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg flex items-center gap-lg">
-                      <img src={course.thumbnail} alt={course.title} className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
+                      <img src={getImageUrl(course.thumbnail)} alt={course.title} className="w-20 h-14 object-cover rounded-lg flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-label-md font-label-md text-on-surface mb-xs truncate">{course.title}</p>
                         <p className="text-label-sm font-label-sm text-on-surface-variant mb-md">

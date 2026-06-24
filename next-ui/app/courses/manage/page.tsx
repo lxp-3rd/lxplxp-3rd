@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 import { PageHeader } from '@/components/ui';
 import { getMyCourses } from '@/app/courses/mockData';
 import { useAuth } from '@/lib/AuthContext';
+import { getImageUrl } from '@/lib/imageUrl';
 
 const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
   PUBLISHED:  { label: '공개', cls: 'bg-primary-container text-on-primary-container' },
@@ -53,7 +54,7 @@ export default function CourseManagePage() {
                   <div className={`relative h-48 overflow-hidden ${course.status !== 'PUBLISHED' ? 'grayscale' : ''}`}>
                     <div
                       className="bg-cover bg-center w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      style={{ backgroundImage: `url('${course.thumbnail}')` }}
+                      style={{ backgroundImage: `url('${getImageUrl(course.thumbnail)}')` }}
                     />
                     <div className="absolute top-md right-md">
                       <span className={`text-label-sm font-label-sm px-sm py-xs rounded-full ${statusInfo.cls}`}>{statusInfo.label}</span>

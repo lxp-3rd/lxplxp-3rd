@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { getImageUrl } from '@/lib/imageUrl';
 
 interface CourseCardProps {
   id: string;
@@ -16,7 +17,7 @@ export function CourseCard({ id, title, instructor, thumbnail, enrollmentCount }
           <img
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             alt={`${title} 썸네일`}
-            src={thumbnail}
+            src={getImageUrl(thumbnail)}
           />
         </div>
         <div className="p-md">
