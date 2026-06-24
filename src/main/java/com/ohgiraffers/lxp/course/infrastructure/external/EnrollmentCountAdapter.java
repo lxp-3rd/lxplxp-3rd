@@ -28,7 +28,7 @@ public class EnrollmentCountAdapter implements LoadEnrollmentCountPort {
         if (courseIds.isEmpty()) {
             return Map.of();
         }
-        return enrollmentJpaRepository.countByCourseIds(courseIds).stream()
+        return enrollmentJpaRepository.countActiveByCourseIds(courseIds).stream()
                 .collect(Collectors.toMap(
                         CourseEnrollmentCount::getCourseId,
                         CourseEnrollmentCount::getCount

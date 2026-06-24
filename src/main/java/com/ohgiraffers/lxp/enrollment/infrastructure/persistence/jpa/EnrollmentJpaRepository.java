@@ -12,16 +12,17 @@ public interface EnrollmentJpaRepository extends JpaRepository<EnrollmentJpaEnti
     boolean existsByMemberIdAndCourseIdAndStatus(Long memberId, Long courseId, EnrollmentStatus status);
 
     /**
-     * 강좌별 수강생 수를 한 번에 집계한다(취소=soft delete 제외).
+     * 강좌별 현재 수강 중(ACTIVE) 인원 수를 한 번에 집계한다.
      */
     @Query("""
             SELECT e.courseId AS courseId, COUNT(e) AS count
             FROM EnrollmentJpaEntity e
             WHERE e.courseId IN :courseIds
+              AND e.status = com.ohgiraffers.lxp.enrollment.domain.model.vo.EnrollmentStatus.ACTIVE
               AND e.deletedAt IS NULL
             GROUP BY e.courseId
             """)
-    List<CourseEnrollmentCount> countByCourseIds(@Param("courseIds") List<Long> courseIds);
+    List<CourseEnrollmentCount> countActiveByCourseIds(@Param("courseIds") List<Long> courseIds);
 
     interface CourseEnrollmentCount {
         Long getCourseId();
