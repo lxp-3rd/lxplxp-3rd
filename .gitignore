@@ -43,3 +43,4 @@ scripts/
 .DS_Store
 .claude/.run-tests-now
 .claude/.test-scope
+uploads/

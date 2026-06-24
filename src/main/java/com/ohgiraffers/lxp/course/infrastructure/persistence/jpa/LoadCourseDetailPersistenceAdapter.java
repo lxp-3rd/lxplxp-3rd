@@ -32,7 +32,7 @@ public class LoadCourseDetailPersistenceAdapter implements LoadCourseDetailPort 
                         entity.getInstructorId(),
                         entity.getTitle(),
                         entity.getSummary(),
-                        entity.getDescription(),
+                        entity.getSummary(),
                         entity.getThumbnailUrl(),
                         loadCurriculum(courseId)
                 ));

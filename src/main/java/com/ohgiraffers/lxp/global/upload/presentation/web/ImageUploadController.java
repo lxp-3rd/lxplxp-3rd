@@ -24,7 +24,6 @@ public class ImageUploadController {
 
     private final UploadImageUseCase uploadImageUseCase;
 
-    @RequireRole(MemberRole.INSTRUCTOR)
     @PostMapping
     public ResponseEntity<ImageUploadResponse> upload(@RequestParam("image") MultipartFile file) {
         try {

@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 @Component
 public class LocalImageStorageAdapter implements ImageStoragePort {
 
-    private static final String UPLOAD_DIR = "src/main/resources/static/images";
+    private static final String UPLOAD_DIR = "uploads/images";
 
     @Override
     public String save(byte[] fileData, String filename) {

@@ -31,7 +31,8 @@
 - [x] 🔐 `POST /api/enrollments` — 수강 신청 버튼 연동
 
 **`courses/new/page.tsx`** — 강좌 생성
-- [ ] 🔑강사 `POST /api/courses` — 강좌 생성
+- [x] 🔑강사 `POST /api/courses` — 강좌 생성
+- [x] 🔐 `POST /api/images` — 이미지 업로드 후 URL → thumbnailUrl 사용
 
 **`courses/manage/page.tsx`** — 내 강좌 목록 (강사)
 - [ ] 🔑강사 `GET /api/courses?instructorId={me}` — 내 강좌 조회 (getMyCourses mock 교체)

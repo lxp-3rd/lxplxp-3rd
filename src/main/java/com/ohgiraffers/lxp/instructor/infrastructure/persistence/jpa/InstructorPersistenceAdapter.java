@@ -6,6 +6,7 @@ import com.ohgiraffers.lxp.instructor.domain.model.entity.InstructorStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class InstructorPersistenceAdapter implements InstructorRepositoryPort {
@@ -19,6 +20,11 @@ public class InstructorPersistenceAdapter implements InstructorRepositoryPort {
     @Override
     public Instructor save(Instructor instructor) {
         return jpaRepository.save(InstructorJpaEntity.from(instructor)).toDomain();
+    }
+
+    @Override
+    public Optional<Instructor> findByMemberId(Long memberId) {
+        return jpaRepository.findByMemberId(memberId).map(InstructorJpaEntity::toDomain);
     }
 
     @Override

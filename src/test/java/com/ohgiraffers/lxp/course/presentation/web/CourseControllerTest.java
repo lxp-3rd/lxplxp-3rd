@@ -16,6 +16,7 @@ import com.ohgiraffers.lxp.course.presentation.dto.UpdateCourseRequest;
 
 import com.ohgiraffers.lxp.global.exception.BusinessException;
 import com.ohgiraffers.lxp.global.exception.ErrorCode;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ class CourseControllerTest {
     @DisplayName("강좌 등록 성공 시 201과 courseId를 반환한다")
     void register_success_returns201() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(
-                1L, "강좌 제목", "강좌 설명입니다.", null
+                1L, "강좌 제목", "강좌 설명입니다.", null, List.of("소개", "실습")
         );
         given(registerCourseUseCase.register(any(RegisterCourseCommand.class))).willReturn(42L);
 
@@ -73,7 +74,7 @@ class CourseControllerTest {
     @DisplayName("instructorId가 null이면 400을 반환한다")
     void register_nullInstructorId_returns400() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(
-                null, "강좌 제목", "강좌 설명입니다.", null
+                null, "강좌 제목", "강좌 설명입니다.", null, List.of()
         );
 
         mockMvc.perform(post("/api/courses")
@@ -86,7 +87,7 @@ class CourseControllerTest {
     @DisplayName("title이 빈 문자열이면 400을 반환한다")
     void register_blankTitle_returns400() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(
-                1L, "", "강좌 설명입니다.", null
+                1L, "", "강좌 설명입니다.", null, List.of()
         );
 
         mockMvc.perform(post("/api/courses")
@@ -99,7 +100,7 @@ class CourseControllerTest {
     @DisplayName("thumbnailUrl이 올바른 URL 형식이 아니면 400을 반환한다")
     void register_invalidThumbnailUrl_returns400() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(
-                1L, "강좌 제목", "강좌 설명입니다.", "not-a-valid-url"
+                1L, "강좌 제목", "강좌 설명입니다.", "not-a-valid-url", List.of()
         );
 
         mockMvc.perform(post("/api/courses")
@@ -112,7 +113,7 @@ class CourseControllerTest {
     @DisplayName("존재하지 않는 강사 ID로 등록 시 404를 반환한다")
     void register_instructorNotFound_returns404() throws Exception {
         RegisterCourseRequest request = new RegisterCourseRequest(
-                99L, "강좌 제목", "강좌 설명입니다.", null
+                99L, "강좌 제목", "강좌 설명입니다.", null, List.of()
         );
         willThrow(new BusinessException(ErrorCode.INSTRUCTOR_NOT_FOUND))
                 .given(registerCourseUseCase).register(any(RegisterCourseCommand.class));
