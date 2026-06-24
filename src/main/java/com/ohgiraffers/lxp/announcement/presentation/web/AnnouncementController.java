@@ -46,6 +46,7 @@ public class AnnouncementController {
         return ResponseEntity.status(HttpStatus.CREATED).body(AnnouncementResponse.from(result));
     }
 
+    @RequireRole(MemberRole.ADMIN)
     @PutMapping("/{announcementId}")
     public ResponseEntity<AnnouncementResponse> update(
             @PathVariable Long announcementId,
@@ -60,6 +61,7 @@ public class AnnouncementController {
         return ResponseEntity.ok(AnnouncementResponse.from(result));
     }
 
+    @RequireRole(MemberRole.ADMIN)
     @DeleteMapping("/{announcementId}")
     public ResponseEntity<DeleteAnnouncementResponse> delete(@PathVariable Long announcementId) {
         Long id = deleteAnnouncementUseCase.deleteAnnouncement(announcementId);
