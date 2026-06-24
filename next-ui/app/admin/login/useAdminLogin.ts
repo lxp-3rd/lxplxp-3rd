@@ -41,7 +41,7 @@ export function useAdminLogin() {
     setIsSubmitting(true);
     try {
       const tokenPair = await authApi.login({ email, password });
-      login({ ...tokenPair, email });
+      await login({ ...tokenPair, email });
     } catch {
       setError('관리자 계정 정보를 확인해주세요.');
     } finally {
