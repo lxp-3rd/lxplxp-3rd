@@ -39,7 +39,7 @@ class GetCourseDetailServiceTest {
     @Test
     @DisplayName("PUBLIC 강좌 상세에 수강 인원·수강 여부·커리큘럼을 조합해 반환한다")
     void getCourseDetail_loggedIn_enrolled() {
-        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "자바 입문 강좌", "thumb.png",
+        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "자바 입문 강좌", "자바 상세 설명", "thumb.png",
                 List.of(new CurriculumItem(11L, 1, "1장"), new CurriculumItem(12L, 2, "2장")));
         given(loadCourseDetailPort.loadPublicCourseDetail(1L)).willReturn(Optional.of(view));
         given(loadEnrollmentStatusPort.load(1L, 7L)).willReturn(new EnrollmentStatusView(1240L, true));
@@ -47,7 +47,8 @@ class GetCourseDetailServiceTest {
         CourseDetail detail = getCourseDetailService.getCourseDetail(1L, 7L);
 
         assertThat(detail.id()).isEqualTo(1L);
-        assertThat(detail.description()).isEqualTo("자바 입문 강좌");
+        assertThat(detail.summary()).isEqualTo("자바 입문 강좌");
+        assertThat(detail.description()).isEqualTo("자바 상세 설명");
         assertThat(detail.enrollmentCount()).isEqualTo(1240L);
         assertThat(detail.enrolled()).isTrue();
         assertThat(detail.curriculum()).hasSize(2);
@@ -58,13 +59,15 @@ class GetCourseDetailServiceTest {
     @Test
     @DisplayName("비로그인(memberId=null)이면 enrolled=false로 조합한다")
     void getCourseDetail_anonymous_notEnrolled() {
-        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "설명", null, List.of());
+        CourseDetailView view = new CourseDetailView(1L, "Java 기초", "요약", null, null, List.of());
         given(loadCourseDetailPort.loadPublicCourseDetail(1L)).willReturn(Optional.of(view));
         given(loadEnrollmentStatusPort.load(1L, null)).willReturn(new EnrollmentStatusView(0L, false));
 
         CourseDetail detail = getCourseDetailService.getCourseDetail(1L, null);
 
         assertThat(detail.enrolled()).isFalse();
+        assertThat(detail.summary()).isEqualTo("요약");
+        assertThat(detail.description()).isNull();
         assertThat(detail.curriculum()).isEmpty();
     }
 
