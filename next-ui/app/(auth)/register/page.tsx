@@ -112,23 +112,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="flex items-start gap-xs py-xs">
-              <input
-                className="mt-1 rounded-sm border-outline text-primary-container focus:ring-primary-container"
-                id="terms"
-                required
-                type="checkbox"
-                checked={termsAgreed}
-                onChange={(event) => setTermsAgreed(event.target.checked)}
-              />
-              <label className="text-label-sm text-on-surface-variant" htmlFor="terms">
-                <Link className="text-primary-container hover:underline" href="/terms">
-                  이용약관
-                </Link>
-                에 동의합니다.
-              </label>
-            </div>
-
             {errorMessage && (
               <p className="text-label-sm font-label-sm text-error">
                 {errorMessage}
