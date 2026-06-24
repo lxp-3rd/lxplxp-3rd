@@ -1,10 +1,8 @@
 package com.ohgiraffers.lxp.course.application.service;
 
-import com.ohgiraffers.lxp.course.application.dto.CourseResult;
-import com.ohgiraffers.lxp.course.application.port.out.CourseLikeRepositoryPort;
-import com.ohgiraffers.lxp.course.application.port.out.CourseRepositoryPort;
-import com.ohgiraffers.lxp.course.domain.model.entity.Course;
-import com.ohgiraffers.lxp.course.domain.model.entity.CourseStatus;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,48 +10,84 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
+import com.ohgiraffers.lxp.course.application.port.out.CourseListView;
+import com.ohgiraffers.lxp.course.application.port.out.LoadCourseLikeCountPort;
+import com.ohgiraffers.lxp.course.application.port.out.LoadCourseListPort;
+import com.ohgiraffers.lxp.course.application.port.out.LoadEnrollmentCountPort;
+import com.ohgiraffers.lxp.course.application.port.out.LoadInstructorNamePort;
+import com.ohgiraffers.lxp.course.domain.model.read.CourseSummary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("GetCourseListService 단위 테스트")
 class GetCourseListServiceTest {
 
     @InjectMocks
     private GetCourseListService getCourseListService;
 
     @Mock
-    private CourseRepositoryPort courseRepository;
+    private LoadCourseListPort loadCourseListPort;
 
     @Mock
-    private CourseLikeRepositoryPort courseLikeRepository;
+    private LoadEnrollmentCountPort loadEnrollmentCountPort;
+
+    @Mock
+    private LoadInstructorNamePort loadInstructorNamePort;
+
+    @Mock
+    private LoadCourseLikeCountPort loadCourseLikeCountPort;
 
     @Test
-    @DisplayName("강좌 목록 조회 시 각 강좌에 likeCount가 포함된 CourseResult 목록을 반환한다")
+    @DisplayName("PUBLIC 강좌에 수강생 수·강사명·좋아요 수를 조합해 반환한다")
     void getCourseList_success() {
-        Course course1 = Course.restore(1L, 10L, "Java 기초", "자바 강좌", null, CourseStatus.PUBLIC, null);
-        Course course2 = Course.restore(2L, 10L, "Spring 기초", "스프링 강좌", null, CourseStatus.HIDDEN, null);
-        given(courseRepository.findAll()).willReturn(List.of(course1, course2));
-        given(courseLikeRepository.countByCourseId(1L)).willReturn(3L);
-        given(courseLikeRepository.countByCourseId(2L)).willReturn(0L);
+        CourseListView c1 = new CourseListView(1L, "Java 기초", "thumb1.png", 10L);
+        CourseListView c2 = new CourseListView(2L, "Spring 기초", null, 11L);
+        given(loadCourseListPort.loadPublicCourses()).willReturn(List.of(c1, c2));
+        given(loadEnrollmentCountPort.countByCourseIds(List.of(1L, 2L)))
+                .willReturn(Map.of(1L, 1240L, 2L, 30L));
+        given(loadInstructorNamePort.findNamesByInstructorIds(List.of(10L, 11L)))
+                .willReturn(Map.of(10L, "김태희", 11L, "이순신"));
+        given(loadCourseLikeCountPort.countByCourseIds(List.of(1L, 2L)))
+                .willReturn(Map.of(1L, 88L, 2L, 5L));
 
-        List<CourseResult> results = getCourseListService.getCourseList();
+        List<CourseSummary> result = getCourseListService.getCourseList();
 
-        assertThat(results).hasSize(2);
-        assertThat(results.get(0).id()).isEqualTo(1L);
-        assertThat(results.get(0).likeCount()).isEqualTo(3L);
-        assertThat(results.get(1).id()).isEqualTo(2L);
-        assertThat(results.get(1).likeCount()).isEqualTo(0L);
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).id()).isEqualTo(1L);
+        assertThat(result.get(0).instructorName()).isEqualTo("김태희");
+        assertThat(result.get(0).enrollmentCount()).isEqualTo(1240L);
+        assertThat(result.get(0).likeCount()).isEqualTo(88L);
+        assertThat(result.get(1).thumbnailUrl()).isNull();
+        assertThat(result.get(1).likeCount()).isEqualTo(5L);
     }
 
     @Test
-    @DisplayName("강좌가 없으면 빈 목록을 반환한다")
+    @DisplayName("수강생·좋아요 집계에 없는 강좌는 각각 0으로 채운다")
+    void getCourseList_missingCounts_returnsZero() {
+        CourseListView c1 = new CourseListView(1L, "Java 기초", null, 10L);
+        given(loadCourseListPort.loadPublicCourses()).willReturn(List.of(c1));
+        given(loadEnrollmentCountPort.countByCourseIds(List.of(1L))).willReturn(Map.of());
+        given(loadInstructorNamePort.findNamesByInstructorIds(List.of(10L))).willReturn(Map.of(10L, "김태희"));
+        given(loadCourseLikeCountPort.countByCourseIds(List.of(1L))).willReturn(Map.of());
+
+        List<CourseSummary> result = getCourseListService.getCourseList();
+
+        assertThat(result.get(0).enrollmentCount()).isZero();
+        assertThat(result.get(0).likeCount()).isZero();
+    }
+
+    @Test
+    @DisplayName("PUBLIC 강좌가 없으면 빈 목록을 반환한다")
     void getCourseList_empty() {
-        given(courseRepository.findAll()).willReturn(List.of());
+        given(loadCourseListPort.loadPublicCourses()).willReturn(List.of());
+        given(loadEnrollmentCountPort.countByCourseIds(List.of())).willReturn(Map.of());
+        given(loadInstructorNamePort.findNamesByInstructorIds(List.of())).willReturn(Map.of());
+        given(loadCourseLikeCountPort.countByCourseIds(List.of())).willReturn(Map.of());
 
-        List<CourseResult> results = getCourseListService.getCourseList();
+        List<CourseSummary> result = getCourseListService.getCourseList();
 
-        assertThat(results).isEmpty();
+        assertThat(result).isEmpty();
     }
 }
