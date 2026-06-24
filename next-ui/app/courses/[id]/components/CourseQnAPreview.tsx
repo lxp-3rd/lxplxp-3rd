@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui';
-import type { Question } from '@/app/questions/types';
+import type { LegacyQuestion } from '@/app/questions/types';
 
 interface CourseQnAPreviewProps {
   courseId: string;
-  questions: Question[];
+  questions: LegacyQuestion[];
 }
 
 export function CourseQnAPreview({ courseId, questions }: CourseQnAPreviewProps) {

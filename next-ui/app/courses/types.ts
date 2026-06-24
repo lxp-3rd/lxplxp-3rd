@@ -1,3 +1,31 @@
+// GET /api/courses 응답 형태
+export type CourseSummary = {
+  id: number;
+  title: string;
+  thumbnailUrl: string;
+  instructorName: string;
+  enrollmentCount: number;
+  likeCount: number;
+};
+
+// GET /api/courses/{id} 응답 형태
+export type CurriculumItem = {
+  id: number;
+  order: number;
+  title: string;
+};
+
+export type CourseDetail = {
+  id: number;
+  title: string;
+  summary: string;
+  description: string;
+  thumbnailUrl: string;
+  enrollmentCount: number;
+  enrolled: boolean;
+  curriculum: CurriculumItem[];
+};
+
 export type Content = {
   id: string;
   title: string;
