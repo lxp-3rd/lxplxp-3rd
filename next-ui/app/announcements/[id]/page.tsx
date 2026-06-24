@@ -57,7 +57,7 @@ export default function AnnouncementDetailPage() {
                   <div className="flex items-center gap-md text-on-surface-variant">
                     <div className="flex items-center gap-xs">
                       <span className="material-symbols-outlined text-[16px]">person</span>
-                      <span className="text-label-md font-label-md">{announcement.author}</span>
+                      <span className="text-label-md font-label-md">{announcement.authorName}</span>
                     </div>
                     <div className="w-1 h-1 bg-outline-variant rounded-full"></div>
                     <div className="flex items-center gap-xs">

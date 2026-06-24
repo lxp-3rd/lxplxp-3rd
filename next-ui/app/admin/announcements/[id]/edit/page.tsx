@@ -12,7 +12,7 @@ export default function AdminAnnouncementEditPage() {
 
   const [title, setTitle] = useState(announcement?.title ?? '');
   const [content, setContent] = useState(announcement?.content ?? '');
-  const [author, setAuthor] = useState(announcement?.author ?? '');
+  const [author, setAuthor] = useState(announcement?.authorName ?? '');
   const [isPublic, setIsPublic] = useState(true);
 
   if (!announcement) {

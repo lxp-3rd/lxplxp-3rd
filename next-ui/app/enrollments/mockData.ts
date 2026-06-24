@@ -1,4 +1,13 @@
-export const MOCK_ENROLLMENTS = [
+export const MOCK_ENROLLMENTS: {
+  id: string;
+  courseId: string;
+  courseTitle: string;
+  instructor: string;
+  thumbnail: string;
+  progress: number;
+  lastAccessedAt: string;
+  status: 'IN_PROGRESS' | 'COMPLETED';
+}[] = [
   {
     id: 'e1',
     courseId: '1',

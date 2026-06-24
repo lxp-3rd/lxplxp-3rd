@@ -1,4 +1,6 @@
-export const MOCK_ROADMAPS = [
+import type { Roadmap } from './types';
+
+export const MOCK_ROADMAPS: Roadmap[] = [
   {
     id: '1',
     title: '프론트엔드 마스터: 실무 중심의 로드맵',
@@ -11,6 +13,8 @@ export const MOCK_ROADMAPS = [
     progress: 35,
     isEnrolled: true,
     thumbnail: 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg',
+    createdAt: '2026-01-10',
+    updatedAt: '2026-05-20',
   },
   {
     id: '2',
@@ -24,6 +28,8 @@ export const MOCK_ROADMAPS = [
     progress: 0,
     isEnrolled: false,
     thumbnail: 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg',
+    createdAt: '2026-02-01',
+    updatedAt: '2026-06-01',
   },
   {
     id: '3',
@@ -37,6 +43,8 @@ export const MOCK_ROADMAPS = [
     progress: 75,
     isEnrolled: true,
     thumbnail: 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg',
+    createdAt: '2026-01-20',
+    updatedAt: '2026-04-15',
   },
   {
     id: '4',
@@ -50,6 +58,8 @@ export const MOCK_ROADMAPS = [
     progress: 0,
     isEnrolled: false,
     thumbnail: 'https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg',
+    createdAt: '2026-03-05',
+    updatedAt: '2026-06-10',
   },
   {
     id: '5',
@@ -63,6 +73,8 @@ export const MOCK_ROADMAPS = [
     progress: 0,
     isEnrolled: false,
     thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFeRNT2jIX0NwLhTV7s6rCojQVRg_-j-juFzjRI65QISW0gbA_5HEQK6un4vqgpnCea_iwvdfbrX9gF66llwIqUEL9wYD98dk2oVIsTk2p-IuCVFzzuROhE9PVoA3lLsfaSeJmN4MoWCd1DzTp0bmCth2NbG2qtVpL8iV4pr46QkEOABLiY37vxWwDBuc0S4657g-Sae5Uu5B7p4KTUiIMDTLMBvMTC60oQI1oEqKkn1rP2NIkzxUyUUY1c34b0nDjK5NAAQwZhYhh',
+    createdAt: '2026-04-01',
+    updatedAt: '2026-06-05',
   },
   {
     id: '6',
@@ -76,6 +88,8 @@ export const MOCK_ROADMAPS = [
     progress: 0,
     isEnrolled: false,
     thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCYf5C358gYRHTx04VU97ReutHchGpgDpgag-hJtXkZudxw56iSYAjD3YJv1ykzrHDwPeIvf9v_V-fVITdppsWuOYHj4O8IAurzNppA1KlkvbCJYaRTxqdHzsnI8A3xIO8xzpSz0OISCfdEOEoqkKrkUtx1Yd54PG8PR-BISijdTrVbLcM5jRm6rQ5HX_3ADJkAMLYY-uZZF0bSsYPwxLGt9XT8q37AaZotN9_a0py8Ahdm-S9vOhcXspLctFEC754nQAS8akD-siYt',
+    createdAt: '2026-04-20',
+    updatedAt: '2026-06-15',
   },
   {
     id: '7',
@@ -89,6 +103,8 @@ export const MOCK_ROADMAPS = [
     progress: 0,
     isEnrolled: false,
     thumbnail: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBOflCVzT456kde8hx8X4R6Z1L9NQvesXUDXgflb3SN5lyDX3fXe7K8H4XKQC7noGnNXtlHHZ2DrR-698kqdqDVUJbUpYA3fZoOzCziz8sAQcR5FjOZVvlZAKE0CKIV_QENAYwfTI7xrM3VywH5IckVwtMz0hmrkM2nRYGdmYthOivV6bXGRXNtmElB54jbzcdgOhcGRVdWchxyzywzGF25J1mrhmSjaN1PefWnyIeYTfPQowPMNIVIJaMYsap2RotopPY9smBS1Ehk',
+    createdAt: '2026-05-01',
+    updatedAt: '2026-06-20',
   },
 ];
 

@@ -1,13 +1,48 @@
-import type { Course } from '../types';
+import Link from 'next/link';
 
 interface CourseCardProps {
-  data: Course;
+  id: string;
+  title: string;
+  instructor: string;
+  thumbnail: string;
+  enrollmentCount: number;
+  badge?: string;
 }
 
-export function CourseCard({ data }: CourseCardProps) {
+export function CourseCard({ id, title, instructor, thumbnail, enrollmentCount, badge }: CourseCardProps) {
   return (
-    <div>
-      {/* TODO: CourseCard 구현 예정 */}
-    </div>
+    <Link href={`/courses/${id}`} className="block">
+      <div className="course-card group bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden cursor-pointer">
+        <div className="relative aspect-video overflow-hidden">
+          <img
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            alt={`${title} 썸네일`}
+            src={thumbnail}
+          />
+          {badge && (
+            <div className="absolute top-sm left-sm">
+              <span className={[
+                'px-xs py-[2px] rounded text-label-sm font-label-sm',
+                badge === 'NEW'
+                  ? 'bg-secondary-container text-on-secondary-container'
+                  : 'bg-primary text-on-primary',
+              ].join(' ')}>
+                {badge}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="p-md">
+          <h3 className="text-headline-sm font-headline-sm text-on-surface mb-xs line-clamp-2">{title}</h3>
+          <p className="text-body-sm font-body-sm text-on-surface-variant mb-md">강사: {instructor}</p>
+          <div className="flex items-center gap-xs">
+            <span className="material-symbols-outlined text-primary text-[16px]">groups</span>
+            <span className="text-label-sm font-label-sm text-on-surface-variant">
+              {enrollmentCount.toLocaleString()}명 수강
+            </span>
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }

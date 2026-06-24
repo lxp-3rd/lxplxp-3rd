@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { TopNavBar } from '@/components/TopNavBar';
 import { Footer } from '@/components/Footer';
-import { MOCK_QUESTIONS, type Answer } from '@/app/questions/mockData';
+import { MOCK_QUESTIONS } from '@/app/questions/mockData';
+import type { Answer } from '@/app/questions/types';
 import { getCourseById, MOCK_COURSES } from '@/app/courses/mockData';
 
 export default function InstructorQuestionsPage() {
@@ -23,8 +24,11 @@ export default function InstructorQuestionsPage() {
     if (!answerText.trim()) return;
     const newAnswer: Answer = {
       id: `a-${Date.now()}`,
+      questionId: selectedId,
+      authorId: 'instructor',
       authorName: '강사',
       createdAt: '방금',
+      updatedAt: '방금',
       content: answerText.trim(),
     };
     setQuestions((prev) =>
