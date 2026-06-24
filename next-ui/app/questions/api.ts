@@ -5,6 +5,7 @@ import { MOCK_QUESTIONS, getQuestionById as findById } from './mockData';
 
 export const questionApi = {
   getAll: () => fetcher.get<Question[]>('/api/questions'),
+  getByCourse: (courseId: number) => fetcher.get<Question[]>(`/api/questions?courseId=${courseId}`),
   getById: (id: number) => fetcher.get<Question>(`/api/questions/${id}`),
   create: (data: Partial<Question>) => fetcher.post<Question>('/api/questions', data),
   update: (id: number, data: Partial<Question>) => fetcher.put<Question>(`/api/questions/${id}`, data),

@@ -7,6 +7,8 @@ import com.ohgiraffers.lxp.course.domain.model.read.CurriculumItem;
 
 public record CourseDetailResponse(
         Long id,
+        Long instructorId,
+        String instructorName,
         String title,
         String summary,
         String description,
@@ -18,6 +20,8 @@ public record CourseDetailResponse(
     public static CourseDetailResponse from(CourseDetail detail) {
         return new CourseDetailResponse(
                 detail.id(),
+                detail.instructorId(),
+                detail.instructorName(),
                 detail.title(),
                 detail.summary(),
                 detail.description(),

@@ -7,6 +7,8 @@ import java.util.List;
  */
 public record CourseDetail(
         Long id,
+        Long instructorId,
+        String instructorName,
         String title,
         String summary,
         String description,

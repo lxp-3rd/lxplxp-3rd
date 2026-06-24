@@ -1,10 +1,14 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui';
-import type { LegacyQuestion } from '@/app/questions/types';
+import type { Question } from '@/app/questions/types';
 
 interface CourseQnAPreviewProps {
   courseId: string;
-  questions: LegacyQuestion[];
+  questions: Question[];
+}
+
+function formatDate(iso: string) {
+  return iso.slice(0, 10).replace(/-/g, '.');
 }
 
 export function CourseQnAPreview({ courseId, questions }: CourseQnAPreviewProps) {
@@ -28,6 +32,7 @@ export function CourseQnAPreview({ courseId, questions }: CourseQnAPreviewProps)
           </Button>
         </Link>
       </div>
+
       {questions.length === 0 ? (
         <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl text-center">
           <span className="material-symbols-outlined text-[40px] text-on-surface-variant mb-md block">forum</span>
@@ -36,43 +41,44 @@ export function CourseQnAPreview({ courseId, questions }: CourseQnAPreviewProps)
         </div>
       ) : (
         <div className="border border-outline-variant rounded-xl overflow-hidden bg-surface-container-lowest">
-          {questions.map((q, idx) => (
-            <Link
-              key={q.id}
-              href={`/courses/${courseId}/questions/${q.id}`}
-              className={[
-                'flex items-start gap-md p-lg hover:bg-surface-container transition-colors group',
-                idx < questions.length - 1 ? 'border-b border-outline-variant' : '',
-              ].join(' ')}
-            >
-              <div className={[
-                'mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center',
-                q.isAnswered ? 'bg-primary' : 'bg-outline-variant',
-              ].join(' ')}>
-                <span className="material-symbols-outlined text-[12px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>
-                  {q.isAnswered ? 'check' : 'help'}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors line-clamp-1">
-                  {q.title}
-                </p>
-                <div className="flex items-center gap-md mt-xs text-label-sm font-label-sm text-on-surface-variant">
-                  <span>{q.authorName}</span>
-                  <span>·</span>
-                  <span>{q.createdAt}</span>
+          {questions.map((q, idx) => {
+            const answered = q.answeredBy !== null;
+            return (
+              <Link
+                key={q.id}
+                href={`/courses/${courseId}/questions/${q.id}`}
+                className={[
+                  'flex items-start gap-md p-lg hover:bg-surface-container transition-colors group',
+                  idx < questions.length - 1 ? 'border-b border-outline-variant' : '',
+                ].join(' ')}
+              >
+                <div className={[
+                  'mt-1 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center',
+                  answered ? 'bg-primary' : 'bg-outline-variant',
+                ].join(' ')}>
+                  <span className="material-symbols-outlined text-[12px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {answered ? 'check' : 'help'}
+                  </span>
                 </div>
-              </div>
-              <span className={[
-                'flex-shrink-0 px-sm py-1 rounded-full text-label-sm font-label-sm',
-                q.isAnswered
-                  ? 'bg-secondary-container text-on-secondary-container'
-                  : 'bg-primary-fixed text-on-primary-container',
-              ].join(' ')}>
-                {q.isAnswered ? '답변 완료' : '답변 대기'}
-              </span>
-            </Link>
-          ))}
+                <div className="flex-1 min-w-0">
+                  <p className="text-body-md font-body-md text-on-surface group-hover:text-primary transition-colors line-clamp-1">
+                    {q.title}
+                  </p>
+                  <p className="text-label-sm font-label-sm text-on-surface-variant mt-xs">
+                    {formatDate(q.createdAt)}
+                  </p>
+                </div>
+                <span className={[
+                  'flex-shrink-0 px-sm py-1 rounded-full text-label-sm font-label-sm',
+                  answered
+                    ? 'bg-secondary-container text-on-secondary-container'
+                    : 'bg-primary-fixed text-on-primary-container',
+                ].join(' ')}>
+                  {answered ? '답변 완료' : '답변 대기'}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       )}
     </section>

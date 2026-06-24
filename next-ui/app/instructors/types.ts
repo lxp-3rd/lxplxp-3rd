@@ -1,3 +1,10 @@
+// GET /api/instructors/{id}/profile 응답 형태
+export type InstructorProfile = {
+  instructorId: number;
+  profileImageUrl: string;
+  bio: string;
+};
+
 // Instructor 도메인 타입 정의 (API 응답 기준)
 export type Instructor = {
   id: string;

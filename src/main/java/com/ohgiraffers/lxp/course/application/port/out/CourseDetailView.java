@@ -9,6 +9,7 @@ import com.ohgiraffers.lxp.course.domain.model.read.CurriculumItem;
  */
 public record CourseDetailView(
         Long id,
+        Long instructorId,
         String title,
         String summary,
         String description,

@@ -26,9 +26,9 @@
 
 **`courses/[id]/page.tsx`** — 강좌 상세
 - [x] 🔓 `GET /api/courses/{id}` — 강좌 정보 (enrolled 여부, 커리큘럼 포함)
-- [ ] 🔓 `GET /api/instructors/{instructorId}` — 강사 정보 (백엔드 응답에 강사 정보 없어 미연동)
-- [ ] 🔓 `GET /api/questions?courseId={id}` — Q&A 미리보기 (CourseQnAPreview, 현재 mock)
-- [ ] 🔐 `POST /api/enrollments` — 수강 신청 버튼
+- [x] 🔓 `GET /api/instructors/{instructorId}/profile` — 강사 프로필(bio) 연동, instructorName은 강좌 상세에 포함
+- [x] 🔓 `GET /api/questions?courseId={id}` — Q&A 미리보기 실제 API 연동
+- [x] 🔐 `POST /api/enrollments` — 수강 신청 버튼 연동
 
 **`courses/new/page.tsx`** — 강좌 생성
 - [ ] 🔑강사 `POST /api/courses` — 강좌 생성

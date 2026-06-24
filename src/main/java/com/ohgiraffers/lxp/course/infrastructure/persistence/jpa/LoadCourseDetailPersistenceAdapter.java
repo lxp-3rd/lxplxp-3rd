@@ -29,6 +29,7 @@ public class LoadCourseDetailPersistenceAdapter implements LoadCourseDetailPort 
         return courseJpaRepository.findByIdAndStatusAndDeletedAtIsNull(courseId, CourseStatus.PUBLIC)
                 .map(entity -> new CourseDetailView(
                         entity.getId(),
+                        entity.getInstructorId(),
                         entity.getTitle(),
                         entity.getSummary(),
                         entity.getDescription(),

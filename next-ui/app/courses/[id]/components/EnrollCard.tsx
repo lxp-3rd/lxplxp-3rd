@@ -5,9 +5,10 @@ interface EnrollCardProps {
   courseId: string;
   enrolled: boolean;
   enrollmentCount: number;
+  onEnroll?: () => Promise<void>;
 }
 
-export function EnrollCard({ courseId, enrolled, enrollmentCount }: EnrollCardProps) {
+export function EnrollCard({ courseId, enrolled, enrollmentCount, onEnroll }: EnrollCardProps) {
   return (
     <div className="bg-surface-container-lowest border border-surface-container-highest rounded-xl p-lg shadow-sm">
       {enrolled ? (
@@ -16,7 +17,7 @@ export function EnrollCard({ courseId, enrolled, enrollmentCount }: EnrollCardPr
           <span className="text-label-md font-label-md">수강 중인 강좌입니다</span>
         </div>
       ) : (
-        <Button fullWidth className="mb-sm">
+        <Button fullWidth className="mb-sm" onClick={onEnroll}>
           <span className="material-symbols-outlined text-[20px]">school</span>
           수강 신청하기
         </Button>

@@ -17,6 +17,8 @@ export type CurriculumItem = {
 
 export type CourseDetail = {
   id: number;
+  instructorId: number;
+  instructorName: string;
   title: string;
   summary: string;
   description: string;
