@@ -9,6 +9,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -40,6 +41,13 @@ public class InstructorApplicationPersistenceAdapter implements InstructorApplic
     @Override
     public Optional<InstructorApplication> findById(Long id) {
         return jpaRepository.findById(id).map(InstructorApplicationJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<InstructorApplication> findAll() {
+        return jpaRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(InstructorApplicationJpaEntity::toDomain)
+                .toList();
     }
 
     @Override

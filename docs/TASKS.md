@@ -184,11 +184,8 @@
 - [ ] 🔑관리자 `PATCH /api/instructors/{id}/status` — 계정 활성/정지
 
 **`admin/instructor-applications/page.tsx`** — 강사 신청 목록
-- [ ] 🔑관리자 `GET /api/instructor-applications` — 신청 목록 (필터: status)
-
-**`instructor-applications/[id]/page.tsx`** — 강사 신청 심사
-- [ ] 🔑관리자 `GET /api/instructor-applications/{id}` — 신청 상세
-- [ ] 🔑관리자 `PATCH /api/instructor-applications/{id}` — 승인 / 반려
+- [x] 🔑관리자 `GET /api/instructors/applications` — 신청 목록
+- [x] 🔑관리자 `PATCH /api/instructors/applications/{id}` — 승인 / 반려 (모달에서 처리)
 
 **`admin/members/page.tsx`** — 회원 관리
 - [ ] 🔑관리자 `GET /api/admin/members` — 회원 목록

@@ -13,68 +13,6 @@ import type {
   AdminRoadmap,
 } from './types';
 
-const ADMIN_INSTRUCTOR_APPLICATIONS: AdminInstructorApplication[] = [
-  {
-    id: 'a1',
-    nickname: 'PixelMaster',
-    displayName: 'Kim Ji-hun',
-    expertise: 'UI/UX 디자인',
-    appliedAt: '2024.05.12',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: '확장 가능한 클라우드 솔루션 구축 경험을 바탕으로 실무 중심 강의를 제공하려는 강사 후보입니다.',
-  },
-  {
-    id: 'a2',
-    nickname: 'CodeNinja',
-    displayName: 'Lee Min-ho',
-    expertise: '풀스택 개발',
-    appliedAt: '2024.05.11',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: 'React, Node.js, 클라우드 아키텍처를 중심으로 한 풀스택 개발 경험을 보유하고 있습니다.',
-  },
-  {
-    id: 'a3',
-    nickname: 'DataGuru',
-    displayName: 'Sarah Park',
-    expertise: '데이터 사이언스',
-    appliedAt: '2024.05.10',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: 'Python과 머신러닝 기반 데이터 분석 및 데이터 파이프라인 구축 경험이 있습니다.',
-  },
-  {
-    id: 'a4',
-    nickname: 'MarketingWiz',
-    displayName: 'Park Jun-su',
-    expertise: '그로스 마케팅',
-    appliedAt: '2024.05.10',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: '스타트업에서 SEO, 퍼포먼스 마케팅, 그로스 해킹을 담당한 실무형 마케터입니다.',
-  },
-  {
-    id: 'a5',
-    nickname: 'CloudArchitect',
-    displayName: 'Choi Da-in',
-    expertise: 'AWS/클라우드',
-    appliedAt: '2024.05.09',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: 'AWS, GCP 환경에서 대규모 인프라를 설계하고 운영한 클라우드 아키텍트입니다.',
-  },
-  {
-    id: 'a6',
-    nickname: 'SecureGuru',
-    displayName: 'Jung Han-byeol',
-    expertise: '사이버 보안',
-    appliedAt: '2024.05.08',
-    status: 'PENDING',
-    rejectReason: '',
-    bio: '침투 테스트와 보안 취약점 분석 분야 프로젝트 경험이 있는 보안 전문가입니다.',
-  },
-];
 
 const ADMIN_MENU_ITEMS: AdminMenuItem[] = [
   {
@@ -164,7 +102,7 @@ export const adminDashboardApi = {
     },
     {
       label: '대기 중인 강사 신청',
-      value: String(ADMIN_INSTRUCTOR_APPLICATIONS.filter((item) => item.status === 'PENDING').length),
+      value: '-',
       icon: 'pending_actions',
       tone: 'danger',
       trendLabel: '검토 필요',
@@ -204,8 +142,10 @@ export const adminInstructorMockApi = {
   },
 };
 
-export const adminInstructorApplicationMockApi = {
-  getApplications: async () => ADMIN_INSTRUCTOR_APPLICATIONS.map((application) => ({ ...application })),
+export const adminInstructorApplicationApi = {
+  getApplications: () => fetcher.get<AdminInstructorApplication[]>('/api/instructors/applications'),
+  review: (id: number, data: { action: 'APPROVE' | 'REJECT'; rejectionReason?: string }) =>
+    fetcher.patch<void>(`/api/instructors/applications/${id}`, data),
 };
 
 export const adminAnnouncementApi = {

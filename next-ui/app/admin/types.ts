@@ -36,14 +36,15 @@ export type AdminInstructorDetail = {
 export type AdminInstructorApplicationStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export type AdminInstructorApplication = {
-  id: string;
-  nickname: string;
-  displayName: string;
+  id: number;
+  memberId: number;
+  instructorName: string;
+  introduction: string;
   expertise: string;
-  appliedAt: string;
   status: AdminInstructorApplicationStatus;
-  rejectReason: string;
-  bio: string;
+  rejectionReason: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
 };
 
 export type AdminAnnouncement = {
