@@ -15,6 +15,7 @@ export default function LoginPage() {
     isSubmitting,
     errorMessage,
     handleSubmit,
+    quickLogin,
   } = useLoginForm();
 
   return (
@@ -102,6 +103,44 @@ export default function LoginPage() {
                   지금 가입하기
                 </Link>
               </p>
+            </div>
+          </div>
+
+          <div className="mt-md bg-surface-container border border-outline-variant/50 rounded-xl p-md">
+            <p className="text-label-sm font-label-sm text-on-surface-variant text-center mb-sm">
+              개발용 빠른 로그인
+            </p>
+            <div className="grid grid-cols-3 gap-sm">
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => quickLogin('test2@test.test')}
+                className="flex flex-col items-center gap-xs p-sm rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-secondary text-xl">school</span>
+                <span className="text-label-sm font-label-sm text-on-surface">수강생</span>
+                <span className="text-label-sm font-label-sm text-on-surface-variant truncate w-full text-center">김수현</span>
+              </button>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => quickLogin('test1@test.test')}
+                className="flex flex-col items-center gap-xs p-sm rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-tertiary text-xl">cast_for_education</span>
+                <span className="text-label-sm font-label-sm text-on-surface">강사</span>
+                <span className="text-label-sm font-label-sm text-on-surface-variant truncate w-full text-center">이하연</span>
+              </button>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => quickLogin('admin@admin.admin')}
+                className="flex flex-col items-center gap-xs p-sm rounded-lg border border-outline-variant hover:bg-surface-container-high transition-colors disabled:opacity-50"
+              >
+                <span className="material-symbols-outlined text-error text-xl">manage_accounts</span>
+                <span className="text-label-sm font-label-sm text-on-surface">관리자</span>
+                <span className="text-label-sm font-label-sm text-on-surface-variant truncate w-full text-center">관리자</span>
+              </button>
             </div>
           </div>
         </div>

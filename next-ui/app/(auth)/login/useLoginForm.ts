@@ -28,6 +28,19 @@ export function useLoginForm() {
     }
   };
 
+  const quickLogin = async (presetEmail: string) => {
+    setErrorMessage('');
+    setIsSubmitting(true);
+    try {
+      const tokenPair = await authApi.login({ email: presetEmail, password: 'testtest' });
+      await login({ ...tokenPair, email: presetEmail });
+    } catch {
+      setErrorMessage('임시 계정 로그인에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     email,
     setEmail,
@@ -38,5 +51,6 @@ export function useLoginForm() {
     isSubmitting,
     errorMessage,
     handleSubmit,
+    quickLogin,
   };
 }
